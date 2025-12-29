@@ -86,7 +86,12 @@ export default function CreatePage() {
   const [pageBgColor, setPageBgColor] = useState('#ffffff')
   const [imageFitMode, setImageFitMode] = useState('cover')
   const [imageBorderRadius, setImageBorderRadius] = useState(4)
-  const [showPageNumbers, setShowPageNumbers] = useState(true)
+  const [showPageNumbers, setShowPageNumbers] = useState(false)
+
+  /* ================= Layout Split ================= */
+
+  const [layoutSplitX, setLayoutSplitX] = useState(50)
+  const [layoutSplitY, setLayoutSplitY] = useState(50)
 
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState(null)
@@ -95,7 +100,7 @@ export default function CreatePage() {
 
   const isStep1Valid = Boolean(selectedProduct && selectedSize)
 
-  /* ================= SAVE ================= */
+ /* ================= SAVE ================= */
 
   const saveProgress = useCallback(() => {
     setIsSaving(true)
@@ -109,14 +114,32 @@ export default function CreatePage() {
       coverImage,
       coverText,
       coverTheme,
-      pageSettings: {
-        margin: pageMargin,
-        gutter: pageGutter,
-        bgColor: pageBgColor,
+
+      /* ✅ SAVE ALL SETTINGS IN ONE PLACE */
+      settings: {
+        pageMargin,
+        pageGutter,
+        pageBgColor,
         imageFitMode,
         imageBorderRadius,
         showPageNumbers,
+
+        layoutSplitX,
+        layoutSplitY,
+
+        selectedLayout,
+
+        captionDefaults: {
+          fontFamily: selectedFontFamily,
+          fontSize: selectedFontSize,
+          color: selectedFontColor,
+          position: captionPosition,
+          alignment: captionAlignment,
+        },
+
+        autoSave,
       },
+
       lastSaved: new Date().toISOString(),
     }
 
@@ -133,12 +156,26 @@ export default function CreatePage() {
     coverImage,
     coverText,
     coverTheme,
+
     pageMargin,
     pageGutter,
     pageBgColor,
     imageFitMode,
     imageBorderRadius,
     showPageNumbers,
+
+    layoutSplitX,
+    layoutSplitY,
+
+    selectedLayout,
+
+    selectedFontFamily,
+    selectedFontSize,
+    selectedFontColor,
+    captionPosition,
+    captionAlignment,
+
+    autoSave,
   ])
 
   /* ================= LOAD ================= */
@@ -146,8 +183,10 @@ export default function CreatePage() {
   useEffect(() => {
     const saved = localStorage.getItem('photobook_draft')
     if (!saved) return
+
     try {
       const d = JSON.parse(saved)
+
       setStep(d.step || 1)
       setPages(Array.isArray(d.pages) ? d.pages : [])
       setUploadedImages(Array.isArray(d.uploadedImages) ? d.uploadedImages : [])
@@ -157,7 +196,35 @@ export default function CreatePage() {
       setCoverText(d.coverText ?? '')
       setCoverTheme(d.coverTheme ?? 'classic')
       setLastSaved(d.lastSaved ?? null)
-    } catch {}
+
+      /* ✅ RESTORE SETTINGS */
+      const s = d.settings || {}
+
+      setPageMargin(s.pageMargin ?? 20)
+      setPageGutter(s.pageGutter ?? 10)
+      setPageBgColor(s.pageBgColor ?? '#ffffff')
+      setImageFitMode(s.imageFitMode ?? 'cover')
+      setImageBorderRadius(s.imageBorderRadius ?? 4)
+      setShowPageNumbers(s.showPageNumbers ?? true)
+
+      setLayoutSplitX(s.layoutSplitX ?? 50)
+      setLayoutSplitY(s.layoutSplitY ?? 50)
+
+      setSelectedLayout(s.selectedLayout ?? 'single')
+
+      if (s.captionDefaults) {
+        setSelectedFontFamily(s.captionDefaults.fontFamily ?? 'Inter')
+        setSelectedFontSize(s.captionDefaults.fontSize ?? 16)
+        setSelectedFontColor(s.captionDefaults.color ?? '#000000')
+        setCaptionPosition(s.captionDefaults.position ?? 'bottom')
+        setCaptionAlignment(s.captionDefaults.alignment ?? 'center')
+      }
+
+      setAutoSave(s.autoSave ?? true)
+
+    } catch (err) {
+      console.error('Failed to load draft', err)
+    }
   }, [])
 
   /* ================= AUTOSAVE ================= */
@@ -166,7 +233,101 @@ export default function CreatePage() {
     if (!autoSave || step < 2) return
     const t = setTimeout(saveProgress, 2000)
     return () => clearTimeout(t)
-  }, [pages, uploadedImages, step, autoSave, saveProgress])
+  }, [
+    pages,
+    uploadedImages,
+
+    pageMargin,
+    pageGutter,
+    pageBgColor,
+    imageFitMode,
+    imageBorderRadius,
+    showPageNumbers,
+
+    layoutSplitX,
+    layoutSplitY,
+
+    selectedLayout,
+
+    selectedFontFamily,
+    selectedFontSize,
+    selectedFontColor,
+    captionPosition,
+    captionAlignment,
+
+    autoSave,
+    step,
+  ])
+
+  /* ================= CLEAR SAVED PROGRESS ================= */
+
+  const clearProgress = () => {
+    if (!confirm('Clear all saved progress?')) return
+
+    localStorage.removeItem('photobook_draft')
+
+    setPages([])
+    setUploadedImages([])
+    setSelectedProduct(null)
+    setSelectedSize(null)
+    setCoverImage(null)
+    setCoverText('')
+    setCoverTheme('classic')
+    setStep(1)
+    setLastSaved(null)
+
+    /* reset settings */
+    setPageMargin(20)
+    setPageGutter(10)
+    setPageBgColor('#ffffff')
+    setImageFitMode('cover')
+    setImageBorderRadius(4)
+    setShowPageNumbers(true)
+
+    setLayoutSplitX(50)
+    setLayoutSplitY(50)
+
+    setSelectedLayout('single')
+
+    setSelectedFontFamily('Inter')
+    setSelectedFontSize(16)
+    setSelectedFontColor('#000000')
+    setCaptionPosition('bottom')
+    setCaptionAlignment('center')
+
+    setAutoSave(true)
+  }
+
+  /* ================= apply to all pages ================= */
+  const applyCaptionStyleToAllPages = useCallback(() => {
+    setPages(p =>
+      p.map(pg => ({
+        ...pg,
+        captionStyle: {
+          fontSize: selectedFontSize,
+          color: selectedFontColor,
+          fontFamily: selectedFontFamily,
+          position: captionPosition,
+          alignment: captionAlignment,
+        },
+      }))
+    )
+  }, [
+    selectedFontSize,
+    selectedFontColor,
+    selectedFontFamily,
+    captionPosition,
+    captionAlignment,
+  ])
+
+  const applyPageSettingsToAllPages = useCallback(() => {
+    setPages(p =>
+      p.map(pg => ({
+        ...pg,
+        layout: selectedLayout,
+      }))
+    )
+  }, [selectedLayout])
 
   /* ================= INIT PAGES ================= */
 
@@ -192,31 +353,77 @@ export default function CreatePage() {
 
   /* ================= PDF ================= */
 
-  const exportToPDF = async () => {
-    const size = SIZES.find(s => s.id === selectedSize)
-    if (!size || pages.length === 0) return
-
+  const exportToPDF = useCallback(async () => {
     setIsExporting(true)
+
     try {
+      const size = SIZES.find(s => s.id === selectedSize)
+      if (!size) return
+
       const pdf = new jsPDF({
         orientation: size.width > size.height ? 'landscape' : 'portrait',
         unit: 'in',
         format: [size.width, size.height],
       })
 
-      pages.forEach((_, i) => {
+      for (let i = 0; i < pages.length; i++) {
+        const page = pages[i]
         if (i > 0) pdf.addPage()
+
         pdf.setFillColor(pageBgColor)
         pdf.rect(0, 0, size.width, size.height, 'F')
-      })
+
+        if (page.images?.length) {
+          const layout = LAYOUTS.find(l => l.id === page.layout) || LAYOUTS[0]
+          const imgW =
+            (size.width - (pageMargin / 25.4) * 2 - (layout.cols - 1) * (pageGutter / 25.4)) /
+            layout.cols
+          const imgH =
+            (size.height - (pageMargin / 25.4) * 2 - (layout.rows - 1) * (pageGutter / 25.4)) /
+            layout.rows
+
+          page.images.forEach((imgId, idx) => {
+            const img = uploadedImages.find(u => u.id === imgId)
+            if (!img) return
+
+            const col = idx % layout.cols
+            const row = Math.floor(idx / layout.cols)
+            const x = pageMargin / 25.4 + col * (imgW + pageGutter / 25.4)
+            const y = pageMargin / 25.4 + row * (imgH + pageGutter / 25.4)
+
+            pdf.addImage(img.src, 'JPEG', x, y, imgW, imgH)
+          })
+        }
+
+        if (page.caption) {
+          pdf.setFontSize(page.captionStyle?.fontSize || 12)
+          pdf.setTextColor(page.captionStyle?.color || '#000000')
+          pdf.text(page.caption, size.width / 2, size.height - 0.3, { align: 'center' })
+        }
+
+        if (showPageNumbers) {
+          pdf.setFontSize(10)
+          pdf.setTextColor('#999')
+          pdf.text(`${i + 1}`, size.width / 2, size.height - 0.15, { align: 'center' })
+        }
+      }
 
       pdf.save('photobook.pdf')
-      eventBus?.emit('pdf-exported', { pages: pages.length })
-    } catch {
+      eventBus?.emit('pdf-exported', { pageCount: pages.length })
+    } catch (e) {
       alert('Failed to export PDF')
     }
+
     setIsExporting(false)
-  }
+  }, [
+    pages,
+    uploadedImages,
+    selectedSize,
+    pageMargin,
+    pageGutter,
+    pageBgColor,
+    showPageNumbers,
+  ])
 
   /* ================= NAV ================= */
 
@@ -337,6 +544,9 @@ export default function CreatePage() {
             autoSave={autoSave}
             setAutoSave={setAutoSave}
             fontFamilies={FONT_FAMILIES}
+            applyCaptionStyleToAllPages={applyCaptionStyleToAllPages}
+            applyPageSettingsToAllPages={applyPageSettingsToAllPages}
+            clearProgress={clearProgress}
           />
         )}
 
