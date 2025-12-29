@@ -25,32 +25,31 @@ const SIZES = [
   { id: 4, name: '11×8.5 Landscape', label: 'Landscape', aspect: '1.29', width: 11, height: 8.5 },
 ]
 
-/* 🔥 FULL LAYOUT SET — EXACT MATCH */
 const LAYOUTS = [
-  // 1 image
   { id: 'single', name: 'Full Page', cols: 1, rows: 1, template: 'single' },
-
-  // 2 images
   { id: '2-horizontal', name: 'Side by Side', cols: 2, rows: 1, template: '2-horizontal' },
   { id: '2-vertical', name: 'Stacked', cols: 1, rows: 2, template: '2-vertical' },
-
-  // 3 images
   { id: '1-top-2-bottom', name: '1 Top + 2 Bottom', cols: 2, rows: 2, template: '1-top-2-bottom' },
   { id: '2-top-1-bottom', name: '2 Top + 1 Bottom', cols: 2, rows: 2, template: '2-top-1-bottom' },
-
-  // 4 images
   { id: '4-grid', name: '2×2 Grid', cols: 2, rows: 2, template: '4-grid' },
-
-  // 6 images
   { id: '6-grid', name: '3×2 Grid', cols: 3, rows: 2, template: '6-grid' },
 ]
 
 const FONT_FAMILIES = [
   { name: 'Inter', label: 'Inter (Sans-serif)' },
   { name: 'Arial', label: 'Arial (Sans-serif)' },
+  { name: 'Helvetica', label: 'Helvetica (Sans-serif)' },
   { name: 'Georgia', label: 'Georgia (Serif)' },
+  { name: 'Times New Roman', label: 'Times New Roman (Serif)' },
   { name: 'Playfair Display', label: 'Playfair Display (Serif)' },
   { name: 'Pacifico', label: 'Pacifico (Handwritten)' },
+  { name: 'Dancing Script', label: 'Dancing Script (Script)' },
+  { name: 'Caveat', label: 'Caveat (Handwritten)' },
+  { name: 'Satisfy', label: 'Satisfy (Script)' },
+  { name: 'Great Vibes', label: 'Great Vibes (Calligraphy)' },
+  { name: 'Shadows Into Light', label: 'Shadows Into Light (Handwritten)' },
+  { name: 'Lobster', label: 'Lobster (Display)' },
+  { name: 'Permanent Marker', label: 'Permanent Marker (Marker)' },
 ]
 
 /* ================= PAGE ================= */
@@ -59,23 +58,20 @@ export default function CreatePage() {
   const router = useRouter()
   const { state, eventBus, isLoaded } = usePhotoBook()
 
-  /* ===== Wizard ===== */
   const [step, setStep] = useState(1)
 
-  /* ===== Setup ===== */
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
-  const [pageCount, setPageCount] = useState(20)
+  const [pageCount] = useState(20)
+
   const [coverImage, setCoverImage] = useState(null)
   const [coverText, setCoverText] = useState('')
   const [coverTheme, setCoverTheme] = useState('classic')
 
-  /* ===== Editor ===== */
   const [pages, setPages] = useState([])
   const [currentPageIdx, setCurrentPageIdx] = useState(0)
   const [uploadedImages, setUploadedImages] = useState([])
 
-  /* ===== Caption ===== */
   const [selectedCaption, setSelectedCaption] = useState('')
   const [selectedFontSize, setSelectedFontSize] = useState(16)
   const [selectedFontColor, setSelectedFontColor] = useState('#000000')
@@ -83,10 +79,8 @@ export default function CreatePage() {
   const [captionPosition, setCaptionPosition] = useState('bottom')
   const [captionAlignment, setCaptionAlignment] = useState('center')
 
-  /* ===== Layout ===== */
   const [selectedLayout, setSelectedLayout] = useState('single')
 
-  /* ===== Page Settings ===== */
   const [pageMargin, setPageMargin] = useState(20)
   const [pageGutter, setPageGutter] = useState(10)
   const [pageBgColor, setPageBgColor] = useState('#ffffff')
@@ -94,11 +88,12 @@ export default function CreatePage() {
   const [imageBorderRadius, setImageBorderRadius] = useState(4)
   const [showPageNumbers, setShowPageNumbers] = useState(true)
 
-  /* ===== Save / Export ===== */
   const [isSaving, setIsSaving] = useState(false)
   const [lastSaved, setLastSaved] = useState(null)
   const [autoSave, setAutoSave] = useState(true)
   const [isExporting, setIsExporting] = useState(false)
+
+  const isStep1Valid = Boolean(selectedProduct && selectedSize)
 
   /* ================= SAVE ================= */
 
@@ -106,6 +101,7 @@ export default function CreatePage() {
     setIsSaving(true)
 
     const draft = {
+      step,
       pages,
       uploadedImages,
       selectedProduct,
@@ -113,35 +109,64 @@ export default function CreatePage() {
       coverImage,
       coverText,
       coverTheme,
-      step,
-      pageSettings: { margin: pageMargin, gutter: pageGutter, bgColor: pageBgColor },
+      pageSettings: {
+        margin: pageMargin,
+        gutter: pageGutter,
+        bgColor: pageBgColor,
+        imageFitMode,
+        imageBorderRadius,
+        showPageNumbers,
+      },
       lastSaved: new Date().toISOString(),
     }
 
     localStorage.setItem('photobook_draft', JSON.stringify(draft))
     setLastSaved(draft.lastSaved)
 
-    setTimeout(() => setIsSaving(false), 500)
-  }, [pages, uploadedImages, selectedProduct, selectedSize, coverImage, coverText, coverTheme, step, pageMargin, pageGutter, pageBgColor])
+    setTimeout(() => setIsSaving(false), 400)
+  }, [
+    step,
+    pages,
+    uploadedImages,
+    selectedProduct,
+    selectedSize,
+    coverImage,
+    coverText,
+    coverTheme,
+    pageMargin,
+    pageGutter,
+    pageBgColor,
+    imageFitMode,
+    imageBorderRadius,
+    showPageNumbers,
+  ])
 
   /* ================= LOAD ================= */
 
   useEffect(() => {
     const saved = localStorage.getItem('photobook_draft')
     if (!saved) return
-
     try {
       const d = JSON.parse(saved)
-      setPages(d.pages || [])
-      setUploadedImages(d.uploadedImages || [])
+      setStep(d.step || 1)
+      setPages(Array.isArray(d.pages) ? d.pages : [])
+      setUploadedImages(Array.isArray(d.uploadedImages) ? d.uploadedImages : [])
       setSelectedProduct(d.selectedProduct ?? null)
       setSelectedSize(d.selectedSize ?? null)
       setCoverImage(d.coverImage ?? null)
       setCoverText(d.coverText ?? '')
-      setStep(d.step || 1)
+      setCoverTheme(d.coverTheme ?? 'classic')
       setLastSaved(d.lastSaved ?? null)
     } catch {}
   }, [])
+
+  /* ================= AUTOSAVE ================= */
+
+  useEffect(() => {
+    if (!autoSave || step < 2) return
+    const t = setTimeout(saveProgress, 2000)
+    return () => clearTimeout(t)
+  }, [pages, uploadedImages, step, autoSave, saveProgress])
 
   /* ================= INIT PAGES ================= */
 
@@ -172,7 +197,6 @@ export default function CreatePage() {
     if (!size || pages.length === 0) return
 
     setIsExporting(true)
-
     try {
       const pdf = new jsPDF({
         orientation: size.width > size.height ? 'landscape' : 'portrait',
@@ -180,7 +204,7 @@ export default function CreatePage() {
         format: [size.width, size.height],
       })
 
-      pages.forEach((page, i) => {
+      pages.forEach((_, i) => {
         if (i > 0) pdf.addPage()
         pdf.setFillColor(pageBgColor)
         pdf.rect(0, 0, size.width, size.height, 'F')
@@ -191,7 +215,6 @@ export default function CreatePage() {
     } catch {
       alert('Failed to export PDF')
     }
-
     setIsExporting(false)
   }
 
@@ -200,7 +223,13 @@ export default function CreatePage() {
   const handleNext = () => {
     if (step === 1 && selectedProduct && selectedSize) setStep(2)
     else if (step === 2) setStep(3)
-    else router.push('/order')
+    else {
+      state.set('selectedProduct', selectedProduct)
+      state.set('selectedSize', selectedSize)
+      state.set('pages', pages)
+      state.set('uploadedImages', uploadedImages)
+      router.push('/order')
+    }
   }
 
   const handleBack = () => {
@@ -208,23 +237,11 @@ export default function CreatePage() {
     else setStep(step - 1)
   }
 
-  /* ================= LOADING ================= */
-
-  if (!isLoaded) {
-    return (
-      <div className="create-loading">
-        <div className="create-loading-inner">
-          <div className="create-spinner" />
-          <p className="create-loading-text">Loading your photo book creator...</p>
-        </div>
-      </div>
-    )
-  }
-
-  /* ================= RENDER ================= */
+  if (!isLoaded) return null
 
   return (
     <main className="create-root">
+      {/* ===== HEADER ===== */}
       <header className="create-header">
         <div className="create-header-inner">
           <div>
@@ -251,6 +268,7 @@ export default function CreatePage() {
         </div>
       </header>
 
+      {/* ===== PROGRESS ===== */}
       <div className="create-progress">
         <div className="create-progress-bar">
           {[1, 2, 3].map(s => (
@@ -259,6 +277,7 @@ export default function CreatePage() {
         </div>
       </div>
 
+      {/* ===== CONTENT ===== */}
       <div className="create-content">
         {step === 1 && (
           <StepSetup
@@ -285,8 +304,8 @@ export default function CreatePage() {
             setCurrentPageIdx={setCurrentPageIdx}
             uploadedImages={uploadedImages}
             setUploadedImages={setUploadedImages}
-            selectedSize={selectedSize}
             sizes={SIZES}
+            selectedSize={selectedSize}
             layouts={LAYOUTS}
             selectedLayout={selectedLayout}
             setSelectedLayout={setSelectedLayout}
@@ -335,21 +354,26 @@ export default function CreatePage() {
         )}
       </div>
 
+      {/* ================= BOTTOM NAV ================= */}
       <footer className="create-bottom-nav">
-        <div className="create-bottom-inner">
-          <button className="btn-secondary" onClick={handleBack}>
+        <div className="create-bottom-inner container">
+          <button
+            className="btn-secondary"
+            onClick={handleBack}
+          >
             {step === 1 ? '← Home' : '← Back'}
           </button>
 
           <button
             className="btn-primary"
             onClick={handleNext}
-            disabled={step === 1 && !(selectedProduct && selectedSize)}
+            disabled={step === 1 && !isStep1Valid}
           >
             {step === 3 ? 'Complete Order →' : 'Next →'}
           </button>
         </div>
       </footer>
+
     </main>
   )
 }
