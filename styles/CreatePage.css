@@ -1,0 +1,258 @@
+/* ================= VARIABLES ================= */
+
+:root {
+  --page-bg: #fafafa;
+  --card-bg: #ffffff;
+  --border-light: #e0e0e0;
+  --text-muted: #999;
+  --text-default: #222;
+}
+
+/* ================= ROOT ================= */
+
+.create-root {
+  min-height: 100vh;
+  background-color: var(--page-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shared container (REQUIRED) */
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ================= LOADING ================= */
+
+.create-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--page-bg);
+}
+
+.create-loading-inner {
+  text-align: center;
+}
+
+.create-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--accent-solid);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.create-loading-text {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* ================= HEADER ================= */
+
+.create-header {
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-light);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.create-header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.create-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-default);
+}
+
+.create-subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.create-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.create-saved {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ================= PROGRESS ================= */
+
+.create-progress {
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.create-progress-bar {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.create-progress-step {
+  flex: 1;
+  height: 4px;
+  background-color: #e6e6e6;
+  border-radius: 2px;
+  transition: background-color 0.25s ease;
+}
+
+.create-progress-step.active {
+  background-color: var(--accent-solid);
+}
+
+/* ================= CONTENT ================= */
+
+.create-content {
+  flex: 1;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 7rem; /* space for fixed footer */
+  width: 100%;
+}
+
+/* ================= BOTTOM NAV ================= */
+
+.create-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-light);
+  z-index: 25;
+}
+
+.create-bottom-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ================= BUTTONS ================= */
+
+.btn-primary,
+.btn-secondary {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.05s ease,
+    opacity 0.2s ease;
+  user-select: none;
+}
+
+/* Primary (Hero-style) */
+.btn-primary {
+  padding: 0.6rem 2rem;
+  background-color: var(--accent-solid);
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Secondary */
+.btn-secondary {
+  padding: 0.6rem 1.4rem;
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #ededed;
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ================= UTILITIES ================= */
+
+.hidden {
+  display: none !important;
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .create-header-inner,
+  .create-bottom-inner {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .create-header-actions {
+    justify-content: space-between;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  .create-content {
+    padding: 1.5rem 1rem 7.5rem;
+  }
+}

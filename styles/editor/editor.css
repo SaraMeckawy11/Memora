@@ -1,0 +1,281 @@
+/* ===============================
+   Animations
+================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===============================
+   Root layout
+================================ */
+.step-editor {
+  animation: fadeIn 0.3s ease;
+}
+
+.step-editor-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr 320px;
+  gap: 1.5rem;
+}
+
+/* ===============================
+   Layout info bar
+================================ */
+.editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.editor-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.editor-page-number {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.editor-divider-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #bbb;
+}
+
+.editor-layout-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #f4f4f4;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.editor-photo-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #f4f4f4;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.editor-photo-count.full {
+  font-weight: 600;
+  color: #e54848;
+  background: rgba(229, 72, 72, 0.08);
+}
+
+/* ===============================
+   Canvas wrapper
+================================ */
+.editor-canvas-wrapper {
+  background-color: #e0e0e0;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+}
+
+/* ===============================
+   Page preview
+================================ */
+.editor-page {
+  width: 100%;
+  max-width: 400px;
+  border-radius: 4px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.editor-page-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-caption {
+  font-weight: 500;
+}
+
+.editor-page-number-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: #999;
+}
+
+/* ===============================
+   Image slots
+================================ */
+.editor-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background-color: #fafafa;
+  border-radius: 0;
+  border: 1.5px dashed #ddd;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease;
+}
+
+.editor-slot.has-image {
+  background-color: #f8f8f8;
+  border: 1px solid var(--border);
+}
+
+.editor-slot.selected {
+  border: 2px solid var(--accent-solid);
+}
+
+.editor-slot-placeholder {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #999;
+  pointer-events: none;
+}
+
+.editor-slot.selected .editor-slot-placeholder {
+  color: var(--accent-solid);
+}
+
+.editor-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.editor-slot-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ===============================
+   Upload area
+================================ */
+.editor-upload-wrapper {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 2px dashed #ddd;
+  text-align: center;
+}
+
+.editor-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 2px dashed var(--border);
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.editor-upload-label:hover {
+  border-color: var(--accent-solid);
+  background: var(--accent-soft);
+}
+
+.editor-upload-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent-solid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.editor-upload-title {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-dark);
+}
+
+.editor-upload-sub {
+  margin: 0.25rem 0 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ===============================
+   Layout helpers (split layouts)
+================================ */
+.layout-col {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.layout-row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.layout-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+

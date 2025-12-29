@@ -1,0 +1,111 @@
+.pages-sidebar {
+  background: #fff;
+  border-radius: 12px;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  position: sticky;
+  top: 140px;
+}
+
+/* Header */
+.pages-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.pages-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.pages-count {
+  color: var(--text-muted);
+}
+
+.add-page-btn {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--accent-soft);
+  color: var(--accent-solid);
+  cursor: pointer;
+}
+
+/* Pages list */
+.pages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Page item */
+.page-item {
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: grab;
+  background: #f9f9f9;
+  border: 1px solid var(--border);
+  transition: background 0.15s ease;
+}
+
+.page-item.active {
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-solid);
+}
+
+/* Page content */
+.page-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.page-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.page-photos {
+  margin-left: 0.4rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.page-caption {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-layout {
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Actions */
+.page-actions {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.icon-btn.delete {
+  color: #e54848;
+}
