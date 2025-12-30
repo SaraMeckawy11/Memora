@@ -7,6 +7,7 @@ import EditorCanvas from './EditorCanvas'
 import UploadArea from './UploadArea'
 import { useRef, useState, useEffect } from 'react'
 import '@/styles/editor/editor.css'
+import ImageEditorModal from './ImageEditorModal'
 
 export default function StepEditor({
   pages,
@@ -52,6 +53,7 @@ export default function StepEditor({
   const canvasRef = useRef(null)
   const currentPage = pages[currentPageIdx]
   const [selectedSlotIdx, setSelectedSlotIdx] = useState(null)
+  const [editingSlotIdx, setEditingSlotIdx] = useState(null)
 
   /* ------------------------------
      Layout helpers
@@ -66,6 +68,78 @@ export default function StepEditor({
     return () => window.removeEventListener('auto-generate-pages', handler)
   }, [setPages])
 
+  const openImageEditor = (slotIdx) => {
+    setEditingSlotIdx(slotIdx)
+  }
+
+  const updateImageInSlot = (slotIdx, updatedImage) => {
+    setUploadedImages(prev =>
+      prev.map(img =>
+        img.id === updatedImage.id ? updatedImage : img
+      )
+    )
+  }
+  
+  const selectedSizeObj = sizes.find(s => s.id === selectedSize)
+
+  const layoutSplitX = currentPage?.layoutSplitX ?? 50
+  const layoutSplitY = currentPage?.layoutSplitY ?? 50
+
+  const getSlotRects = () => {
+    const pageW = selectedSizeObj.width
+    const pageH = selectedSizeObj.height
+
+    const innerW = pageW - pageMargin * 2
+    const innerH = pageH - pageMargin * 2
+
+    const splitX = (layoutSplitX ?? 50) / 100
+    const splitY = (layoutSplitY ?? 50) / 100
+
+    switch (currentLayoutObj.template) {
+      case 'single':
+        return [{ x: 0, y: 0, width: innerW, height: innerH }]
+
+      case '2-horizontal': {
+        const h = (innerH - pageGutter) / 2
+        return [
+          { x: 0, y: 0, width: innerW, height: h },
+          { x: 0, y: h + pageGutter, width: innerW, height: h },
+        ]
+      }
+
+      case '2-vertical': {
+        const w = (innerW - pageGutter) / 2
+        return [
+          { x: 0, y: 0, width: w, height: innerH },
+          { x: w + pageGutter, y: 0, width: w, height: innerH },
+        ]
+      }
+
+      case '1-top-2-bottom': {
+        const topH = innerH * splitY
+        const bottomH = innerH - topH - pageGutter
+        const w = (innerW - pageGutter) / 2
+        return [
+          { x: 0, y: 0, width: innerW, height: topH },
+          { x: 0, y: topH + pageGutter, width: w, height: bottomH },
+          { x: w + pageGutter, y: topH + pageGutter, width: w, height: bottomH },
+        ]
+      }
+
+      // add others as needed
+      default:
+        return []
+    }
+  }
+
+  const slotRects = getSlotRects()
+
+  const getImageObjectForSlot = (slotIdx) => {
+    const imageId = currentPage?.images?.[slotIdx]
+    if (!imageId) return null
+    return uploadedImages.find(img => img.id === imageId) || null
+  }
+
   const getMaxImages = (layout) => {
     if (!layout) return 1
     if (
@@ -76,7 +150,6 @@ export default function StepEditor({
   }
 
   const maxSlots = getMaxImages(currentLayoutObj)
-  const selectedSizeObj = sizes.find(s => s.id === selectedSize)
 
   if (currentPage?.layout && currentPage.layout !== selectedLayout) {
     setSelectedLayout(currentPage.layout)
@@ -344,7 +417,21 @@ export default function StepEditor({
             newPages[currentPageIdx].layoutSplitY = v
             setPages(newPages)
           }}
+          selectedSlotIdx={selectedSlotIdx}
+          openImageEditor={openImageEditor}
+          updateImageInSlot={updateImageInSlot}
         />
+        {editingSlotIdx !== null && (
+          <ImageEditorModal
+            image={getImageObjectForSlot(editingSlotIdx)}
+            slot={slotRects[editingSlotIdx]}   // ✅ REAL slot size
+            onClose={() => setEditingSlotIdx(null)}
+            onSave={(updatedImage) => {
+              updateImageInSlot(editingSlotIdx, updatedImage)
+              setEditingSlotIdx(null)
+            }}
+          />
+        )}
       </div>
     </div>
   )

@@ -1,0 +1,131 @@
+.editor-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.editor-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1rem;
+  width: 420px;
+  max-width: 90vw;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.editor-preview {
+  margin: 1rem 0;
+  background: #eee;
+  overflow: hidden;
+  border-radius: 10px;
+  cursor: grab;
+}
+
+.editor-preview img {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: all;
+}
+
+.editor-controls {
+  font-size: 0.85rem;
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.editor-controls select {
+  padding: 0.3rem;
+  border-radius: 6px;
+}
+
+.hint {
+  font-size: 0.7rem;
+  color: #666;
+  margin-top: 0.5rem;
+}
+
+.editor-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.editor-actions .ghost {
+  background: none;
+  border: none;
+  color: #555;
+}
+
+.editor-actions .primary {
+  background: #000;
+  color: #fff;
+  border-radius: 8px;
+  padding: 0.4rem 1.2rem;
+}
+
+.crop-stage {
+  position: relative;
+  margin: 1rem 0;
+  display: grid;
+  place-items: center;
+}
+
+/* Blurred background */
+.crop-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: blur(18px) brightness(0.8);
+  opacity: 0.9;
+  z-index: 0;
+}
+
+/* Crop window */
+.crop-viewport {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #eee;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.4),
+    0 10px 30px rgba(0,0,0,0.35);
+  cursor: grab;
+}
+
+/* Foreground image */
+.crop-viewport img {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: all;
+}
+.editor-preview {
+  position: relative;        /* REQUIRED */
+  overflow: hidden;          /* REQUIRED */
+  background: #eee;
+  border-radius: 12px;
+}

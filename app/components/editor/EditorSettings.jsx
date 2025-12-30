@@ -65,18 +65,22 @@ export default function EditorSettings({
   layouts,
   selectedLayout,
   updatePageLayout,
+
   pageMargin,
   setPageMargin,
   pageGutter,
   setPageGutter,
   pageBgColor,
   setPageBgColor,
+
   imageBorderRadius,
   setImageBorderRadius,
   imageFitMode,
   setImageFitMode,
+
   showPageNumbers,
   setShowPageNumbers,
+
   selectedCaption,
   updateCaption,
   fontFamilies,
@@ -86,28 +90,46 @@ export default function EditorSettings({
   captionPosition,
   captionAlignment,
   updateCaptionStyle,
+
   applyToAllPages,
+
   uploadedImages,
   currentPage,
   addImageToPage,
+
+  /* 🔴 ADDED */
+  selectedSlotIdx,
+  openImageEditor,
+  updateImageInSlot,
+
   autoSave,
   setAutoSave,
   clearProgress,
+
   layoutSplitX,
   layoutSplitY,
   updateLayoutSplitX,
   updateLayoutSplitY,
 }) {
+
+  /* 🔴 ADDED */
+  const selectedImage =
+    selectedSlotIdx !== null &&
+    currentPage?.images?.[selectedSlotIdx]
+
   return (
     <div className="editor-settings">
 
       {/* Layout */}
       <div className="editor-card">
         <h4>Layout</h4>
-        {/*  gridTemplateColumns: 'repeat(3, 1fr)', 
-          , gridTemplateColumns: 'repeat(3, minmax(0, 1fr)'
-        */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.5rem' }}>        
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: '0.5rem',
+          }}
+        >
           {layouts.map(layout => (
             <button
               key={layout.id}
@@ -132,7 +154,11 @@ export default function EditorSettings({
         <div className="control-group">
           <div>
             <label className="control-label">Margin (px)</label>
-            <input type="range" min="0" max="60" value={pageMargin}
+            <input
+              type="range"
+              min="0"
+              max="60"
+              value={pageMargin}
               onChange={e => setPageMargin(+e.target.value)}
               className="control-range"
             />
@@ -141,7 +167,11 @@ export default function EditorSettings({
 
           <div>
             <label className="control-label">Gutter (px)</label>
-            <input type="range" min="0" max="40" value={pageGutter}
+            <input
+              type="range"
+              min="0"
+              max="40"
+              value={pageGutter}
               onChange={e => setPageGutter(+e.target.value)}
               className="control-range"
             />
@@ -150,13 +180,21 @@ export default function EditorSettings({
 
           <div className="control-group">
             <label>Horizontal Split</label>
-            <input type="range" min="20" max="80" value={layoutSplitX}
+            <input
+              type="range"
+              min="20"
+              max="80"
+              value={layoutSplitX}
               onChange={e => updateLayoutSplitX(+e.target.value)}
             />
             <span>{layoutSplitX}%</span>
 
             <label>Vertical Split</label>
-            <input type="range" min="20" max="80" value={layoutSplitY}
+            <input
+              type="range"
+              min="20"
+              max="80"
+              value={layoutSplitY}
               onChange={e => updateLayoutSplitY(+e.target.value)}
             />
             <span>{layoutSplitY}%</span>
@@ -165,7 +203,9 @@ export default function EditorSettings({
           <div className="inline-row">
             <div className="inline-col">
               <label className="control-label">Background</label>
-              <input type="color" value={pageBgColor}
+              <input
+                type="color"
+                value={pageBgColor}
                 onChange={e => setPageBgColor(e.target.value)}
                 className="control-color"
               />
@@ -173,7 +213,11 @@ export default function EditorSettings({
 
             <div className="inline-col">
               <label className="control-label">Corner Radius</label>
-              <input type="number" min="0" max="20" value={imageBorderRadius}
+              <input
+                type="number"
+                min="0"
+                max="20"
+                value={imageBorderRadius}
                 onChange={e => setImageBorderRadius(+e.target.value)}
                 className="control-input"
               />
@@ -203,6 +247,21 @@ export default function EditorSettings({
           </div>
         </div>
       </div>
+
+      {/* ================= IMAGE (NEW – THIS IS WHAT YOU WERE MISSING) ================= */}
+      {selectedImage && (
+        <div className="editor-card">
+          <h4>Image</h4>
+
+          <button
+            className="btn-secondary"
+            onClick={() => openImageEditor(selectedSlotIdx)}
+          >
+            Edit selected image
+          </button>
+
+        </div>
+      )}
 
       {/* Caption */}
       <div className="editor-card">
