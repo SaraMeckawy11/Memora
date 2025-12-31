@@ -4,7 +4,7 @@ import '@/styles/editor/image-editor.css'
 
 export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- GUARD ---------- */
-  if (!image?.src || !slot || slot.width === 0 || slot.height === 0) {
+  if (!image?.src || !slot ) {
     return null
   }
 
@@ -30,7 +30,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
 
   /* ---------- STATE ---------- */
   const [fit, setFit] = useState(image.fit || 'cover')
-  const [cropMode, setCropMode] = useState(!!image.crop)
+  const cropMode = true
 
   const [offset, setOffset] = useState({ x: 0, y: 0 })
 
@@ -239,16 +239,6 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
 
         {/* CONTROLS */}
         <div className="editor-controls">
-          <div className="control-row">
-            <label>Mode</label>
-            <select
-              value={cropMode ? 'crop' : 'fit'}
-              onChange={(e) => setCropMode(e.target.value === 'crop')}
-            >
-              <option value="crop">Crop</option>
-              <option value="fit">Fit only</option>
-            </select>
-          </div>
 
           <div className="control-row">
             <label>Fit</label>
