@@ -223,28 +223,6 @@ export default function EditorSettings({
               />
             </div>
           </div>
-
-          <div>
-            <label className="control-label">Image Fit</label>
-            <select
-              value={imageFitMode}
-              onChange={e => setImageFitMode(e.target.value)}
-              className="control-input"
-            >
-              <option value="cover">Cover (Fill)</option>
-              <option value="contain">Contain (Fit)</option>
-              <option value="fill">Stretch</option>
-            </select>
-          </div>
-
-          <div className="checkbox-row">
-            <input
-              type="checkbox"
-              checked={showPageNumbers}
-              onChange={e => setShowPageNumbers(e.target.checked)}
-            />
-            <label className="checkbox-label">Show page numbers</label>
-          </div>
         </div>
       </div>
 

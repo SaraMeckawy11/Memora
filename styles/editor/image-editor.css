@@ -1,21 +1,24 @@
+/* ================= MODAL BACKDROP ================= */
 .editor-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.55);
+  background: rgba(0, 0, 0, 0.55);
   display: grid;
   place-items: center;
   z-index: 1000;
 }
 
+/* ================= MODAL CONTAINER ================= */
 .editor-modal {
   background: #fff;
   border-radius: 16px;
   padding: 1rem;
   width: 420px;
   max-width: 90vw;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
 }
 
+/* ================= HEADER ================= */
 .editor-header {
   display: flex;
   justify-content: space-between;
@@ -29,21 +32,78 @@
   cursor: pointer;
 }
 
-.editor-preview {
+/* ================= CROP STAGE (CRITICAL) ================= */
+.crop-stage {
+  position: relative;
   margin: 1rem 0;
-  background: #eee;
+
+  /* 🔑 THIS FIXES THE "NO IMAGE VISIBLE" BUG */
+  width: 100%;
+  height: 320px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  border-radius: 10px;
+}
+
+/* ================= DIMMED BACKGROUND IMAGE ================= */
+.crop-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  filter: blur(18px) brightness(0.6);
+  transform: scale(1.05);
+  opacity: 0.9;
+
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ================= CROP VIEWPORT (SLOT) ================= */
+.crop-viewport {
+  position: relative;
+  z-index: 1;
+
+  overflow: hidden;
+  background: #000;
+  border-radius: 12px;
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 10px 30px rgba(0, 0, 0, 0.35);
+
   cursor: grab;
 }
 
-.editor-preview img {
-  width: 100%;
-  height: 100%;
-  user-select: none;
-  pointer-events: all;
+/* Visible crop frame */
+.crop-viewport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  pointer-events: none;
 }
 
+/* ================= FOREGROUND IMAGE ================= */
+.crop-viewport img {
+  width: 100%;
+  height: 100%;
+
+  user-select: none;
+  pointer-events: all;
+
+  cursor: grab;
+}
+
+.crop-viewport img:active {
+  cursor: grabbing;
+}
+
+/* ================= CONTROLS ================= */
 .editor-controls {
   font-size: 0.85rem;
 }
@@ -52,11 +112,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .editor-controls select {
-  padding: 0.3rem;
+  padding: 0.3rem 0.4rem;
   border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 .hint {
@@ -65,6 +127,7 @@
   margin-top: 0.5rem;
 }
 
+/* ================= ACTIONS ================= */
 .editor-actions {
   display: flex;
   justify-content: space-between;
@@ -75,57 +138,14 @@
   background: none;
   border: none;
   color: #555;
+  cursor: pointer;
 }
 
 .editor-actions .primary {
   background: #000;
   color: #fff;
+  border: none;
   border-radius: 8px;
   padding: 0.4rem 1.2rem;
-}
-
-.crop-stage {
-  position: relative;
-  margin: 1rem 0;
-  display: grid;
-  place-items: center;
-}
-
-/* Blurred background */
-.crop-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: blur(18px) brightness(0.8);
-  opacity: 0.9;
-  z-index: 0;
-}
-
-/* Crop window */
-.crop-viewport {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #eee;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.4),
-    0 10px 30px rgba(0,0,0,0.35);
-  cursor: grab;
-}
-
-/* Foreground image */
-.crop-viewport img {
-  width: 100%;
-  height: 100%;
-  user-select: none;
-  pointer-events: all;
-}
-.editor-preview {
-  position: relative;        /* REQUIRED */
-  overflow: hidden;          /* REQUIRED */
-  background: #eee;
-  border-radius: 12px;
+  cursor: pointer;
 }

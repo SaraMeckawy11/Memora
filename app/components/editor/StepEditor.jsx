@@ -5,7 +5,7 @@ import EditorSettings from './EditorSettings'
 import EditorTopbar from './EditorTopbar'
 import EditorCanvas from './EditorCanvas'
 import UploadArea from './UploadArea'
-import { useRef, useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import '@/styles/editor/editor.css'
 import ImageEditorModal from './ImageEditorModal'
 
@@ -54,6 +54,7 @@ export default function StepEditor({
   const currentPage = pages[currentPageIdx]
   const [selectedSlotIdx, setSelectedSlotIdx] = useState(null)
   const [editingSlotIdx, setEditingSlotIdx] = useState(null)
+  
 
   /* ------------------------------
      Layout helpers
@@ -313,6 +314,31 @@ export default function StepEditor({
     setPages(newPages)
     setCurrentPageIdx(newIdx)
   }
+  const editorSlot = useMemo(() => {
+  if (
+    editingSlotIdx === null ||
+    editingSlotIdx === undefined ||
+    !slotRects ||
+    !slotRects[editingSlotIdx]
+  ) {
+    return null
+  }
+
+  const rawSlot = slotRects[editingSlotIdx]
+
+  // Final safety (never hurts)
+  if (!rawSlot.width || !rawSlot.height) return null
+
+  const SLOT_MAX = 420
+  const ratio = rawSlot.width / rawSlot.height
+
+  return ratio >= 1
+    ? { width: SLOT_MAX, height: SLOT_MAX / ratio }
+    : { height: SLOT_MAX, width: SLOT_MAX * ratio }
+}, [editingSlotIdx, slotRects])
+
+
+
 
   /* ------------------------------
      JSX
@@ -421,10 +447,10 @@ export default function StepEditor({
           openImageEditor={openImageEditor}
           updateImageInSlot={updateImageInSlot}
         />
-        {editingSlotIdx !== null && (
+        {editingSlotIdx !== null && editorSlot && (
           <ImageEditorModal
             image={getImageObjectForSlot(editingSlotIdx)}
-            slot={slotRects[editingSlotIdx]}   // ✅ REAL slot size
+            slot={editorSlot}
             onClose={() => setEditingSlotIdx(null)}
             onSave={(updatedImage) => {
               updateImageInSlot(editingSlotIdx, updatedImage)
