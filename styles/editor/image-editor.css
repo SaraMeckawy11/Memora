@@ -1,3 +1,45 @@
+/* ================= BUTTONS (ENHANCED) ================= */
+.editor-btn {
+  display: inline-block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.4rem 1.2rem;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+}
+
+.editor-btn.primary {
+  background: #000;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.editor-btn.secondary {
+  background: #f3f3f3;
+  color: #222;
+  border: 1px solid #ccc;
+}
+
+.editor-btn.ghost {
+  background: none;
+  color: #555;
+  border: none;
+}
+
+.editor-btn.disabled,
+.editor-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.crop-action-row {
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
 /* ================= MODAL BACKDROP ================= */
 .editor-modal-backdrop {
   position: fixed;
@@ -148,4 +190,98 @@
   border-radius: 8px;
   padding: 0.4rem 1.2rem;
   cursor: pointer;
+}
+
+/* --- Crop Stage --- */
+.crop-stage {
+  position: relative;
+  min-height: 360px; /* fallback, override with inline if needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --- Cropper Container --- */
+.crop-cropper-container {
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Cropper Image --- */
+.crop-cropper-image {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* --- Cropper Rect --- */
+.crop-cropper-rect {
+  position: absolute;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #000;
+  cursor: grab;
+}
+.crop-cropper-rect.dragging {
+  cursor: grabbing;
+}
+
+/* --- Cropper Handles --- */
+.crop-cropper-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 1px solid #000;
+}
+.handle-nw { left: -5px; top: -5px; cursor: nw-resize; }
+.handle-ne { right: -5px; top: -5px; cursor: ne-resize; }
+.handle-sw { left: -5px; bottom: -5px; cursor: sw-resize; }
+.handle-se { right: -5px; bottom: -5px; cursor: se-resize; }
+.handle-n { left: 50%; top: -5px; transform: translateX(-50%); cursor: n-resize; }
+.handle-s { left: 50%; bottom: -5px; transform: translateX(-50%); cursor: s-resize; }
+.handle-w { left: -5px; top: 50%; transform: translateY(-50%); cursor: w-resize; }
+.handle-e { right: -5px; top: 50%; transform: translateY(-50%); cursor: e-resize; }
+
+/* --- Dimmed BG --- */
+.crop-dimmed-bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 10;
+  pointer-events: none;
+}
+.crop-dimmed-img {
+  width: 100%;
+  height: 100%;
+  filter: brightness(0.45);
+  user-select: none;
+}
+
+/* --- Crop Viewport --- */
+.crop-viewport {
+  overflow: hidden;
+  position: relative;
+  z-index: 20;
+  background: #fff;
+  border-radius: 6px;
+  touch-action: none;
+}
+
+/* --- Crop Viewport Image --- */
+.crop-viewport-img {
+  position: absolute;
+  user-select: none;
+  touch-action: none;
+}
+
+/* --- Cursor for cover mode --- */
+.crop-viewport-img.cover {
+  cursor: grab;
+}
+.crop-viewport-img.cover:active {
+  cursor: grabbing;
+}
+.crop-viewport-img.contain {
+  cursor: default;
 }
