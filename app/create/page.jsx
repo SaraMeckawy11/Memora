@@ -353,6 +353,87 @@ export default function CreatePage() {
 
   /* ================= PDF ================= */
 
+  const getSlotRectsInInches = (layout, size, pageMargin, pageGutter, layoutSplitX, layoutSplitY) => {
+    const pageW = size.width
+    const pageH = size.height
+    const marginInInches = pageMargin / 25.4  // Assuming pageMargin is in mm
+    const gutterInInches = pageGutter / 25.4
+    const innerW = pageW - marginInInches * 2
+    const innerH = pageH - marginInInches * 2
+    const splitX = (layoutSplitX ?? 50) / 100
+    const splitY = (layoutSplitY ?? 50) / 100
+
+    switch (layout.template) {
+      case 'single':
+        return [{ x: 0, y: 0, width: innerW, height: innerH }]
+
+      case '2-horizontal': {
+        const h = (innerH - gutterInInches) / 2
+        return [
+          { x: 0, y: 0, width: innerW, height: h },
+          { x: 0, y: h + gutterInInches, width: innerW, height: h },
+        ]
+      }
+
+      case '2-vertical': {
+        const w = (innerW - gutterInInches) / 2
+        return [
+          { x: 0, y: 0, width: w, height: innerH },
+          { x: w + gutterInInches, y: 0, width: w, height: innerH },
+        ]
+      }
+
+      case '1-top-2-bottom': {
+        const topH = innerH * splitY
+        const bottomH = innerH - topH - gutterInInches
+        const w = (innerW - gutterInInches) / 2
+        return [
+          { x: 0, y: 0, width: innerW, height: topH },
+          { x: 0, y: topH + gutterInInches, width: w, height: bottomH },
+          { x: w + gutterInInches, y: topH + gutterInInches, width: w, height: bottomH },
+        ]
+      }
+
+      case '2-top-1-bottom': {
+        const bottomH = innerH * (1 - splitY)
+        const topH = innerH - bottomH - gutterInInches
+        const w = (innerW - gutterInInches) / 2
+        return [
+          { x: 0, y: 0, width: w, height: topH },
+          { x: w + gutterInInches, y: 0, width: w, height: topH },
+          { x: 0, y: topH + gutterInInches, width: innerW, height: bottomH },
+        ]
+      }
+
+      case '4-grid': {
+        const w = (innerW - gutterInInches) / 2
+        const h = (innerH - gutterInInches) / 2
+        return [
+          { x: 0, y: 0, width: w, height: h },
+          { x: w + gutterInInches, y: 0, width: w, height: h },
+          { x: 0, y: h + gutterInInches, width: w, height: h },
+          { x: w + gutterInInches, y: h + gutterInInches, width: w, height: h },
+        ]
+      }
+
+      case '6-grid': {
+        const w = (innerW - gutterInInches * 2) / 3
+        const h = (innerH - gutterInInches) / 2
+        return [
+          { x: 0, y: 0, width: w, height: h },
+          { x: w + gutterInInches, y: 0, width: w, height: h },
+          { x: (w + gutterInInches) * 2, y: 0, width: w, height: h },
+          { x: 0, y: h + gutterInInches, width: w, height: h },
+          { x: w + gutterInInches, y: h + gutterInInches, width: w, height: h },
+          { x: (w + gutterInInches) * 2, y: h + gutterInInches, width: w, height: h },
+        ]
+      }
+
+      default:
+        return []
+    }
+  }
+
   const exportToPDF = useCallback(async () => {
     setIsExporting(true)
 
@@ -375,23 +456,16 @@ export default function CreatePage() {
 
         if (page.images?.length) {
           const layout = LAYOUTS.find(l => l.id === page.layout) || LAYOUTS[0]
-          const imgW =
-            (size.width - (pageMargin / 25.4) * 2 - (layout.cols - 1) * (pageGutter / 25.4)) /
-            layout.cols
-          const imgH =
-            (size.height - (pageMargin / 25.4) * 2 - (layout.rows - 1) * (pageGutter / 25.4)) /
-            layout.rows
+          const slotRects = getSlotRectsInInches(layout, size, pageMargin, pageGutter, page.layoutSplitX ?? 50, page.layoutSplitY ?? 50)
 
           page.images.forEach((imgId, idx) => {
             const img = uploadedImages.find(u => u.id === imgId)
-            if (!img) return
+            if (!img || !slotRects[idx]) return
 
-            const col = idx % layout.cols
-            const row = Math.floor(idx / layout.cols)
-            const x = pageMargin / 25.4 + col * (imgW + pageGutter / 25.4)
-            const y = pageMargin / 25.4 + row * (imgH + pageGutter / 25.4)
-
-            pdf.addImage(img.src, 'JPEG', x, y, imgW, imgH)
+            const rect = slotRects[idx]
+            const x = (pageMargin / 25.4) + rect.x
+            const y = (pageMargin / 25.4) + rect.y
+            pdf.addImage(img.src, 'JPEG', x, y, rect.width, rect.height)
           })
         }
 

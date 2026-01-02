@@ -338,8 +338,6 @@ export default function StepEditor({
 }, [editingSlotIdx, slotRects])
 
 
-
-
   /* ------------------------------
      JSX
   ------------------------------ */
