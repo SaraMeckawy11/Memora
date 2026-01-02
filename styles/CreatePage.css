@@ -242,6 +242,7 @@
   justify-content: center;
 }
 
+
 /* ================= PAGE NUMBER ================= */
 .page-number-indicator {
   min-width: 96px;
@@ -290,16 +291,21 @@
     padding-bottom: 5rem;
   }
 }
-
 @media (max-width: 768px) {
   .create-header-bottom {
-    flex-wrap: wrap;
-    justify-content: flex-start;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 0.5rem;
   }
 
   .create-header-bottom .btn-primary,
   .create-header-bottom .btn-secondary {
-    width: 100%;
+    width: 140px; /* same size */
     height: 40px;
   }
+
+  .create-saved {
+    margin-right: auto; /* pushes buttons to the right */
+  }
 }
+
