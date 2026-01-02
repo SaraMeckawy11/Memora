@@ -13,38 +13,38 @@ export default function PagesSidebar({
   layouts = [],
 }) {
   const [draggedIndex, setDraggedIndex] = useState(null)
-  // New state to handle mobile visibility
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false) // Controls mobile collapse
 
   const getLayoutName = (layoutId) => {
     const layout = layouts.find(l => l.id === layoutId)
     return layout ? layout.name : 'Single'
   }
 
-  const handleDragStart = (idx) => {
-    setDraggedIndex(idx)
-  }
+  const handlePageSelect = (idx) => {
+    setCurrentPageIdx(idx);
+    // Auto-close drawer only on mobile devices
+    if (window.innerWidth <= 1024) {
+      setIsOpen(false);
+    }
+  };
 
-  const handleDragOver = (e) => {
-    e.preventDefault()
-  }
-
+  const handleDragStart = (idx) => setDraggedIndex(idx)
+  const handleDragOver = (e) => e.preventDefault()
+  
   const handleDrop = (idx) => {
     if (draggedIndex === null || draggedIndex === idx) return
     movePage(draggedIndex, idx - draggedIndex)
     setDraggedIndex(null)
   }
 
-  const toggleSidebar = () => setIsOpen(!isOpen)
-
   return (
     <>
-      {/* 1. Mobile Toggle Button (Visible via CSS media queries) */}
-      <button className="sidebar-toggle" onClick={toggleSidebar}>
+      {/* 1. Mobile Toggle Button */}
+      <button className="sidebar-toggle" onClick={() => setIsOpen(true)}>
         <span>📄 Pages</span>
       </button>
 
-      {/* 2. Dimmed Overlay for mobile */}
+      {/* 2. Dimmed Overlay */}
       <div 
         className={`sidebar-overlay ${isOpen ? 'is-active' : ''}`} 
         onClick={() => setIsOpen(false)}
@@ -52,7 +52,6 @@ export default function PagesSidebar({
 
       {/* 3. The Sidebar */}
       <aside className={`pages-sidebar ${isOpen ? 'is-open' : ''}`}>
-        {/* Header */}
         <div className="pages-header">
           <h4 className="pages-title">
             Pages <span className="pages-count">({pages.length})</span>
@@ -62,15 +61,13 @@ export default function PagesSidebar({
             <button className="add-page-btn" onClick={addPage}>
               + Add
             </button>
-            
-            {/* Mobile-only close button */}
+            {/* Visible only on mobile */}
             <button className="mobile-close-btn" onClick={() => setIsOpen(false)}>
               Done
             </button>
           </div>
         </div>
 
-        {/* Pages List */}
         <div className="pages-list">
           {pages.map((page, idx) => {
             const isActive = idx === currentPageIdx
@@ -83,15 +80,10 @@ export default function PagesSidebar({
                 onDragStart={() => handleDragStart(idx)}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(idx)}
-                onClick={() => {
-                  setCurrentPageIdx(idx);
-                  // Optionally close sidebar on mobile after selecting a page
-                  if(window.innerWidth < 1024) setIsOpen(false);
-                }}
+                onClick={() => handlePageSelect(idx)}
                 className={`page-item ${isActive ? 'active' : ''}`}
                 style={{ opacity: isDragging ? 0.5 : 1 }}
               >
-                {/* Top row */}
                 <div className="page-top">
                   <div>
                     <div className="page-title">
@@ -110,7 +102,6 @@ export default function PagesSidebar({
                     )}
                   </div>
 
-                  {/* Actions */}
                   <div className="page-actions">
                     <button
                       className="icon-btn"
@@ -138,7 +129,6 @@ export default function PagesSidebar({
                   </div>
                 </div>
 
-                {/* Layout info */}
                 <div className="page-layout">
                   Layout: {getLayoutName(page.layout)}
                 </div>

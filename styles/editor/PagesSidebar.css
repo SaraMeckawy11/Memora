@@ -1,46 +1,70 @@
 /* ===============================
-   Pages Sidebar Base
+   Desktop / Laptop Sidebar
 ================================ */
 .pages-sidebar {
   background: #fff;
   border-radius: 12px;
   padding: 0.75rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border, #eee);
   max-height: calc(100vh - 200px);
   overflow-y: auto;
   position: sticky;
   top: 140px;
+  
+  /* FIXED WIDTH FOR LAPTOP: 
+     This prevents the sidebar from growing too big on large screens */
+  width: 260px;
+  min-width: 260px;
+  
   transition: transform 0.3s ease, visibility 0.3s;
-  z-index: 1000;
+  z-index: 100;
 }
 
-/* Toggle Button (Hidden on Desktop) */
-.sidebar-toggle {
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 1100;
-  background: var(--accent-solid);
-  color: #fff;
-  border: none;
-  padding: 0.8rem 1.2rem;
-  border-radius: 50px;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  cursor: pointer;
+/* Hide mobile-specific elements on Laptop/Desktop */
+.sidebar-toggle, 
+.sidebar-overlay, 
+.mobile-close-btn {
+  display: none !important;
 }
 
 /* ===============================
-   Responsive Adjustments
+   Mobile / Tablet Sidebar (Collapsible)
 ================================ */
 @media (max-width: 1024px) {
+  /* The Floating Button to open sidebar */
   .sidebar-toggle {
-    display: flex; /* Show button on mobile */
+    display: flex !important;
     align-items: center;
     gap: 8px;
+    position: fixed;
+    bottom: 90px; /* Above the bottom nav */
+    left: 20px;
+    z-index: 1100;
+    background: var(--accent-solid, #000);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
   }
 
+  /* The Dimmed background */
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1050;
+    display: none;
+  }
+
+  .sidebar-overlay.is-active {
+    display: block !important;
+  }
+
+  /* The Sidebar Drawer */
   .pages-sidebar {
     position: fixed;
     top: 0;
@@ -48,36 +72,33 @@
     width: 280px;
     height: 100vh;
     max-height: 100vh;
-    border-radius: 0 12px 12px 0;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.1);
-    /* Hidden by default on mobile */
-    transform: translateX(-100%);
+    border-radius: 0 16px 16px 0;
+    box-shadow: 5px 0 20px rgba(0,0,0,0.1);
+    transform: translateX(-105%); /* Hidden left */
     visibility: hidden;
+    z-index: 1200;
+    background: #fff;
   }
 
-  /* When sidebar has the 'is-open' class */
   .pages-sidebar.is-open {
     transform: translateX(0);
     visibility: visible;
   }
 
-  /* Overlay for background when sidebar is open */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 999;
-    backdrop-filter: blur(2px);
-  }
-
-  .sidebar-overlay.is-active {
-    display: block;
+  .mobile-close-btn {
+    display: block !important;
+    background: #f0f0f0;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
   }
 }
 
 /* ===============================
-   Internal Components (Unchanged but ensured scannable)
+   Inner Components (Items, Text, etc.)
 ================================ */
 .pages-header {
   display: flex;
@@ -85,80 +106,64 @@
   align-items: center;
   padding-bottom: 0.75rem;
   margin-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border, #eee);
 }
 
 .pages-title { margin: 0; font-size: 0.9rem; font-weight: 600; }
-.pages-count { color: var(--text-muted); }
+.pages-count { color: var(--text-muted, #666); margin-left: 4px; }
 
 .add-page-btn {
   font-size: 0.75rem;
   padding: 0.35rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--accent-soft);
-  color: var(--accent-solid);
+  border: 1px solid var(--border, #eee);
+  background: var(--accent-soft, #f0f0f0);
+  color: var(--accent-solid, #000);
   cursor: pointer;
+  font-weight: 600;
 }
 
-.pages-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
+.pages-list { display: flex; flex-direction: column; gap: 0.5rem; }
 
 .page-item {
-  padding: 0.6rem;
-  border-radius: 8px;
-  cursor: grab;
+  padding: 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
   background: #f9f9f9;
-  border: 1px solid var(--border);
-  transition: background 0.15s ease;
+  border: 1px solid var(--border, #eee);
+  transition: all 0.2s ease;
 }
 
 .page-item.active {
-  background: var(--accent-soft);
-  border: 1px solid var(--accent-solid);
+  background: var(--accent-soft, #f0f0f0);
+  border: 1px solid var(--accent-solid, #000);
 }
 
-.page-top { display: flex; justify-content: space-between; }
+.page-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .page-title { font-size: 0.85rem; font-weight: 600; }
-.page-photos { margin-left: 0.4rem; font-size: 0.7rem; color: var(--text-muted); }
+.page-photos { margin-left: 0.4rem; font-size: 0.7rem; color: #888; }
 
 .page-caption {
   font-size: 0.7rem;
-  color: var(--text-muted);
+  color: #666;
+  margin-top: 2px;
+  font-style: italic;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 140px;
 }
 
-.page-layout { margin-top: 0.35rem; font-size: 0.7rem; color: var(--text-muted); }
-.page-actions { display: flex; gap: 0.3rem; }
+.page-layout { margin-top: 0.5rem; font-size: 0.7rem; color: #999; }
+.page-actions { display: flex; gap: 4px; }
 
 .icon-btn {
   background: transparent;
   border: none;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.6;
+  padding: 2px;
 }
-
+.icon-btn:hover { opacity: 1; }
 .icon-btn.delete { color: #e54848; }
-
-/* Close button for mobile inside the header */
-.mobile-close-btn {
-  display: none;
-}
-
-@media (max-width: 1024px) {
-  .mobile-close-btn {
-    display: block;
-    background: #f4f4f4;
-    border: none;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    cursor: pointer;
-  }
-}
