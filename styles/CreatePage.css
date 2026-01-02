@@ -6,6 +6,9 @@
   --border-light: #e0e0e0;
   --text-muted: #999;
   --text-default: #222;
+
+  /* 🔑 editor bottom bar height */
+  --editor-bottom-bar-height: 72px;
 }
 
 /* ================= ROOT ================= */
@@ -17,51 +20,22 @@
   flex-direction: column;
 }
 
-/* Shared container (REQUIRED) */
+/* Shared container */
 .container {
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
-/* ================= LOADING ================= */
-
-.create-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  background-color: var(--page-bg);
-}
-
-.create-loading-inner {
-  text-align: center;
-}
-
-.create-spinner {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--accent-solid);
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-.create-loading-text {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-/* ================= HEADER ================= */
+/* ================= HEADER (TOP NAV – CONSISTENT) ================= */
 
 .create-header {
-  background-color: var(--card-bg);
-  border-bottom: 1px solid var(--border-light);
-  padding: 1rem 0;
   position: sticky;
   top: 0;
   z-index: 30;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-light);
+  padding: 1rem 0;
 }
 
 .create-header-inner {
@@ -74,22 +48,22 @@
 }
 
 .create-title {
-  margin: 0;
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--text-default);
+  margin: 0;
 }
 
 .create-subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--text-muted);
   font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
 }
 
 .create-header-actions {
   display: flex;
-  gap: 0.75rem;
   align-items: center;
+  gap: 0.75rem;
 }
 
 .create-saved {
@@ -106,54 +80,98 @@
 }
 
 .create-progress-bar {
-  display: flex;
-  gap: 0.75rem;
-  padding: 1rem 1.5rem;
   max-width: 1400px;
   margin: 0 auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  gap: 0.75rem;
 }
 
 .create-progress-step {
   flex: 1;
   height: 4px;
-  background-color: #e6e6e6;
   border-radius: 2px;
-  transition: background-color 0.25s ease;
+  background-color: #e6e6e6;
 }
 
 .create-progress-step.active {
   background-color: var(--accent-solid);
 }
 
-/* ================= CONTENT ================= */
+/* ================= MAIN CONTENT ================= */
 
 .create-content {
   flex: 1;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 7rem; /* space for fixed footer */
   width: 100%;
+
+  /* Desktop: space ONLY for Back / Next */
+  padding: 2rem 1.5rem 5rem;
+  padding-bottom:6rem;
+
 }
 
-/* ================= BOTTOM NAV ================= */
+/* Mobile: space for Back/Next + editor bottom nav */
+@media (max-width: 1024px) {
+  .create-content {
+    padding-bottom: calc(
+      var(--editor-bottom-bar-height) + 5rem
+    );
+  }
+.create-content {
+    padding-bottom: 11rem;
+
+}
+}
+/* ================= EDITOR BOTTOM NAV ================= */
+/* Layout / Page / Text / Photos / Actions */
+
+.mobile-interface,
+.mobile-bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: var(--editor-bottom-bar-height);
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border-light);
+
+  z-index: 1000;
+}
+
+/* ================= BACK / NEXT NAV ================= */
 
 .create-bottom-nav {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
+
+  /* Desktop: FIRST thing at bottom */
+  bottom: 0;
+
   background-color: var(--card-bg);
   border-top: 1px solid var(--border-light);
-  z-index: 25;
+  z-index: 1100;
+}
+
+/* Mobile: stack above editor nav */
+@media (max-width: 1024px) {
+  .create-bottom-nav {
+    bottom: var(--editor-bottom-bar-height);
+  }
 }
 
 .create-bottom-inner {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
+
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 /* ================= BUTTONS ================= */
@@ -164,17 +182,16 @@
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
+  user-select: none;
+
   transition:
     background-color 0.2s ease,
-    box-shadow 0.2s ease,
     transform 0.05s ease,
     opacity 0.2s ease;
-  user-select: none;
 }
 
-/* Primary (Hero-style) */
+/* Primary */
 .btn-primary {
-  padding: 0.6rem 2rem;
   background-color: var(--accent-solid);
   color: #fff;
   border: none;
@@ -195,7 +212,6 @@
 
 /* Secondary */
 .btn-secondary {
-  padding: 0.6rem 1.4rem;
   background-color: #f4f4f4;
   color: #333;
   border: 1px solid #ddd;
@@ -212,6 +228,18 @@
 .btn-secondary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Force equal size in bottom nav */
+.create-bottom-inner .btn-primary,
+.create-bottom-inner .btn-secondary {
+  width: 180px;
+  height: 44px;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ================= UTILITIES ================= */
@@ -232,27 +260,22 @@
   }
 }
 
-/* ================= RESPONSIVE ================= */
+/* ================= RESPONSIVE HEADER ================= */
 
 @media (max-width: 768px) {
-  .create-header-inner,
-  .create-bottom-inner {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
-  }
-
   .create-header-actions {
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.4rem;
   }
 
-  .btn-primary,
-  .btn-secondary {
+  .create-header-actions .btn-primary,
+  .create-header-actions .btn-secondary {
     width: 100%;
-    text-align: center;
+    height: 40px;
   }
+  
+.create-content {
+    padding-bottom: 11rem;
 
-  .create-content {
-    padding: 1.5rem 1rem 7.5rem;
-  }
+}
 }
