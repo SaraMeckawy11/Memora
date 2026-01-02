@@ -48,7 +48,7 @@ export default function ImageSlot({
                   left: `${-img.crop.x * (100 / img.crop.w)}%`,
                   top: `${-img.crop.y * (100 / img.crop.h)}%`,
 
-                  objectFit: 'fill', // important
+                  objectFit: 'cover', // important
                   userSelect: 'none',
                   pointerEvents: 'none',
                 }}

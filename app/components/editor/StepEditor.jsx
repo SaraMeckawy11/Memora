@@ -87,49 +87,82 @@ export default function StepEditor({
   const layoutSplitY = currentPage?.layoutSplitY ?? 50
 
   const getSlotRects = () => {
-    const pageW = selectedSizeObj.width
-    const pageH = selectedSizeObj.height
-
-    const innerW = pageW - pageMargin * 2
-    const innerH = pageH - pageMargin * 2
-
-    const splitX = (layoutSplitX ?? 50) / 100
-    const splitY = (layoutSplitY ?? 50) / 100
+    const PIXELS_PER_INCH = 96; // Assuming 96 DPI for preview; adjust if needed for higher quality
+    const pageW = selectedSizeObj.width * PIXELS_PER_INCH;
+    const pageH = selectedSizeObj.height * PIXELS_PER_INCH;
+    const innerW = pageW - pageMargin * 2; // pageMargin assumed in pixels
+    const innerH = pageH - pageMargin * 2;
+    const splitX = (layoutSplitX ?? 50) / 100;
+    const splitY = (layoutSplitY ?? 50) / 100;
 
     switch (currentLayoutObj.template) {
       case 'single':
-        return [{ x: 0, y: 0, width: innerW, height: innerH }]
+        return [{ x: 0, y: 0, width: innerW, height: innerH }];
 
       case '2-horizontal': {
-        const h = (innerH - pageGutter) / 2
+        const h = (innerH - pageGutter) / 2;
         return [
           { x: 0, y: 0, width: innerW, height: h },
           { x: 0, y: h + pageGutter, width: innerW, height: h },
-        ]
+        ];
       }
 
       case '2-vertical': {
-        const w = (innerW - pageGutter) / 2
+        const w = (innerW - pageGutter) / 2;
         return [
           { x: 0, y: 0, width: w, height: innerH },
           { x: w + pageGutter, y: 0, width: w, height: innerH },
-        ]
+        ];
       }
 
       case '1-top-2-bottom': {
-        const topH = innerH * splitY
-        const bottomH = innerH - topH - pageGutter
-        const w = (innerW - pageGutter) / 2
+        const topH = innerH * splitY;
+        const bottomH = innerH - topH - pageGutter;
+        const w = (innerW - pageGutter) / 2;
         return [
           { x: 0, y: 0, width: innerW, height: topH },
           { x: 0, y: topH + pageGutter, width: w, height: bottomH },
           { x: w + pageGutter, y: topH + pageGutter, width: w, height: bottomH },
-        ]
+        ];
       }
 
-      // add others as needed
+      case '2-top-1-bottom': {
+        const bottomH = innerH * (1 - splitY);
+        const topH = innerH - bottomH - pageGutter;
+        const w = (innerW - pageGutter) / 2;
+        return [
+          { x: 0, y: 0, width: w, height: topH },
+          { x: w + pageGutter, y: 0, width: w, height: topH },
+          { x: 0, y: topH + pageGutter, width: innerW, height: bottomH },
+        ];
+      }
+
+      case '4-grid': {
+        const w = (innerW - pageGutter) / 2;
+        const h = (innerH - pageGutter) / 2;
+        return [
+          { x: 0, y: 0, width: w, height: h },
+          { x: w + pageGutter, y: 0, width: w, height: h },
+          { x: 0, y: h + pageGutter, width: w, height: h },
+          { x: w + pageGutter, y: h + pageGutter, width: w, height: h },
+        ];
+      }
+
+      case '6-grid': {
+        const w = (innerW - pageGutter * 2) / 3;
+        const h = (innerH - pageGutter) / 2;
+        return [
+          { x: 0, y: 0, width: w, height: h },
+          { x: w + pageGutter, y: 0, width: w, height: h },
+          { x: (w + pageGutter) * 2, y: 0, width: w, height: h },
+          { x: 0, y: h + pageGutter, width: w, height: h },
+          { x: w + pageGutter, y: h + pageGutter, width: w, height: h },
+          { x: (w + pageGutter) * 2, y: h + pageGutter, width: w, height: h },
+        ];
+      }
+
       default:
-        return []
+        return [];
     }
   }
 
