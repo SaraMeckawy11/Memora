@@ -524,28 +524,40 @@ export default function CreatePage() {
     <main className="create-root">
       {/* ===== HEADER ===== */}
       <header className="create-header">
-        <div className="create-header-inner">
-          <div>
-            <h1 className="create-title">Create Your Photo Book</h1>
-            <p className="create-subtitle">Step {step} of 3</p>
+        <div className="container create-header-inner">
+          
+          {/* TOP ROW */}
+          <div className="create-header-top">
+            <h1>Create Your Photo Book</h1>
+            <span className="create-step">Step {step} of 3</span>
           </div>
 
-          <div className="create-header-actions">
-            {lastSaved && (
-              <span className="create-saved">
-                {isSaving ? '💾 Saving…' : `Saved ${new Date(lastSaved).toLocaleTimeString()}`}
-              </span>
-            )}
+          {/* BOTTOM ROW */}
+          {step >= 2 && (
+            <div className="create-header-bottom">
+              {lastSaved && (
+                <span className="create-saved">
+                  {isSaving
+                    ? 'Saving…'
+                    : `Saved ${new Date(lastSaved).toLocaleTimeString()}`}
+                </span>
+              )}
+        
 
-            {step >= 2 && (
-              <>
-                <button className="btn-secondary" onClick={saveProgress}>💾 Save</button>
-                <button className="btn-primary" onClick={exportToPDF} disabled={isExporting}>
-                  {isExporting ? '⏳ Exporting…' : '📄 Download PDF'}
-                </button>
-              </>
-            )}
-          </div>
+              <button className="btn-secondary" onClick={saveProgress}>
+                💾 Save
+              </button>
+
+              <button
+                className="btn-primary"
+                onClick={exportToPDF}
+                disabled={isExporting}
+              >
+                {isExporting ? '⏳ Exporting…' : '📄 Download PDF'}
+              </button>
+            </div>
+          )}
+
         </div>
       </header>
 

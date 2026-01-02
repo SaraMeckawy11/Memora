@@ -1,18 +1,13 @@
 /* ================= VARIABLES ================= */
-
 :root {
   --page-bg: #fafafa;
   --card-bg: #ffffff;
   --border-light: #e0e0e0;
   --text-muted: #999;
   --text-default: #222;
-
-  /* 🔑 editor bottom bar height */
-  --editor-bottom-bar-height: 72px;
 }
 
 /* ================= ROOT ================= */
-
 .create-root {
   min-height: 100vh;
   background-color: var(--page-bg);
@@ -20,15 +15,42 @@
   flex-direction: column;
 }
 
-/* Shared container */
+/* Shared container (REQUIRED) */
 .container {
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 1.5rem;
 }
 
-/* ================= HEADER (TOP NAV – CONSISTENT) ================= */
+/* ================= LOADING ================= */
+.create-loading {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--page-bg);
+}
 
+.create-loading-inner {
+  text-align: center;
+}
+
+.create-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--accent-solid);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+.create-loading-text {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ================= HEADER ================= */
 .create-header {
   position: sticky;
   top: 0;
@@ -42,38 +64,62 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 1.5rem;
+
   display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* ---------- TOP ROW ---------- */
+.create-header-top {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
 }
 
-.create-title {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: var(--text-default);
+.create-header-top h1 {
   margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-default);
 }
 
-.create-subtitle {
+.create-step {
   font-size: 0.8rem;
   color: var(--text-muted);
-  margin-top: 0.25rem;
 }
 
-.create-header-actions {
+/* ---------- BOTTOM ROW ---------- */
+.create-header-bottom {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.75rem;
 }
 
+/* Saved time inline */
 .create-saved {
   font-size: 0.75rem;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
-/* ================= PROGRESS ================= */
+/* ================= HEADER ACTION BUTTONS ================= */
+.create-header-bottom .btn-primary,
+.create-header-bottom .btn-secondary {
+  width: 160px;
+  height: 36px;
+  padding: 0;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ================= PROGRESS ================= */
 .create-progress {
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-light);
@@ -83,6 +129,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 1rem 1.5rem;
+
   display: flex;
   gap: 0.75rem;
 }
@@ -90,77 +137,31 @@
 .create-progress-step {
   flex: 1;
   height: 4px;
-  border-radius: 2px;
   background-color: #e6e6e6;
+  border-radius: 2px;
+  transition: background-color 0.25s ease;
 }
 
 .create-progress-step.active {
   background-color: var(--accent-solid);
 }
 
-/* ================= MAIN CONTENT ================= */
-
+/* ================= CONTENT ================= */
 .create-content {
   flex: 1;
+  width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  width: 100%;
-
-  /* Desktop: space ONLY for Back / Next */
-  padding: 2rem 1.5rem 5rem;
-  padding-bottom:6rem;
-
+  padding: 2rem 1.5rem 7rem;
 }
 
-/* Mobile: space for Back/Next + editor bottom nav */
-@media (max-width: 1024px) {
-  .create-content {
-    padding-bottom: calc(
-      var(--editor-bottom-bar-height) + 5rem
-    );
-  }
-.create-content {
-    padding-bottom: 11rem;
-
-}
-}
-/* ================= EDITOR BOTTOM NAV ================= */
-/* Layout / Page / Text / Photos / Actions */
-
-.mobile-interface,
-.mobile-bottom-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  height: var(--editor-bottom-bar-height);
-  background-color: var(--card-bg);
-  border-top: 1px solid var(--border-light);
-
-  z-index: 1000;
-}
-
-/* ================= BACK / NEXT NAV ================= */
-
+/* ================= BOTTOM NAV ================= */
 .create-bottom-nav {
   position: fixed;
-  left: 0;
-  right: 0;
-
-  /* Desktop: FIRST thing at bottom */
-  bottom: 0;
-
+  inset: auto 0 0 0;
   background-color: var(--card-bg);
   border-top: 1px solid var(--border-light);
-  z-index: 1100;
-}
-
-/* Mobile: stack above editor nav */
-@media (max-width: 1024px) {
-  .create-bottom-nav {
-    bottom: var(--editor-bottom-bar-height);
-  }
+  z-index: 25;
 }
 
 .create-bottom-inner {
@@ -175,7 +176,6 @@
 }
 
 /* ================= BUTTONS ================= */
-
 .btn-primary,
 .btn-secondary {
   border-radius: 8px;
@@ -230,7 +230,7 @@
   cursor: not-allowed;
 }
 
-/* Force equal size in bottom nav */
+/* ================= BACK / NEXT (EQUAL SIZE) ================= */
 .create-bottom-inner .btn-primary,
 .create-bottom-inner .btn-secondary {
   width: 180px;
@@ -242,8 +242,30 @@
   justify-content: center;
 }
 
-/* ================= UTILITIES ================= */
+/* ================= PAGE NUMBER ================= */
+.page-number-indicator {
+  min-width: 96px;
+  height: 36px;
+  padding: 0 0.75rem;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+
+  color: var(--text-muted);
+  background-color: #f6f6f6;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ================= UTILITIES ================= */
 .hidden {
   display: none !important;
 }
@@ -253,29 +275,31 @@
 }
 
 /* ================= ANIMATION ================= */
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
   }
 }
 
-/* ================= RESPONSIVE HEADER ================= */
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px) {
+  .create-content {
+    padding: 1.5rem 1rem 11rem;
+  }
+  .create-bottom-inner {
+    padding-bottom: 5rem;
+  }
+}
 
 @media (max-width: 768px) {
-  .create-header-actions {
-    flex-direction: column;
-    gap: 0.4rem;
+  .create-header-bottom {
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 
-  .create-header-actions .btn-primary,
-  .create-header-actions .btn-secondary {
+  .create-header-bottom .btn-primary,
+  .create-header-bottom .btn-secondary {
     width: 100%;
     height: 40px;
   }
-  
-.create-content {
-    padding-bottom: 11rem;
-
-}
 }
