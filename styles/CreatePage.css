@@ -190,6 +190,7 @@
     opacity 0.2s ease;
 }
 
+
 /* Primary */
 .btn-primary {
   background-color: var(--accent-solid);
@@ -308,4 +309,39 @@
     margin-right: auto; /* pushes buttons to the right */
   }
 }
+/* ================= Select Page Button ================= */
+
+.select-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+
+  height: 44px;
+  padding: 0 1.25rem;
+
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  background: #ffffff;
+  color: #111;
+  border: 1px solid #e5e7eb;
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.select-page-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+/* 🔥 Hide on large screens */
+@media (min-width: 1024px) {
+  .select-page-btn {
+    display: none;
+  }
+}
+
 

@@ -49,6 +49,8 @@ export default function StepEditor({
   setAutoSave,
   clearProgress,
   fontFamilies,
+  isSidebarOpen,
+  setIsSidebarOpen,
 }) {
   const canvasRef = useRef(null)
   const currentPage = pages[currentPageIdx]
@@ -387,6 +389,8 @@ export default function StepEditor({
           movePage={movePage}
           layouts={layouts}
           getMaxImages={getMaxImages}
+          isOpen={isSidebarOpen}
+          setIsOpen={setIsSidebarOpen}
         />
 
         <div>

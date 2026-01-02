@@ -11,9 +11,10 @@ export default function PagesSidebar({
   duplicatePage,
   movePage,
   layouts = [],
+  isOpen,
+  setIsOpen,
 }) {
   const [draggedIndex, setDraggedIndex] = useState(null)
-  const [isOpen, setIsOpen] = useState(false) // Controls mobile collapse
 
   const getLayoutName = (layoutId) => {
     const layout = layouts.find(l => l.id === layoutId)
@@ -40,9 +41,9 @@ export default function PagesSidebar({
   return (
     <>
       {/* 1. Mobile Toggle Button */}
-      <button className="sidebar-toggle" onClick={() => setIsOpen(true)}>
+      {/* <button className="sidebar-toggle" onClick={() => setIsOpen(true)}>
         <span>📄 Pages</span>
-      </button>
+      </button> */}
 
       {/* 2. Dimmed Overlay */}
       <div 

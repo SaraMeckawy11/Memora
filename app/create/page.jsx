@@ -72,6 +72,8 @@ export default function CreatePage() {
   const [currentPageIdx, setCurrentPageIdx] = useState(0)
   const [uploadedImages, setUploadedImages] = useState([])
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+
   const [selectedCaption, setSelectedCaption] = useState('')
   const [selectedFontSize, setSelectedFontSize] = useState(16)
   const [selectedFontColor, setSelectedFontColor] = useState('#000000')
@@ -533,31 +535,96 @@ export default function CreatePage() {
           </div>
 
           {/* BOTTOM ROW */}
-          {step >= 2 && (
-            <div className="create-header-bottom">
-              {lastSaved && (
-                <span className="create-saved">
-                  {isSaving
-                    ? 'Saving…'
-                    : `Saved ${new Date(lastSaved).toLocaleTimeString()}`}
-                </span>
-              )}
-        
+         {step >= 2 && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '1rem',
+              marginTop: '0.75rem',
+            }}
+          >
+            {/* Saved status */}
+            {lastSaved && (
+              <span
+                style={{
+                  fontSize: '0.85rem',
+                  color: '#888',
+                  whiteSpace: 'nowrap',
+                  lineHeight: 1,
+                }}
+              >
+                {isSaving
+                  ? 'Saving…'
+                  : `Saved ${new Date(lastSaved).toLocaleTimeString()}`}
+              </span>
+            )}
 
-              <button className="btn-secondary" onClick={saveProgress}>
-                💾 Save
+            {/* Buttons */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',     // 🔥 forces same baseline
+                gap: '0.75rem',
+              }}
+            >
+              <button
+                type="button"
+                onClick={saveProgress}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+
+                  height: '36px',
+                  padding: '0 1.25rem',
+                  lineHeight: 1,
+                  boxSizing: 'border-box',
+
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+
+                  background: '#f5f5f5',
+                  color: '#222',
+                  border: '1px solid #ddd',
+                  cursor: 'pointer',
+                }}
+              >
+                Save
               </button>
 
               <button
-                className="btn-primary"
+                type="button"
                 onClick={exportToPDF}
                 disabled={isExporting}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+
+                  height: '36px',
+                  padding: '0 1.25rem',
+                  lineHeight: 1,
+                  boxSizing: 'border-box',
+
+                  borderRadius: '8px',
+                  fontSize: '0.9rem',
+                  fontWeight: 500,
+
+                  background: 'linear-gradient(135deg, #1e293b, #0ea5e9)',
+                  color: '#fff',
+                  border: 'none',
+                  cursor: isExporting ? 'not-allowed' : 'pointer',
+                  opacity: isExporting ? 0.6 : 1,
+                }}
               >
-                {isExporting ? '⏳ Exporting…' : '📄 Download PDF'}
+                {isExporting ? 'Exporting…' : 'Download PDF'}
               </button>
             </div>
-          )}
-
+          </div>
+        )}
         </div>
       </header>
 
@@ -633,6 +700,8 @@ export default function CreatePage() {
             applyCaptionStyleToAllPages={applyCaptionStyleToAllPages}
             applyPageSettingsToAllPages={applyPageSettingsToAllPages}
             clearProgress={clearProgress}
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
           />
         )}
 
@@ -652,20 +721,81 @@ export default function CreatePage() {
 
       {/* ================= BOTTOM NAV ================= */}
       <footer className="create-bottom-nav">
-        <div className="create-bottom-inner container">
+        <div
+          className="create-bottom-inner container"
+          style={{
+            display: 'flex',
+            alignItems: 'center',          // 🔥 same baseline
+            justifyContent: 'space-between',
+            gap: '1rem',
+          }}
+        >
+          {/* Back / Home */}
           <button
-            className="btn-secondary"
+            type="button"
             onClick={handleBack}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+
+              height: '44px',
+              padding: '0 1.5rem',
+              lineHeight: 1,
+              boxSizing: 'border-box',
+
+              borderRadius: '8px',
+              fontSize: '0.95rem',
+              fontWeight: 500,
+
+              background: '#f5f5f5',
+              color: '#222',
+              border: '1px solid #ddd',
+              cursor: 'pointer',
+            }}
           >
-            {step === 1 ? '← Home' : '← Back'}
+            {step === 1 ? 'Home' : 'Back'}
           </button>
 
+          {/* Pages Button - only show in step 2 */}
+         {step === 2 && (
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="select-page-btn"
+            >
+              📄 Select Page
+            </button>
+          )}
+
+          {/* Next / Complete */}
           <button
-            className="btn-primary"
+            type="button"
             onClick={handleNext}
             disabled={step === 1 && !isStep1Valid}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+
+              height: '44px',
+              padding: '0 1.5rem',
+              lineHeight: 1,
+              boxSizing: 'border-box',
+
+              borderRadius: '8px',
+              fontSize: '0.95rem',
+              fontWeight: 500,
+
+              background: 'linear-gradient(135deg, #1e293b, #0ea5e9)',
+              color: '#fff',
+              border: 'none',
+              cursor:
+                step === 1 && !isStep1Valid ? 'not-allowed' : 'pointer',
+              opacity: step === 1 && !isStep1Valid ? 0.6 : 1,
+            }}
           >
-            {step === 3 ? 'Complete Order →' : 'Next →'}
+            {step === 3 ? 'Complete Order' : 'Next'}
           </button>
         </div>
       </footer>
