@@ -370,18 +370,22 @@ export default function CreatePage() {
         return [{ x: 0, y: 0, width: innerW, height: innerH }]
 
       case '2-horizontal': {
-        const h = (innerH - gutterInInches) / 2
+        // Side by Side - images next to each other (left | right)
+        const w1 = (innerW - gutterInInches) * splitX
+        const w2 = (innerW - gutterInInches) * (1 - splitX)
         return [
-          { x: 0, y: 0, width: innerW, height: h },
-          { x: 0, y: h + gutterInInches, width: innerW, height: h },
+          { x: 0, y: 0, width: w1, height: innerH },
+          { x: w1 + gutterInInches, y: 0, width: w2, height: innerH },
         ]
       }
 
       case '2-vertical': {
-        const w = (innerW - gutterInInches) / 2
+        // Stacked - images on top of each other (top / bottom)
+        const h1 = (innerH - gutterInInches) * splitY
+        const h2 = (innerH - gutterInInches) * (1 - splitY)
         return [
-          { x: 0, y: 0, width: w, height: innerH },
-          { x: w + gutterInInches, y: 0, width: w, height: innerH },
+          { x: 0, y: 0, width: innerW, height: h1 },
+          { x: 0, y: h1 + gutterInInches, width: innerW, height: h2 },
         ]
       }
 
@@ -460,15 +464,119 @@ export default function CreatePage() {
           const layout = LAYOUTS.find(l => l.id === page.layout) || LAYOUTS[0]
           const slotRects = getSlotRectsInInches(layout, size, pageMargin, pageGutter, page.layoutSplitX ?? 50, page.layoutSplitY ?? 50)
 
-          page.images.forEach((imgId, idx) => {
-            const img = uploadedImages.find(u => u.id === imgId)
-            if (!img || !slotRects[idx]) return
+          for (let idx = 0; idx < page.images.length; idx++) {
+            const imgId = page.images[idx]
+            if (!imgId) continue
+            
+            const imgData = uploadedImages.find(u => u.id === imgId)
+            if (!imgData || !slotRects[idx]) continue
 
             const rect = slotRects[idx]
-            const x = (pageMargin / 25.4) + rect.x
-            const y = (pageMargin / 25.4) + rect.y
-            pdf.addImage(img.src, 'JPEG', x, y, rect.width, rect.height)
-          })
+            const slotX = (pageMargin / 25.4) + rect.x
+            const slotY = (pageMargin / 25.4) + rect.y
+            const slotW = rect.width
+            const slotH = rect.height
+
+            // Load image to get natural dimensions
+            const imgElement = new Image()
+            imgElement.src = imgData.src
+            await new Promise((resolve) => {
+              imgElement.onload = resolve
+              imgElement.onerror = resolve
+            })
+
+            const imgW = imgElement.naturalWidth || 1000
+            const imgH = imgElement.naturalHeight || 1000
+            const imgRatio = imgW / imgH
+            const slotRatio = slotW / slotH
+
+            // Get fit mode and crop data
+            const crop = imgData.crop
+            const fitMode = imgData.fit || imageFitMode || 'cover'
+
+            let drawX, drawY, drawW, drawH
+
+            if (crop) {
+              // Custom crop from editor
+              drawW = slotW / (crop.w / 100)
+              drawH = slotH / (crop.h / 100)
+              drawX = slotX - (drawW * (crop.x / 100))
+              drawY = slotY - (drawH * (crop.y / 100))
+            } else if (fitMode === 'contain') {
+              // Contain: fit entire image, may have empty space
+              if (imgRatio > slotRatio) {
+                drawW = slotW
+                drawH = slotW / imgRatio
+              } else {
+                drawH = slotH
+                drawW = slotH * imgRatio
+              }
+              drawX = slotX + (slotW - drawW) / 2
+              drawY = slotY + (slotH - drawH) / 2
+            } else {
+              // Cover: fill slot, crop overflow
+              if (imgRatio > slotRatio) {
+                drawH = slotH
+                drawW = slotH * imgRatio
+              } else {
+                drawW = slotW
+                drawH = slotW / imgRatio
+              }
+              drawX = slotX + (slotW - drawW) / 2
+              drawY = slotY + (slotH - drawH) / 2
+            }
+
+            // For cover/crop mode, we need to crop the image to fit the slot
+            // Since jsPDF clipping is unreliable, we'll use canvas to pre-crop the image
+            if (crop || fitMode === 'cover') {
+              // Create a canvas to crop the image
+              const canvas = document.createElement('canvas')
+              const ctx = canvas.getContext('2d')
+              
+              // Set canvas size to match slot aspect ratio at high resolution
+              const scale = 2 // Higher quality
+              canvas.width = slotW * 96 * scale  // 96 DPI
+              canvas.height = slotH * 96 * scale
+              
+              // Calculate source rectangle (what part of image to draw)
+              let sx, sy, sw, sh
+              
+              if (crop) {
+                // Custom crop
+                sx = (crop.x / 100) * imgW
+                sy = (crop.y / 100) * imgH
+                sw = (crop.w / 100) * imgW
+                sh = (crop.h / 100) * imgH
+              } else {
+                // Cover mode - center crop
+                if (imgRatio > slotRatio) {
+                  // Image is wider - crop sides
+                  sh = imgH
+                  sw = imgH * slotRatio
+                  sx = (imgW - sw) / 2
+                  sy = 0
+                } else {
+                  // Image is taller - crop top/bottom
+                  sw = imgW
+                  sh = imgW / slotRatio
+                  sx = 0
+                  sy = (imgH - sh) / 2
+                }
+              }
+              
+              // Draw cropped portion to canvas
+              ctx.drawImage(imgElement, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
+              
+              // Get cropped image as data URL
+              const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92)
+              
+              // Add the pre-cropped image to PDF (fits exactly in slot)
+              pdf.addImage(croppedDataUrl, 'JPEG', slotX, slotY, slotW, slotH)
+            } else {
+              // Contain mode - just draw centered, no cropping needed
+              pdf.addImage(imgData.src, 'JPEG', drawX, drawY, drawW, drawH)
+            }
+          }
         }
 
         if (page.caption) {
@@ -487,6 +595,7 @@ export default function CreatePage() {
       pdf.save('photobook.pdf')
       eventBus?.emit('pdf-exported', { pageCount: pages.length })
     } catch (e) {
+      console.error('PDF Export Error:', e)
       alert('Failed to export PDF')
     }
 
@@ -499,6 +608,7 @@ export default function CreatePage() {
     pageGutter,
     pageBgColor,
     showPageNumbers,
+    imageFitMode,
   ])
 
   /* ================= NAV ================= */
