@@ -61,133 +61,240 @@ export default function EditorSettings(props) {
 
   const renderLayoutSection = () => (
     <div className="editor-card">
-      <h4>Layout</h4>
-      <div className="layout-grid-container">
-        {layouts.map(layout => (
-          <button
-            key={layout.id}
-            onClick={() => updatePageLayout(layout.id)}
-            className={`layout-btn ${selectedLayout === layout.id ? 'active' : 'inactive'}`}
-            title={layout.name}
-          >
-            <LayoutIcon template={layout.template} isSelected={selectedLayout === layout.id} />
-            <span className="layout-name">{layout.name}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-
-  const renderPageSettingsSection = () => (
-    <div className="editor-card">
-      <h4>Page Settings</h4>
-      <div className="control-group">
-        {/* Sliders */}
-        <div>
-          <label className="control-label">Margin & Gutter</label>
-          <div className="inline-row">
-            <input type="range" min="0" max="60" value={pageMargin} onChange={e => setPageMargin(+e.target.value)} className="control-range" title="Margin" />
-            <input type="range" min="0" max="40" value={pageGutter} onChange={e => setPageGutter(+e.target.value)} className="control-range" title="Gutter" />
-          </div>
-        </div>
-
-        {/* Split Controls */}
-        <div className="control-group">
-          <label className="control-label">Split Adjustments (H/V)</label>
-          <div className="inline-row">
-            <input type="range" min="20" max="80" value={layoutSplitX} onChange={e => updateLayoutSplitX(+e.target.value)} className="control-range" />
-            <input type="range" min="20" max="80" value={layoutSplitY} onChange={e => updateLayoutSplitY(+e.target.value)} className="control-range" />
-          </div>
-        </div>
-
-        <div className="inline-row">
-          <div className="inline-col">
-            <label className="control-label">Bg Color</label>
-            <input type="color" value={pageBgColor} onChange={e => setPageBgColor(e.target.value)} className="control-color" />
-          </div>
-          <div className="inline-col">
-            <label className="control-label">Radius</label>
-            <input type="number" min="0" max="20" value={imageBorderRadius} onChange={e => setImageBorderRadius(+e.target.value)} className="control-input" />
-          </div>
-        </div>
-
-        <div>
-          <label className="control-label">Image Fit</label>
-          <select value={imageFitMode} onChange={e => setImageFitMode(e.target.value)} className="control-input">
-            <option value="cover">Cover (Fill)</option>
-            <option value="contain">Contain (Fit)</option>
-            <option value="fill">Stretch</option>
-          </select>
-        </div>
-
-        <div className="checkbox-row">
-          <input type="checkbox" checked={showPageNumbers} onChange={e => setShowPageNumbers(e.target.checked)} />
-          <label className="checkbox-label">Show page numbers</label>
-        </div>
-      </div>
-    </div>
-  )
-
-  const renderCaptionSection = () => (
-    <div className="editor-card">
-      <h4>Caption</h4>
-      <textarea value={selectedCaption} onChange={e => updateCaption(e.target.value)} placeholder="Add caption..." className="caption-textarea" />
-      <div className="caption-grid">
-        <div>
-          <label className="caption-label">Font</label>
-          <select value={selectedFontFamily} onChange={e => updateCaptionStyle('fontFamily', e.target.value)} className="caption-select">
-            {fontFamilies.map(font => <option key={font.name} value={font.name}>{font.label}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="caption-label">Size</label>
-          <select value={selectedFontSize} onChange={e => updateCaptionStyle('fontSize', +e.target.value)} className="caption-select">
-            {[10, 12, 14, 16, 18, 20, 24, 28, 32].map(size => <option key={size} value={size}>{size}px</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="caption-label">Color</label>
-          <input type="color" value={selectedFontColor} onChange={e => updateCaptionStyle('color', e.target.value)} className="caption-color" />
-        </div>
-        <div>
-          <label className="caption-label">Position</label>
-          <select value={captionPosition} onChange={e => updateCaptionStyle('position', e.target.value)} className="caption-select">
-            <option value="top">Top</option>
-            <option value="bottom">Bottom</option>
-          </select>
-        </div>
-      </div>
-      <div className="caption-align-wrapper">
-        <label className="caption-label">Alignment</label>
-        <div className="caption-align">
-          {['left', 'center', 'right'].map(align => (
-            <button key={align} onClick={() => updateCaptionStyle('alignment', align)} className={captionAlignment === align ? 'active' : 'inactive'}>
-              {align}
+        <h4>Layout</h4>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
+            gap: '0.5rem',
+          }}
+        >
+          {layouts.map(layout => (
+            <button
+              key={layout.id}
+              onClick={() => updatePageLayout(layout.id)}
+              className={`layout-btn ${selectedLayout === layout.id ? 'active' : 'inactive'}`}
+              title={layout.name}
+            >
+              <LayoutIcon
+                template={layout.template}
+                isSelected={selectedLayout === layout.id}
+              />
+              <span className="layout-name">{layout.name}</span>
             </button>
           ))}
         </div>
       </div>
-    </div>
+  )
+
+  const renderPageSettingsSection = () => (
+    <div className="editor-card">
+        <h4>Page Settings</h4>
+
+        <div className="control-group">
+          <div className="control-subgroup">
+            <div className='control-sub'>
+              <label className="control-label">Margin (px)</label>
+              <input
+                type="range"
+                min="0"
+                max="60"
+                value={pageMargin}
+                onChange={e => setPageMargin(+e.target.value)}
+                className="control-range"
+              />
+              <span className="control-value">{pageMargin}px</span>
+            </div>
+
+            <div className='control-sub'>
+              <label className="control-label">Gutter (px)</label>
+              <input
+                type="range"
+                min="0"
+                max="40"
+                value={pageGutter}
+                onChange={e => setPageGutter(+e.target.value)}
+                className="control-range"
+              />
+              <span className="control-value">{pageGutter}px</span>
+            </div>
+
+          </div>
+
+          <div className="control-group">
+            <div className="control-subgroup">
+              <div>
+                <label>Horizontal Split</label>
+                <input
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={layoutSplitX}
+                  onChange={e => updateLayoutSplitX(+e.target.value)}
+                  className="control-range"
+                />
+                <span className="control-value">{layoutSplitX}%</span>
+              </div>
+
+              <div> 
+                <label>Vertical Split</label>
+                <input
+                  type="range"
+                  min="20"
+                  max="80"
+                  value={layoutSplitY}
+                  onChange={e => updateLayoutSplitY(+e.target.value)}
+                  className="control-range"
+                />
+                <span className="control-value">{layoutSplitY}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="inline-row">
+            <div className="inline-col">
+              <label className="control-label">Background</label>
+              <input
+                type="color"
+                value={pageBgColor}
+                onChange={e => setPageBgColor(e.target.value)}
+                className="control-color"
+              />
+            </div>
+
+            <div className="inline-col">
+              <label className="control-label">Corner Radius</label>
+              <input
+                type="number"
+                min="0"
+                max="20"
+                value={imageBorderRadius}
+                onChange={e => setImageBorderRadius(+e.target.value)}
+                className="control-input"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+  )
+
+  const renderCaptionSection = () => (
+     <div className="editor-card">
+        <h4>Caption</h4>
+
+        <textarea
+          value={selectedCaption}
+          onChange={e => updateCaption(e.target.value)}
+          placeholder="Add caption..."
+          className="caption-textarea"
+        />
+
+        <div className="caption-grid">
+          <div>
+            <label className="caption-label">Font</label>
+            <select
+              value={selectedFontFamily}
+              onChange={e => updateCaptionStyle('fontFamily', e.target.value)}
+              className="caption-select"
+            >
+              {fontFamilies.map(font => (
+                <option key={font.name} value={font.name}>
+                  {font.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="caption-label">Size</label>
+            <select
+              value={selectedFontSize}
+              onChange={e => updateCaptionStyle('fontSize', +e.target.value)}
+              className="caption-select"
+            >
+              {[10,12,14,16,18,20,24,28,32].map(size => (
+                <option key={size} value={size}>{size}px</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="caption-label">Color</label>
+            <input
+              type="color"
+              value={selectedFontColor}
+              onChange={e => updateCaptionStyle('color', e.target.value)}
+              className="caption-color"
+            />
+          </div>
+
+          <div>
+            <label className="caption-label">Position</label>
+            <select
+              value={captionPosition}
+              onChange={e => updateCaptionStyle('position', e.target.value)}
+              className="caption-select"
+            >
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="caption-align-wrapper">
+          <label className="caption-label">Alignment</label>
+          <div className="caption-align">
+            {['left', 'center', 'right'].map(align => (
+              <button
+                key={align}
+                onClick={() => updateCaptionStyle('alignment', align)}
+                className={captionAlignment === align ? 'active' : 'inactive'}
+              >
+                {align}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
   )
 
   const renderImageActions = () => selectedImage && (
     <div className="editor-card">
-      <h4>Image Options</h4>
-      <button className="btn-secondary" onClick={() => openImageEditor(selectedSlotIdx)}>Edit selected image</button>
+        <h4>Image</h4>
+
+        <button
+          className="btn-secondary"
+          onClick={() => openImageEditor(selectedSlotIdx)}
+        >
+          Edit selected image
+        </button>
     </div>
   )
 
   const renderGlobalActions = () => (
     <div className="editor-card action-card">
-      <button className="apply-btn" onClick={applyToAllPages}>Apply to all pages</button>
+      <button className="apply-btn" onClick={applyToAllPages}>
+        Apply settings to all pages
+      </button>
+
       <div className="auto-save">
-        <span className="auto-save-label">Auto-save</span>
+        <span className="auto-save-label">💾 Auto-save</span>
         <label className={`switch ${autoSave ? 'checked' : 'unchecked'}`}>
-          <input type="checkbox" checked={autoSave} onChange={e => setAutoSave(e.target.checked)} />
-          <span className="switch-track"><span className="switch-thumb" /></span>
+          <input
+            type="checkbox"
+            checked={autoSave}
+            onChange={e => setAutoSave(e.target.checked)}
+          />
+          <span className="switch-track">
+            <span className="switch-thumb" />
+          </span>
         </label>
       </div>
-      <button className="clear-btn" onClick={clearProgress}>Clear All</button>
+
+      <button className="clear-btn" onClick={clearProgress}>
+        Clear saved progress
+      </button>
     </div>
   )
 
