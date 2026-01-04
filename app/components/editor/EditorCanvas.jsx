@@ -62,12 +62,6 @@ export default function EditorCanvas({
             {currentPage.caption}
           </p>
         )}
-
-        {showPageNumbers && (
-          <div className="editor-page-number-indicator">
-            {currentPageIdx + 1}
-          </div>
-        )}
       </div>
     </div>
   )

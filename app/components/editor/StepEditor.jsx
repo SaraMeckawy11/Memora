@@ -414,7 +414,7 @@ export default function StepEditor({
             selectedFontSize={selectedFontSize}
             selectedFontColor={selectedFontColor}
             selectedFontFamily={selectedFontFamily}
-            showPageNumbers={showPageNumbers}
+            // showPageNumbers={showPageNumbers}
             currentPageIdx={currentPageIdx}
             imageGridProps={{
               currentPage,

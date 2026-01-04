@@ -108,45 +108,65 @@ export default function CreatePage() {
     setIsSaving(true)
 
     const draft = {
-      step,
-      pages,
-      uploadedImages,
-      selectedProduct,
-      selectedSize,
-      coverImage,
-      coverText,
-      coverTheme,
+  step,
 
-      /* ✅ SAVE ALL SETTINGS IN ONE PLACE */
-      settings: {
-        pageMargin,
-        pageGutter,
-        pageBgColor,
-        imageFitMode,
-        imageBorderRadius,
-        showPageNumbers,
+  // ✅ SAVE STRUCTURE ONLY
+  pages: pages.map(p => ({
+    layout: p.layout,
+    images: p.images,              // ids only
+    caption: p.caption || '',
+    captionStyle: p.captionStyle || {},
+    layoutSplitX: p.layoutSplitX ?? 50,
+    layoutSplitY: p.layoutSplitY ?? 50,
+  })),
 
-        layoutSplitX,
-        layoutSplitY,
+  selectedProduct,
+  selectedSize,
+  coverImage,
+  coverText,
+  coverTheme,
 
-        selectedLayout,
+  settings: {
+    pageMargin,
+    pageGutter,
+    pageBgColor,
+    imageFitMode,
+    imageBorderRadius,
+    showPageNumbers,
+    selectedLayout,
 
-        captionDefaults: {
-          fontFamily: selectedFontFamily,
-          fontSize: selectedFontSize,
-          color: selectedFontColor,
-          position: captionPosition,
-          alignment: captionAlignment,
-        },
+    captionDefaults: {
+      fontFamily: selectedFontFamily,
+      fontSize: selectedFontSize,
+      color: selectedFontColor,
+      position: captionPosition,
+      alignment: captionAlignment,
+    },
 
-        autoSave,
-      },
+    autoSave,
+  },
 
-      lastSaved: new Date().toISOString(),
-    }
+  lastSaved: new Date().toISOString(),
+}
 
-    localStorage.setItem('photobook_draft', JSON.stringify(draft))
-    setLastSaved(draft.lastSaved)
+
+   let serialized
+
+  try {
+    serialized = JSON.stringify(draft)
+  } catch (e) {
+    console.error('Draft too large to serialize', e)
+    return
+  }
+
+  if (serialized.length > 4_500_000) {
+    console.warn('Draft too large for localStorage')
+    return
+  }
+
+  localStorage.setItem('photobook_draft', serialized)
+
+      setLastSaved(draft.lastSaved)
 
     setTimeout(() => setIsSaving(false), 400)
   }, [
@@ -191,7 +211,7 @@ export default function CreatePage() {
 
       setStep(d.step || 1)
       setPages(Array.isArray(d.pages) ? d.pages : [])
-      setUploadedImages(Array.isArray(d.uploadedImages) ? d.uploadedImages : [])
+      // setUploadedImages(Array.isArray(d.uploadedImages) ? d.uploadedImages : [])
       setSelectedProduct(d.selectedProduct ?? null)
       setSelectedSize(d.selectedSize ?? null)
       setCoverImage(d.coverImage ?? null)
@@ -207,7 +227,7 @@ export default function CreatePage() {
       setPageBgColor(s.pageBgColor ?? '#ffffff')
       setImageFitMode(s.imageFitMode ?? 'cover')
       setImageBorderRadius(s.imageBorderRadius ?? 4)
-      setShowPageNumbers(s.showPageNumbers ?? true)
+      setShowPageNumbers(false)
 
       setLayoutSplitX(s.layoutSplitX ?? 50)
       setLayoutSplitY(s.layoutSplitY ?? 50)
@@ -237,14 +257,12 @@ export default function CreatePage() {
     return () => clearTimeout(t)
   }, [
     pages,
-    uploadedImages,
-
+    // uploadedImages,
     pageMargin,
     pageGutter,
     pageBgColor,
     imageFitMode,
     imageBorderRadius,
-    showPageNumbers,
 
     layoutSplitX,
     layoutSplitY,
@@ -284,7 +302,7 @@ export default function CreatePage() {
     setPageBgColor('#ffffff')
     setImageFitMode('cover')
     setImageBorderRadius(4)
-    setShowPageNumbers(true)
+    setShowPageNumbers(false)
 
     setLayoutSplitX(50)
     setLayoutSplitY(50)
@@ -583,12 +601,6 @@ export default function CreatePage() {
           pdf.setFontSize(page.captionStyle?.fontSize || 12)
           pdf.setTextColor(page.captionStyle?.color || '#000000')
           pdf.text(page.caption, size.width / 2, size.height - 0.3, { align: 'center' })
-        }
-
-        if (showPageNumbers) {
-          pdf.setFontSize(10)
-          pdf.setTextColor('#999')
-          pdf.text(`${i + 1}`, size.width / 2, size.height - 0.15, { align: 'center' })
         }
       }
 
