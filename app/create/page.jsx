@@ -188,8 +188,13 @@ export default function CreatePage() {
       lastSaved: new Date().toISOString(),
     }
 
-    localStorage.setItem('photobook_draft', JSON.stringify(draft))
-    setLastSaved(draft.lastSaved)
+    try {
+      localStorage.setItem('photobook_draft', JSON.stringify(draft))
+      setLastSaved(draft.lastSaved)
+    } catch (e) {
+      console.error('Failed to save draft to localStorage (Quota Exceeded)', e)
+      // Optional: Show a toast or alert to the user
+    }
 
     setTimeout(() => setIsSaving(false), 400)
   }, [
