@@ -1,0 +1,125 @@
+/* ===========================================
+   LAYOUT & GLOBAL STYLES
+=========================================== */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --sidebar-width: 72px;
+  --panel-width: 260px;
+  --toolbar-width: 280px;
+  --header-height: 52px;
+  --primary-color: #3b82f6;
+  --primary-dark: #2563eb;
+  --bg-dark: #0f172a;
+  --bg-light: #f8fafc;
+  --border-color: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+}
+
+/* ===== BASE LAYOUT ===== */
+.cover-editor-root {
+  display: flex;
+  height: 100vh;
+  background-color: #f1f5f9;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ===== MAIN EDITOR AREA ===== */
+.editor-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  background: #fff;
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+  z-index: 80;
+}
+
+.editor-header h3 {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ===== UTILITIES & ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===========================================
+   TABLET STYLES (768px - 1024px)
+=========================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  :root {
+    --sidebar-width: 60px;
+    --panel-width: 240px;
+    --toolbar-width: 260px;
+  }
+}
+
+/* ===========================================
+   MOBILE STYLES (<768px)
+=========================================== */
+@media (max-width: 767px) {
+  .cover-editor-root {
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .editor-main {
+    flex: 1;
+    height: calc(100vh - 56px);
+    height: calc(100dvh - 56px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .editor-header {
+    height: 44px;
+    min-height: 44px;
+    padding: 0 0.75rem;
+  }
+
+  .editor-header h3 {
+    font-size: 0.85rem;
+  }
+}

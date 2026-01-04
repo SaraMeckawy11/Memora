@@ -1,0 +1,324 @@
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.setup-container {
+  animation: fadeIn 0.3s ease;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header */
+.setup-title {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+.setup-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+  font-size: 1.05rem;
+}
+
+/* Section Headers */
+.section-container {
+  margin-bottom: 3rem;
+}
+
+.section-title {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-align: left;
+}
+
+/* Product Selection */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: var(--radius);
+  border: 2px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.product-card:hover {
+  border-color: var(--accent-solid);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+}
+
+.product-card.selected {
+  background-color: #f0f9ff;
+  border-color: var(--accent-solid);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.product-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.product-name {
+  margin: 0 0 0.25rem 0;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.product-desc {
+  margin: 0.25rem 0 0.75rem 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.product-price {
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent-solid);
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Size Selection */
+.size-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.size-card {
+  padding: 1.25rem;
+  background-color: #fff;
+  border-radius: var(--radius);
+  border: 2px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.size-card:hover {
+  border-color: var(--accent-solid);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-1);
+}
+
+.size-card.selected {
+  background-color: #f0f9ff;
+  border-color: var(--accent-solid);
+}
+
+.popular-tag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--accent-solid);
+  color: #fff;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.size-visual-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.size-visual-shape {
+  background-color: #f1f5f9;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0 var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.size-card.selected .size-visual-shape {
+  background-color: var(--accent-solid);
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+}
+
+.size-dimensions {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.size-card.selected .size-dimensions {
+  color: #fff;
+}
+
+.size-name {
+  margin: 0 0 0.25rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.size-label {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/* Cover Theme Selection */
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: -0.5rem;
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0.5rem;
+}
+
+.theme-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  height: 100%;
+  text-align: left;
+}
+
+.theme-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.theme-card.selected {
+  ring: 2px solid var(--accent-solid);
+  ring-offset: 2px;
+}
+
+.theme-preview {
+  width: 100%;
+  aspect-ratio: 3/4; /* Book cover ratio */
+  background-color: #f8fafc;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Upload Card Styling */
+.upload-card .theme-preview {
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.upload-icon-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: transform 0.2s;
+}
+
+.upload-card:hover .upload-icon-circle {
+  transform: scale(1.1);
+  color: var(--accent-solid);
+}
+
+.upload-icon {
+  font-size: 1.5rem;
+  color: #64748b;
+  font-weight: 300;
+}
+
+/* Design Card Styling */
+.design-card .theme-preview {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.design-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  transition: transform 0.2s;
+}
+
+.design-card:hover .design-icon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+/* Theme Info */
+.theme-info {
+  padding: 1rem;
+  background: #fff;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-top: 1px solid rgba(0,0,0,0.03);
+}
+
+.theme-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1e293b;
+  margin-bottom: 0.25rem;
+}
+
+.theme-desc {
+  font-size: 0.8rem;
+  color: #64748b;
+  line-height: 1.4;
+}

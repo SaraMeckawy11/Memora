@@ -4,11 +4,11 @@ import { usePhotoBook } from '@/app/components/editor/PhotoBookProvider'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import jsPDF from 'jspdf'
+import StepSetup from '@/app/components/setup/StepSetup' 
 
 import StepSetup from '@/app/components/StepSetup'
 import StepEditor from '@/app/components/editor/StepEditor'
 import StepReview from '@/app/components/StepReview'
-
 import '@/styles/CreatePage.css'
 
 /* ================= CONSTANTS ================= */

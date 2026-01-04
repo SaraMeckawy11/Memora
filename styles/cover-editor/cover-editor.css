@@ -1,0 +1,6 @@
+﻿/* Main Entry Point for Cover Editor Styles */
+@import './layout.css';
+@import './sidebar.css';
+@import './canvas.css';
+@import './toolbar.css';
+@import './font-select.css';

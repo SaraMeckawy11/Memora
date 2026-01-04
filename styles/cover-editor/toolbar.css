@@ -1,0 +1,646 @@
+/* ===========================================
+   TOOLBAR & PROPERTY EDITOR STYLES
+=========================================== */
+
+/* ===== RIGHT TOOLBAR (Property Editor) ===== */
+.editor-toolbar {
+  width: var(--toolbar-width);
+  background-color: #fff;
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 85;
+  flex-shrink: 0;
+}
+
+.editor-toolbar.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.editor-toolbar.empty::before {
+  content: "👆";
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-style: normal;
+}
+
+/* Desktop Toolbar Content */
+.desktop-toolbar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* Mobile-specific elements hidden on desktop */
+.mobile-close-handle,
+.toolbar-header-mobile,
+.mobile-toolbar-content {
+  display: none;
+}
+
+/* ===== COMPACT TOOLBAR SECTIONS ===== */
+.toolbar-section {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.toolbar-section-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.toolbar-section-header:hover {
+  background: var(--bg-light);
+}
+
+.toolbar-section-header .section-arrow {
+  font-size: 0.55rem;
+  transition: transform 0.2s;
+  color: var(--text-muted);
+}
+
+.toolbar-section-header.open .section-arrow {
+  transform: rotate(180deg);
+}
+
+.toolbar-section-content {
+  padding: 0.75rem 1rem;
+  background: var(--bg-light);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ===== FORM CONTROLS ===== */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.control-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.input-label {
+  width: 24px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.toolbar-input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.toolbar-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.toolbar-textarea {
+  width: 100%;
+  padding: 0.625rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background: #fff;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.2s;
+}
+
+.toolbar-textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.filter-btn {
+  padding: 0.5rem 0.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.filter-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+  background: #eff6ff;
+}
+
+.filter-btn.active {
+  border-color: #3b82f6;
+  background: #3b82f6;
+  color: #fff;
+}
+
+.filter-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+/* Color Picker */
+.color-picker-wrapper {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.color-picker-wrapper:hover {
+  border-color: #94a3b8;
+}
+
+.color-picker-wrapper input[type="color"] {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.color-preview {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+}
+
+/* Range Input Styling */
+input[type="range"] {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #e2e8f0;
+  border-radius: 3px;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* ===== TEXT PRESETS ===== */
+.text-preset-btn {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #1e293b;
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.text-preset-btn:hover {
+  background: #f8fafc;
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.text-preset-btn.heading {
+  font-size: 1.375rem;
+  font-weight: 700;
+  padding: 1.25rem;
+}
+
+.text-preset-btn.subheading {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.text-preset-btn.body {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ===== BUTTONS ===== */
+.save-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.save-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.toolbar-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.toolbar-btn:hover {
+  border-color: #94a3b8;
+  background: #f8fafc;
+}
+
+.toolbar-btn.active {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.toolbar-btn.delete {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+
+.toolbar-btn.delete:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
+/* ===========================================
+   TABLET STYLES (768px - 1024px)
+=========================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===========================================
+   MOBILE STYLES (<768px)
+=========================================== */
+@media (max-width: 767px) {
+  .save-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  /* ===== MOBILE TOOLBAR (Bottom Sheet) ===== */
+  .editor-toolbar {
+    position: fixed;
+    bottom: 56px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: auto;
+    max-height: 40vh;
+    border-radius: 16px 16px 0 0;
+    border-left: none;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.12);
+    z-index: 90;
+    background: #fff;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .editor-toolbar:not(.empty) {
+    transform: translateY(0);
+  }
+
+  .editor-toolbar.empty {
+    display: none;
+  }
+
+  /* Mobile Toolbar Header */
+  .mobile-close-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 2px;
+    margin: 8px auto 4px;
+    cursor: pointer;
+  }
+
+  .toolbar-header-mobile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.375rem 0.875rem 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .mobile-tabs {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  .mobile-tab-btn {
+    background: none;
+    border: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 0.25rem 0;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+  }
+
+  .mobile-tab-btn.active {
+    color: #1e293b;
+  }
+
+  .mobile-tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #3b82f6;
+    border-radius: 1px;
+  }
+
+  .close-btn-mobile {
+    background: #f1f5f9;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #3b82f6;
+    cursor: pointer;
+  }
+
+  /* Hide desktop toolbar content on mobile */
+  .desktop-toolbar-content {
+    display: none;
+  }
+
+  /* Show mobile toolbar content */
+  .mobile-toolbar-content {
+    display: block;
+    width: 100%;
+    overflow-y: auto; /* Allow scrolling within toolbar if needed */
+    max-height: 35vh;
+  }
+
+  /* Mobile Tools (Horizontal Scroll) */
+  .mobile-tools-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-active-tool-slider {
+    padding: 0.75rem 1rem;
+    background: #fafbfc;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .tool-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+  }
+
+  .mobile-tools-scroll {
+    display: flex;
+    overflow-x: auto;
+    padding: 0.75rem 1rem;
+    gap: 1rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-tools-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    min-width: 56px;
+    padding: 0.25rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    cursor: pointer;
+  }
+
+  .mobile-tool-btn.active {
+    opacity: 1;
+  }
+
+  .tool-icon {
+    font-size: 1.25rem;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+  }
+
+  .mobile-tool-btn.active .tool-icon {
+    background: #eff6ff;
+    border-color: #3b82f6;
+  }
+
+  .tool-label {
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  .mobile-tool-btn.active .tool-label {
+    color: #1e293b;
+  }
+
+  /* Mobile Filters (Horizontal Scroll) */
+  .mobile-filters-scroll {
+    display: flex;
+    overflow-x: auto;
+    padding: 1rem;
+    gap: 0.5rem;
+    scrollbar-width: none;
+  }
+
+  .mobile-filters-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobile-filter-btn {
+    padding: 0.625rem 1rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mobile-filter-btn:hover,
+  .mobile-filter-btn.active {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+  }
+
+  .text-preset-btn {
+    padding: 0.875rem 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .text-preset-btn.heading {
+    font-size: 1.125rem;
+    padding: 1rem;
+  }
+
+  .filter-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ===========================================
+   SMALL MOBILE (<400px)
+=========================================== */
+@media (max-width: 400px) {
+  .filter-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===========================================
+   LARGE DESKTOP (>1400px)
+=========================================== */
+@media (min-width: 1400px) {
+  .editor-toolbar {
+    width: 340px;
+  }
+
+  .filter-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Touch-friendly hover states */
+@media (hover: none) {
+  .filter-btn:hover,
+  .toolbar-btn:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .editor-toolbar {
+    border-width: 2px;
+  }
+}
