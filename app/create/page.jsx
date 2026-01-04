@@ -112,11 +112,11 @@ export default function CreatePage() {
 
   const [selectedLayout, setSelectedLayout] = useState('single')
 
-  const [pageMargin, setPageMargin] = useState(20)
-  const [pageGutter, setPageGutter] = useState(10)
+  const [pageMargin, setPageMargin] = useState(8)
+  const [pageGutter, setPageGutter] = useState(8)
   const [pageBgColor, setPageBgColor] = useState('#ffffff')
   const [imageFitMode, setImageFitMode] = useState('cover')
-  const [imageBorderRadius, setImageBorderRadius] = useState(4)
+  const [imageBorderRadius, setImageBorderRadius] = useState(0)
   const [showPageNumbers, setShowPageNumbers] = useState(false)
 
   /* ================= Layout Split ================= */
