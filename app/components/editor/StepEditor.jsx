@@ -51,6 +51,10 @@ export default function StepEditor({
   fontFamilies,
   isSidebarOpen,
   setIsSidebarOpen,
+  undo,
+  redo,
+  canUndo,
+  canRedo,
 }) {
   const canvasRef = useRef(null)
   const currentPage = pages[currentPageIdx]
@@ -391,6 +395,13 @@ export default function StepEditor({
           getMaxImages={getMaxImages}
           isOpen={isSidebarOpen}
           setIsOpen={setIsSidebarOpen}
+          undo={undo}
+          redo={redo}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          uploadedImages={uploadedImages}
+          selectedSize={selectedSize}
+          sizes={sizes}
         />
 
         <div>

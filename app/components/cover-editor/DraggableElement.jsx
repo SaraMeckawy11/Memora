@@ -311,6 +311,7 @@ export default function DraggableElement({
             d={element.path}
             stroke={element.stroke}
             strokeWidth={element.strokeWidth}
+            opacity={element.opacity}
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
