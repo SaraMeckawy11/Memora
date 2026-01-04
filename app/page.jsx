@@ -6,36 +6,46 @@ import Testimonials from "./components/home/Testimonials"
 import CTA from "./components/home/CTA"
 import Footer from "./components/home/Footer"
 
+import "@/styles/HomePage.css"
+
 export default function Home() {
-	return (
-		<>
-			<NavBar />
-			<main>
-				<Hero />
+  return (
+    <>
+      <NavBar />
 
-				<section className="container features-section">
-					<Features />
-				</section>
+      <main>
+        {/* HERO */}
+        <Hero />
 
-				<section className="container themes-section">
-					<h2 className="section-title">Beautiful themes</h2>
-					<div className="themes">
-						<ThemeCard title="Engagement" />
-						<ThemeCard title="Wedding" />
-						<ThemeCard title="Travel" />
-						<ThemeCard title="Family" />
-					</div>
-				</section>
+        {/* FEATURES */}
+        <section className="container">
+          <Features />
+        </section>
 
-				<section className="container testimonials-section">
-					<h2 className="section-title">Loved by customers</h2>
-					<Testimonials />
-				</section>
+        {/* THEMES */}
+        <section className="container">
+          <h2 className="section-title">Beautiful themes</h2>
+          <div className="themes">
+            <ThemeCard title="Engagement" />
+            <ThemeCard title="Wedding" />
+            <ThemeCard title="Travel" />
+            <ThemeCard title="Family" />
+          </div>
+        </section>
 
-				<CTA />
-			</main>
+        {/* TESTIMONIALS */}
+        <section className="container">
+          <h2 className="section-title">Loved by customers</h2>
+          <Testimonials />
+        </section>
 
-			<Footer />
-		</>
-	)
+        {/* CTA */}
+        <section className="container">
+          <CTA />
+        </section>
+      </main>
+
+      <Footer />
+    </>
+  )
 }
