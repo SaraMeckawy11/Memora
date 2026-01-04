@@ -296,11 +296,11 @@ export default function CreatePage() {
       /* ✅ RESTORE SETTINGS */
       const s = d.settings || {}
 
-      setPageMargin(s.pageMargin ?? 20)
-      setPageGutter(s.pageGutter ?? 10)
+      setPageMargin(s.pageMargin ?? 8)
+      setPageGutter(s.pageGutter ?? 8)
       setPageBgColor(s.pageBgColor ?? '#ffffff')
       setImageFitMode(s.imageFitMode ?? 'cover')
-      setImageBorderRadius(s.imageBorderRadius ?? 4)
+      setImageBorderRadius(s.imageBorderRadius ?? 0)
       setShowPageNumbers(false)
 
       setLayoutSplitX(s.layoutSplitX ?? 50)
@@ -371,11 +371,11 @@ export default function CreatePage() {
     setLastSaved(null)
 
     /* reset settings */
-    setPageMargin(20)
-    setPageGutter(10)
+    setPageMargin(8)
+    setPageGutter(8)
     setPageBgColor('#ffffff')
     setImageFitMode('cover')
-    setImageBorderRadius(4)
+    setImageBorderRadius(0)
     setShowPageNumbers(false)
 
     setLayoutSplitX(50)
