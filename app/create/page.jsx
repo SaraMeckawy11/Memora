@@ -4,9 +4,11 @@ import { usePhotoBook } from '@/app/components/editor/PhotoBookProvider'
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import jsPDF from 'jspdf'
-import StepSetup from '@/app/components/setup/StepSetup'
+
+import StepSetup from '@/app/components/StepSetup'
 import StepEditor from '@/app/components/editor/StepEditor'
 import StepReview from '@/app/components/StepReview'
+
 import '@/styles/CreatePage.css'
 
 /* ================= CONSTANTS ================= */
@@ -17,10 +19,39 @@ const PRODUCTS = [
 ]
 
 const SIZES = [
-  { id: 1, name: '8×10 Portrait', label: 'Classic Portrait', aspect: '0.8', width: 8, height: 10, popular: true },
-  { id: 2, name: '8×8 Square', label: 'Square', aspect: '1', width: 8, height: 8 },
-  { id: 3, name: '10×10 Square', label: 'Large Square', aspect: '1', width: 10, height: 10 },
-  { id: 4, name: '11×8.5 Landscape', label: 'Landscape', aspect: '1.29', width: 11, height: 8.5 },
+  {
+    id: 1,
+    name: 'A4 Portrait',
+    label: '210 × 297 mm',
+    aspect: (8.27 / 11.69).toFixed(2), // ≈ 0.71
+    width: 8.27,     // inches
+    height: 11.69,   // inches
+    popular: true,
+  },
+  {
+    id: 2,
+    name: 'A4 Landscape',
+    label: '297 × 210 mm',
+    aspect: (11.69 / 8.27).toFixed(2), // ≈ 1.41
+    width: 11.69,    // inches
+    height: 8.27,    // inches
+  },
+  {
+    id: 3,
+    name: 'B5 Portrait',
+    label: '176 × 250 mm',
+    aspect: (6.93 / 9.84).toFixed(2), // ≈ 0.70
+    width: 6.93,     // inches
+    height: 9.84,    // inches
+  },
+  {
+    id: 4,
+    name: 'B5 Landscape',
+    label: '250 × 176 mm',
+    aspect: (9.84 / 6.93).toFixed(2), // ≈ 1.42
+    width: 9.84,     // inches
+    height: 6.93,    // inches
+  },
 ]
 
 const LAYOUTS = [
