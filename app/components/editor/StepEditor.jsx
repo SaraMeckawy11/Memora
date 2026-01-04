@@ -302,25 +302,30 @@ export default function StepEditor({
   /* ------------------------------
      Page operations
   ------------------------------ */
-  const addPage = () => {
-    setPages([
-      ...pages,
-      {
-        id: Date.now(),
-        images: [],
-        caption: '',
-        captionStyle: {
-          fontSize: selectedFontSize,
-          color: selectedFontColor,
-          fontFamily: selectedFontFamily,
-          position: captionPosition,
-          alignment: captionAlignment,
-        },
-        layout: selectedLayout,
-        layoutSplitX: 50,
-        layoutSplitY: 50,
+  const addPage = (insertAtIndex = null) => {
+    const newPage = {
+      id: Date.now(),
+      images: [],
+      caption: '',
+      captionStyle: {
+        fontSize: selectedFontSize,
+        color: selectedFontColor,
+        fontFamily: selectedFontFamily,
+        position: captionPosition,
+        alignment: captionAlignment,
       },
-    ])
+      layout: selectedLayout,
+      layoutSplitX: 50,
+      layoutSplitY: 50,
+    }
+
+    if (typeof insertAtIndex === 'number') {
+      const newPages = [...pages]
+      newPages.splice(insertAtIndex, 0, newPage)
+      setPages(newPages)
+    } else {
+      setPages([...pages, newPage])
+    }
   }
 
   const duplicatePage = (idx) => {
