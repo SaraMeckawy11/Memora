@@ -60,6 +60,7 @@ export default function StepEditor({
   const currentPage = pages[currentPageIdx]
   const [selectedSlotIdx, setSelectedSlotIdx] = useState(null)
   const [editingSlotIdx, setEditingSlotIdx] = useState(null)
+  const [editingSlotRect, setEditingSlotRect] = useState(null)
   
 
   /* ------------------------------
@@ -354,27 +355,29 @@ export default function StepEditor({
     setCurrentPageIdx(newIdx)
   }
   const editorSlot = useMemo(() => {
-  if (
-    editingSlotIdx === null ||
-    editingSlotIdx === undefined ||
-    !slotRects ||
-    !slotRects[editingSlotIdx]
-  ) {
-    return null
-  }
+    // Prefer the real DOM-measured slot size (exact match to what the user sees)
+    if (editingSlotRect?.width && editingSlotRect?.height) return editingSlotRect
 
-  const rawSlot = slotRects[editingSlotIdx]
+    // Fallback: keep previous behavior (aspect-ratio only) if we don't have a DOM rect
+    if (
+      editingSlotIdx === null ||
+      editingSlotIdx === undefined ||
+      !slotRects ||
+      !slotRects[editingSlotIdx]
+    ) {
+      return null
+    }
 
-  // Final safety (never hurts)
-  if (!rawSlot.width || !rawSlot.height) return null
+    const rawSlot = slotRects[editingSlotIdx]
+    if (!rawSlot.width || !rawSlot.height) return null
 
-  const SLOT_MAX = 420
-  const ratio = rawSlot.width / rawSlot.height
+    const SLOT_MAX = 420
+    const ratio = rawSlot.width / rawSlot.height
 
-  return ratio >= 1
-    ? { width: SLOT_MAX, height: SLOT_MAX / ratio }
-    : { height: SLOT_MAX, width: SLOT_MAX * ratio }
-}, [editingSlotIdx, slotRects])
+    return ratio >= 1
+      ? { width: SLOT_MAX, height: SLOT_MAX / ratio }
+      : { height: SLOT_MAX, width: SLOT_MAX * ratio }
+  }, [editingSlotIdx, slotRects, editingSlotRect])
 
 
   /* ------------------------------
@@ -436,7 +439,10 @@ export default function StepEditor({
               selectedSlotIdx,
               imageFitMode,
               imageBorderRadius,
-              onSelectSlot: setSelectedSlotIdx,
+              onSelectSlot: (idx, rect) => {
+                setSelectedSlotIdx(idx)
+                if (rect?.width && rect?.height) setEditingSlotRect(rect)
+              },
               onRemoveImage: removeImageFromPage,
             }}
           />
@@ -497,10 +503,14 @@ export default function StepEditor({
           <ImageEditorModal
             image={getImageObjectForSlot(editingSlotIdx)}
             slot={editorSlot}
-            onClose={() => setEditingSlotIdx(null)}
+            onClose={() => {
+              setEditingSlotIdx(null)
+              setEditingSlotRect(null)
+            }}
             onSave={(updatedImage) => {
               updateImageInSlot(editingSlotIdx, updatedImage)
               setEditingSlotIdx(null)
+              setEditingSlotRect(null)
             }}
           />
         )}

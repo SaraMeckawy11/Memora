@@ -18,7 +18,10 @@ export default function ImageSlot({
         borderRadius: imageBorderRadius,
         overflow: 'hidden',
       }}
-      onClick={() => onSelect(idx)}
+      onClick={(e) => {
+        const r = e.currentTarget.getBoundingClientRect()
+        onSelect(idx, { width: r.width, height: r.height })
+      }}
     >
       {img ? (
         <>

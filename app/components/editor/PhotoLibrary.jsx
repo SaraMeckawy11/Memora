@@ -18,8 +18,8 @@ const OUTRO_TWO_VERTICAL_PAGES = 2
 const THREE_IMAGE_RATIO = 0.45
 const FOUR_IMAGE_RATIO  = 0.55
 
-const TWO_HORIZONTAL_RATIO = 0.6
-const TWO_VERTICAL_RATIO   = 0.4
+const TWO_HORIZONTAL_RATIO = 0
+const TWO_VERTICAL_RATIO   = 1
 
 /* ======================================================
    LAYOUT DEFINITIONS
@@ -35,7 +35,7 @@ const LAYOUTS = {
 }
 
 /* ======================================================
-   IMAGE ORIENTATION UTILS  ✅ NEW
+   IMAGE ORIENTATION UTILS
    ====================================================== */
 
 const getOrientation = (img) => {
@@ -71,7 +71,7 @@ export default function PhotoLibrary({
   }
 
   /* ======================================================
-     AUTO GENERATE (UPGRADED)
+     AUTO GENERATE (WITH FORCED INTRO PAGES)
      ====================================================== */
 
   const autoGenerate = () => {
@@ -105,9 +105,15 @@ export default function PhotoLibrary({
     const pages = []
     const layoutCounts = { single: 0, two: 0, three: 0, four: 0 }
 
+    /* ---------- layout chooser ---------- */
     const chooseLayout = () => {
       const remainingImages = remainingCount()
       const remainingPagesEstimate = Math.ceil(remainingImages / 3)
+
+      /* ✅ FORCE FIRST 2 PAGES TO BE SINGLE */
+      if (pages.length < 2) {
+        return LAYOUTS.single
+      }
 
       /* ---------- outro ---------- */
       if (remainingPagesEstimate <= OUTRO_TWO_VERTICAL_PAGES && portraits.length >= 2) {
@@ -149,7 +155,6 @@ export default function PhotoLibrary({
       const layout = chooseLayout()
       const pageImages = Array(layout.slots).fill(null)
 
-      /* ---------- slot-aware filling ---------- */
       if (layout.id === 'single') {
         pageImages[0] = pickImage('portrait')?.id
         layoutCounts.single++
