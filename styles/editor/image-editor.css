@@ -150,6 +150,124 @@
   font-size: 0.85rem;
 }
 
+/* ================= MODERN TOOLBAR (Crop / Fit / Revert) ================= */
+.editor-toolbar {
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.tool-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tool-label {
+  font-size: 0.8rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.ui-chip {
+  height: 34px;
+  padding: 0 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+  color: #111;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.03s;
+}
+
+.ui-chip:hover {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.22);
+}
+
+.ui-chip:active {
+  transform: translateY(1px);
+}
+
+.ui-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.18);
+}
+
+.ui-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-chip--primary {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.ui-chip--primary:hover {
+  background: #000;
+  border-color: #000;
+}
+
+.ui-chip--danger {
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+}
+
+.ui-chip--danger:hover {
+  background: rgba(220, 38, 38, 0.06);
+  border-color: rgba(220, 38, 38, 0.5);
+}
+
+.ui-segment {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  background: #fff;
+}
+
+.ui-segment-btn {
+  height: 28px;
+  padding: 0 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #333;
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.ui-segment-btn.is-active {
+  background: rgba(0, 0, 0, 0.08);
+  color: #111;
+}
+
+.ui-segment-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-segment-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.18);
+}
+
+.ui-hint {
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: #666;
+  line-height: 1.3;
+}
+
 .control-row {
   display: flex;
   justify-content: space-between;
