@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import '@/styles/editor/PagesSidebar.css'
 
 export default function PagesSidebar({
@@ -24,6 +24,14 @@ export default function PagesSidebar({
   const [draggedIndex, setDraggedIndex] = useState(null)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   const [viewMode, setViewMode] = useState('grid') // 'grid' | 'list'
+  const scrollContainerRef = useRef(null)
+  const touchTimer = useRef(null)
+  
+  // Floating Drag State
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 })
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [isTouchDragging, setIsTouchDragging] = useState(false)
+  const [draggedCardDims, setDraggedCardDims] = useState({ width: 0, height: 0 })
 
   const selectedSizeObj = sizes.find(s => s.id === selectedSize)
   const aspectRatio = selectedSizeObj ? selectedSizeObj.width / selectedSizeObj.height : 1
@@ -92,7 +100,6 @@ export default function PagesSidebar({
     }
     return styles
   }
-
   const handlePageSelect = (idx) => {
     setCurrentPageIdx(idx);
     // Auto-close drawer only on mobile devices
@@ -101,265 +108,369 @@ export default function PagesSidebar({
     }
   };
 
-  const handleDragStart = (idx) => setDraggedIndex(idx)
-  const handleDragOver = (e) => e.preventDefault()
+  // --- Desktop Drag & Drop (Live Swap) ---
+  const handleDragStart = (e, idx) => {
+    setDraggedIndex(idx)
+    // Required for some browsers to allow drag
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move'
+      // Optional: set a custom drag image if needed
+    }
+  }
+
+  const handleDragEnter = (e, targetIdx) => {
+    e.preventDefault()
+    if (draggedIndex === null) return
+    if (draggedIndex !== targetIdx) {
+      // Swap immediately
+      movePage(draggedIndex, targetIdx - draggedIndex)
+      setDraggedIndex(targetIdx)
+    }
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault() // Allow drop
+
+    // Auto-scroll logic for desktop drag
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current
+      const { top, bottom } = container.getBoundingClientRect()
+      const scrollZoneHeight = 155 // Increased zone
+      const scrollSpeed = 30 // Increased speed
+
+      if (e.clientY < top + scrollZoneHeight) {
+        // Scroll up
+        container.scrollTop -= scrollSpeed
+      } else if (e.clientY > bottom - scrollZoneHeight) {
+        // Scroll down
+        container.scrollTop += scrollSpeed
+      }
+    }
+  }
   
-  const handleDrop = (idx) => {
-    if (draggedIndex === null || draggedIndex === idx) return
-    movePage(draggedIndex, idx - draggedIndex)
+  const handleDrop = (e) => {
+    e.preventDefault()
     setDraggedIndex(null)
   }
 
+  // --- Mobile Touch Drag & Drop (Live Swap + Floating Card) ---
+  const handleTouchStart = (e, idx) => {
+    const touch = e.touches[0]
+    const target = e.currentTarget
+    const rect = target.getBoundingClientRect()
+    
+    const offsetX = touch.clientX - rect.left
+    const offsetY = touch.clientY - rect.top
+
+    // Long press to start drag (200ms) to distinguish from scroll
+    touchTimer.current = setTimeout(() => {
+      setDraggedIndex(idx)
+      setIsTouchDragging(true)
+      setDragOffset({ x: offsetX, y: offsetY })
+      setDragPosition({ 
+        x: touch.clientX - offsetX, 
+        y: touch.clientY - offsetY 
+      })
+      setDraggedCardDims({ width: rect.width, height: rect.height })
+      
+      // Vibrate if supported for feedback
+      if (navigator.vibrate) navigator.vibrate(50)
+    }, 200)
+  }
+
+  const handleTouchMove = (e) => {
+    // If we haven't started dragging yet, this is a scroll
+    if (draggedIndex === null) {
+      if (touchTimer.current) {
+        clearTimeout(touchTimer.current)
+        touchTimer.current = null
+      }
+      return
+    }
+
+    // We are dragging, prevent scroll
+    if (e.cancelable) e.preventDefault()
+
+    const touch = e.touches[0]
+    
+    // Update floating card position
+    setDragPosition({
+      x: touch.clientX - dragOffset.x,
+      y: touch.clientY - dragOffset.y
+    })
+
+    // Auto-scroll for touch
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current
+      const { top, bottom } = container.getBoundingClientRect()
+      const scrollZoneHeight = 100 // Increased zone
+      const scrollSpeed = 20 // Increased speed
+
+      if (touch.clientY < top + scrollZoneHeight) {
+        container.scrollTop -= scrollSpeed
+      } else if (touch.clientY > bottom - scrollZoneHeight) {
+        container.scrollTop += scrollSpeed
+      }
+    }
+
+    const target = document.elementFromPoint(touch.clientX, touch.clientY)
+    if (!target) return
+
+    const card = target.closest('.preview-card')
+    if (card) {
+      const targetIdx = parseInt(card.dataset.index)
+      if (!isNaN(targetIdx) && targetIdx !== draggedIndex) {
+        movePage(draggedIndex, targetIdx - draggedIndex)
+        setDraggedIndex(targetIdx)
+        // Vibrate on swap
+        if (navigator.vibrate) navigator.vibrate(20)
+      }
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (touchTimer.current) clearTimeout(touchTimer.current)
+    setDraggedIndex(null)
+    setIsTouchDragging(false)
+  }
+
+  const renderCardContent = (page, idx) => (
+    <>
+      <div className="preview-card-header">
+        <span>Page {idx + 1}</span>
+        {!isTouchDragging && (
+          <input 
+            type="number" 
+            className="page-pos-input"
+            defaultValue={idx + 1}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const val = parseInt(e.target.value)
+                if (!isNaN(val) && val >= 1 && val <= pages.length && val !== idx + 1) {
+                  movePage(idx, (val - 1) - idx)
+                  e.target.blur()
+                } else {
+                  e.target.value = idx + 1
+                }
+              }
+            }}
+            onBlur={(e) => {
+              const val = parseInt(e.target.value)
+              if (!isNaN(val) && val >= 1 && val <= pages.length && val !== idx + 1) {
+                movePage(idx, (val - 1) - idx)
+              } else {
+                e.target.value = idx + 1
+              }
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        )}
+      </div>
+      <div className="preview-card-body">
+        <div 
+          className="preview-page-container"
+          style={{
+            aspectRatio: `${aspectRatio}`,
+            width: aspectRatio >= 1 ? '100%' : 'auto',
+            height: aspectRatio < 1 ? '100%' : 'auto',
+            maxHeight: '100%',
+            maxWidth: '100%',
+            boxShadow: '0 0 5px rgba(0,0,0,0.1)',
+            backgroundColor: '#fff'
+          }}
+        >
+        {page.images && page.images.some(id => id) ? (
+          <div className="mini-page-content" style={getMiniLayoutStyles(page.layout, page.images.length)}>
+            {page.images.map((imgId, imgIdx) => {
+              const src = getImageSrc(imgId)
+              const layoutStyles = getMiniLayoutStyles(page.layout, page.images.length)
+              
+              let itemStyle = {
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                overflow: 'hidden',
+                backgroundColor: '#f0f0f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }
+
+              // Apply custom spans
+              if (layoutStyles.custom === '1-top-2-bottom' && imgIdx === 0) {
+                itemStyle.gridColumn = 'span 2'
+              }
+              if (layoutStyles.custom === '2-top-1-bottom' && imgIdx === 2) {
+                itemStyle.gridColumn = 'span 2'
+              }
+
+              return (
+                <div key={imgIdx} className="mini-img-wrapper" style={itemStyle}>
+                  {src ? (
+                    <img 
+                      src={src} 
+                      alt="" 
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        display: 'block'
+                      }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: '10px', color: '#ccc' }}>+</span>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="mini-layout" style={{ 
+            height: '100%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '4px'
+          }}>
+            <span>Empty</span>
+            <span style={{fontSize: '0.7em'}}>{getLayoutName(page.layout)}</span>
+          </div>
+        )}
+        </div>
+      </div>
+    </>
+  )
+
   return (
     <>
-      {/* 1. Mobile Toggle Button */}
+      {/* Mobile Toggle Button */}
       {/* <button className="sidebar-toggle" onClick={() => setIsOpen(true)}>
         <span>📄 Pages</span>
       </button> */}
 
-      {/* 2. Dimmed Overlay */}
+      {/* Dimmed Overlay */}
       <div 
         className={`sidebar-overlay ${isOpen ? 'is-active' : ''}`} 
         onClick={() => setIsOpen(false)}
       />
 
-      {/* 3. The Sidebar */}
+      {/* The Sidebar */}
       <aside className={`pages-sidebar ${isOpen ? 'is-open' : ''}`}>
         <div className="pages-header">
-          <h4 className="pages-title">
-            Pages <span className="pages-count">({pages.length})</span>
-          </h4>
-
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button className="add-page-btn" onClick={() => setIsPreviewOpen(true)}>
+          <h4 className="pages-title">Pages ({pages.length})</h4>
+          <div className="pages-actions">
+            <button className="add-page-btn" onClick={addPage}>+ Add</button>
+            <button 
+              className="add-page-btn" 
+              onClick={() => setIsPreviewOpen(true)} 
+              title="Preview & Organize"
+              style={{ 
+                marginLeft: '8px', 
+                background: '#000', 
+                color: '#fff', 
+                border: 'none',
+                padding: '0.35rem 0.8rem'
+              }}
+            >
               Preview
-            </button>
-            <button className="add-page-btn" onClick={addPage}>
-              + Add
-            </button>
-            {/* Visible only on mobile */}
-            <button className="mobile-close-btn" onClick={() => setIsOpen(false)}>
-              Done
             </button>
           </div>
         </div>
 
         <div className="pages-list">
-          {pages.map((page, idx) => {
-            const isActive = idx === currentPageIdx
-            const isDragging = idx === draggedIndex
-
-            return (
-              <div
-                key={page.id}
-                draggable
-                onDragStart={() => handleDragStart(idx)}
-                onDragOver={handleDragOver}
-                onDrop={() => handleDrop(idx)}
-                onClick={() => handlePageSelect(idx)}
-                className={`page-item ${isActive ? 'active' : ''}`}
-                style={{ opacity: isDragging ? 0.5 : 1 }}
-              >
-                <div className="page-top">
-                  <div>
-                    <div className="page-title">
-                      Page {idx + 1}
-                      {page.images?.length > 0 && (
-                        <span className="page-photos">
-                          {page.images.length} photos
-                        </span>
-                      )}
-                    </div>
-
-                    {page.caption && (
-                      <div className="page-caption">
-                        “{page.caption}”
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="page-actions">
-                    <button
-                      className="icon-btn"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        duplicatePage(idx)
-                      }}
-                      title="Duplicate"
-                    >
-                      ⧉
-                    </button>
-
-                    {pages.length > 1 && (
-                      <button
-                        className="icon-btn delete"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          removePage(idx)
-                        }}
-                        title="Delete"
-                      >
-                        ×
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                <div className="page-layout">
-                  Layout: {getLayoutName(page.layout)}
+          {pages.map((page, idx) => (
+            <div 
+              key={page.id} 
+              className={`page-item ${idx === currentPageIdx ? 'active' : ''}`}
+              onClick={() => handlePageSelect(idx)}
+            >
+              <div className="page-top">
+                <span className="page-title">Page {idx + 1}</span>
+                <div className="page-actions">
+                  <button 
+                    className="icon-btn delete" 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      if(confirm('Delete page?')) removePage(idx); 
+                    }}
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
-            )
-          })}
+              <div className="page-layout">{getLayoutName(page.layout)}</div>
+              <div className="page-caption">
+                {page.images && page.images.length > 0 ? `${page.images.length} photos` : 'Empty'}
+              </div>
+            </div>
+          ))}
         </div>
       </aside>
 
-      {/* 4. Preview Modal */}
+      {/* The Preview Modal */}
       {isPreviewOpen && (
         <div className="preview-modal-overlay">
           <div className="preview-modal-content">
             <div className="preview-header">
               <h3>Page Preview</h3>
-              <div className="view-toggles" style={{ display: 'flex', gap: '4px', marginRight: 'auto', marginLeft: '16px' }}>
-                <button 
-                  className={`preview-btn ${viewMode === 'grid' ? 'primary' : ''}`}
-                  onClick={() => setViewMode('grid')}
-                  title="Grid View"
-                  style={{ padding: '4px 8px' }}
-                >
-                  ⊞ Grid
-                </button>
-                <button 
-                  className={`preview-btn ${viewMode === 'list' ? 'primary' : ''}`}
-                  onClick={() => setViewMode('list')}
-                  title="List View"
-                  style={{ padding: '4px 8px' }}
-                >
-                  ☰ List
-                </button>
-              </div>
               <div className="preview-actions">
+                <button className="preview-btn" onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}>
+                  {viewMode === 'grid' ? 'List View' : 'Grid View'}
+                </button>
                 <button className="preview-btn" onClick={undo} disabled={!canUndo}>Undo</button>
                 <button className="preview-btn" onClick={redo} disabled={!canRedo}>Redo</button>
                 <button className="preview-btn primary" onClick={() => setIsPreviewOpen(false)}>Done</button>
               </div>
             </div>
             
-            <div className={`preview-grid ${viewMode === 'list' ? 'list-view' : ''}`}>
+            <div 
+              className={`preview-grid ${viewMode === 'list' ? 'list-view' : ''}`}
+              ref={scrollContainerRef}
+            >
               {pages.map((page, idx) => (
                 <div 
                   key={page.id} 
-                  className={`preview-card ${idx === currentPageIdx ? 'active' : ''}`}
+                  data-index={idx}
+                  className={`preview-card ${idx === currentPageIdx ? 'active' : ''} ${draggedIndex === idx ? 'is-dragging' : ''}`}
                   draggable
-                  onDragStart={() => handleDragStart(idx)}
+                  onDragStart={(e) => handleDragStart(e, idx)}
+                  onDragEnter={(e) => handleDragEnter(e, idx)}
                   onDragOver={handleDragOver}
-                  onDrop={() => handleDrop(idx)}
+                  onDrop={handleDrop}
+                  onTouchStart={(e) => handleTouchStart(e, idx)}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                   onClick={() => setCurrentPageIdx(idx)}
                 >
-                  <div className="preview-card-header">
-                    <span>Page {idx + 1}</span>
-                    <input 
-                      type="number" 
-                      className="page-pos-input"
-                      defaultValue={idx + 1}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          const val = parseInt(e.target.value)
-                          if (!isNaN(val) && val >= 1 && val <= pages.length && val !== idx + 1) {
-                            movePage(idx, (val - 1) - idx)
-                            e.target.blur()
-                          } else {
-                            e.target.value = idx + 1
-                          }
-                        }
-                      }}
-                      onBlur={(e) => {
-                        const val = parseInt(e.target.value)
-                        if (!isNaN(val) && val >= 1 && val <= pages.length && val !== idx + 1) {
-                          movePage(idx, (val - 1) - idx)
-                        } else {
-                          e.target.value = idx + 1
-                        }
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                  <div className="preview-card-body">
-                    <div 
-                      className="preview-page-container"
-                      style={{
-                        aspectRatio: `${aspectRatio}`,
-                        width: aspectRatio >= 1 ? '100%' : 'auto',
-                        height: aspectRatio < 1 ? '100%' : 'auto',
-                        maxHeight: '100%',
-                        maxWidth: '100%',
-                        boxShadow: '0 0 5px rgba(0,0,0,0.1)',
-                        backgroundColor: '#fff'
-                      }}
-                    >
-                    {page.images && page.images.some(id => id) ? (
-                      <div className="mini-page-content" style={getMiniLayoutStyles(page.layout, page.images.length)}>
-                        {page.images.map((imgId, imgIdx) => {
-                          const src = getImageSrc(imgId)
-                          const layoutStyles = getMiniLayoutStyles(page.layout, page.images.length)
-                          
-                          let itemStyle = {
-                            position: 'relative',
-                            width: '100%',
-                            height: '100%',
-                            overflow: 'hidden',
-                            backgroundColor: '#f0f0f0',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                          }
-
-                          // Apply custom spans
-                          if (layoutStyles.custom === '1-top-2-bottom' && imgIdx === 0) {
-                            itemStyle.gridColumn = 'span 2'
-                          }
-                          if (layoutStyles.custom === '2-top-1-bottom' && imgIdx === 2) {
-                            itemStyle.gridColumn = 'span 2'
-                          }
-
-                          return (
-                            <div key={imgIdx} className="mini-img-wrapper" style={itemStyle}>
-                              {src ? (
-                                <img 
-                                  src={src} 
-                                  alt="" 
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    display: 'block'
-                                  }}
-                                />
-                              ) : (
-                                <span style={{ fontSize: '10px', color: '#ccc' }}>+</span>
-                              )}
-                            </div>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <div className="mini-layout" style={{ 
-                        height: '100%', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        flexDirection: 'column',
-                        gap: '4px'
-                      }}>
-                        <span>Empty</span>
-                        <span style={{fontSize: '0.7em'}}>{getLayoutName(page.layout)}</span>
-                      </div>
-                    )}
-                    </div>
-                  </div>
+                  {renderCardContent(page, idx)}
                 </div>
               ))}
             </div>
+
+            {/* Floating Drag Card (Mobile) */}
+            {isTouchDragging && draggedIndex !== null && pages[draggedIndex] && (
+              <div 
+                className={`preview-card ${viewMode === 'list' ? 'list-view' : ''}`}
+                style={{
+                  position: 'fixed',
+                  left: dragPosition.x,
+                  top: dragPosition.y,
+                  width: draggedCardDims.width,
+                  height: draggedCardDims.height,
+                  zIndex: 9999,
+                  pointerEvents: 'none',
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+                  opacity: 0.9,
+                  margin: 0,
+                  display: 'flex',
+                  flexDirection: viewMode === 'list' ? 'row' : 'column'
+                }}
+              >
+                {renderCardContent(pages[draggedIndex], draggedIndex)}
+              </div>
+            )}
           </div>
         </div>
       )}
