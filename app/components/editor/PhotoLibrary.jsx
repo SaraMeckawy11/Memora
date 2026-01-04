@@ -6,25 +6,18 @@ import '@/styles/editor/PhotoLibrary.css'
    AUTO GENERATION CONFIG — EDIT ONLY HERE
    ====================================================== */
 
-// Minimum number of pages regardless of image count
 const AUTO_MIN_PAGES = 25
-
-// Safety limits
 const MAX_IMAGES = 400
 const MAX_PAGES = 180
 
-// Hard caps
-const MAX_SINGLE_PAGES = 4          // 1-image pages
-const MAX_TWO_PAGES = 10            // total 2-image pages (H + V)
+const MAX_SINGLE_PAGES = 4
+const MAX_TWO_PAGES = 10
 
-// Outro rule
-const OUTRO_TWO_VERTICAL_PAGES = 2  // last N pages forced to 2-vertical
+const OUTRO_TWO_VERTICAL_PAGES = 2
 
-// Distribution ratios (3 vs 4 images)
 const THREE_IMAGE_RATIO = 0.45
 const FOUR_IMAGE_RATIO  = 0.55
 
-// 2-image orientation ratio (non-outro)
 const TWO_HORIZONTAL_RATIO = 0.6
 const TWO_VERTICAL_RATIO   = 0.4
 
@@ -39,6 +32,18 @@ const LAYOUTS = {
   threeA: { id: '1-top-2-bottom', slots: 3 },
   threeB: { id: '2-top-1-bottom', slots: 3 },
   four: { id: '4-grid', slots: 4 },
+}
+
+/* ======================================================
+   IMAGE ORIENTATION UTILS  ✅ NEW
+   ====================================================== */
+
+const getOrientation = (img) => {
+  if (!img.width || !img.height) return 'square'
+  const ratio = img.width / img.height
+  if (ratio > 1.15) return 'landscape'
+  if (ratio < 0.85) return 'portrait'
+  return 'square'
 }
 
 /* ======================================================
@@ -66,7 +71,7 @@ export default function PhotoLibrary({
   }
 
   /* ======================================================
-     AUTO GENERATE
+     AUTO GENERATE (UPGRADED)
      ====================================================== */
 
   const autoGenerate = () => {
@@ -75,48 +80,55 @@ export default function PhotoLibrary({
       return
     }
 
-    const imageIds = images
+    /* ---------- classify images ---------- */
+    const prepared = images
       .slice(0, MAX_IMAGES)
-      .map((img) => img.id)
+      .map((img) => ({
+        ...img,
+        orientation: getOrientation(img),
+      }))
 
-    let cursor = 0
-    const pages = []
+    const portraits   = prepared.filter(i => i.orientation === 'portrait')
+    const landscapes  = prepared.filter(i => i.orientation === 'landscape')
+    const squares     = prepared.filter(i => i.orientation === 'square')
 
-    const layoutCounts = {
-      single: 0,
-      two: 0,
-      three: 0,
-      four: 0,
+    const pickImage = (preferred) => {
+      if (preferred === 'portrait' && portraits.length) return portraits.shift()
+      if (preferred === 'landscape' && landscapes.length) return landscapes.shift()
+      if (preferred === 'square' && squares.length) return squares.shift()
+      return portraits.shift() || landscapes.shift() || squares.shift() || null
     }
 
+    const remainingCount = () =>
+      portraits.length + landscapes.length + squares.length
+
+    const pages = []
+    const layoutCounts = { single: 0, two: 0, three: 0, four: 0 }
+
     const chooseLayout = () => {
-      const remainingImages = imageIds.length - cursor
+      const remainingImages = remainingCount()
       const remainingPagesEstimate = Math.ceil(remainingImages / 3)
 
-      /* =============================
-         OUTRO — FORCE 2 VERTICAL
-         ============================= */
-      if (remainingPagesEstimate <= OUTRO_TWO_VERTICAL_PAGES) {
+      /* ---------- outro ---------- */
+      if (remainingPagesEstimate <= OUTRO_TWO_VERTICAL_PAGES && portraits.length >= 2) {
         return LAYOUTS.twoV
       }
 
-      /* =============================
-         NORMAL FLOW
-         ============================= */
-
-      // 1️⃣ Single-image pages
-      if (layoutCounts.single < MAX_SINGLE_PAGES) {
+      /* ---------- single image ---------- */
+      if (layoutCounts.single < MAX_SINGLE_PAGES && portraits.length) {
         return LAYOUTS.single
       }
 
-      // 2️⃣ Two-image pages
+      /* ---------- two images ---------- */
       if (layoutCounts.two < MAX_TWO_PAGES) {
+        if (portraits.length >= 2) return LAYOUTS.twoV
+        if (landscapes.length >= 2) return LAYOUTS.twoH
         return Math.random() < TWO_HORIZONTAL_RATIO
           ? LAYOUTS.twoH
           : LAYOUTS.twoV
       }
 
-      // 3️⃣ Three vs Four balance
+      /* ---------- three vs four ---------- */
       const totalDense = layoutCounts.three + layoutCounts.four || 1
       const currentThreeRatio = layoutCounts.three / totalDense
 
@@ -129,28 +141,50 @@ export default function PhotoLibrary({
       return LAYOUTS.four
     }
 
+    /* ---------- page loop ---------- */
     while (
-      (pages.length < AUTO_MIN_PAGES || cursor < imageIds.length) &&
+      (pages.length < AUTO_MIN_PAGES || remainingCount() > 0) &&
       pages.length < MAX_PAGES
     ) {
       const layout = chooseLayout()
-
       const pageImages = Array(layout.slots).fill(null)
-      for (let i = 0; i < layout.slots && cursor < imageIds.length; i++) {
-        pageImages[i] = imageIds[cursor]
-        cursor++
+
+      /* ---------- slot-aware filling ---------- */
+      if (layout.id === 'single') {
+        pageImages[0] = pickImage('portrait')?.id
+        layoutCounts.single++
+      }
+
+      else if (layout.id === '2-vertical') {
+        pageImages[0] = pickImage('portrait')?.id
+        pageImages[1] = pickImage('portrait')?.id
+        layoutCounts.two++
+      }
+
+      else if (layout.id === '2-horizontal') {
+        pageImages[0] = pickImage('landscape')?.id
+        pageImages[1] = pickImage('landscape')?.id
+        layoutCounts.two++
+      }
+
+      else if (layout.slots === 3) {
+        pageImages[0] = pickImage('landscape')?.id
+        pageImages[1] = pickImage('portrait')?.id
+        pageImages[2] = pickImage('portrait')?.id
+        layoutCounts.three++
+      }
+
+      else if (layout.slots === 4) {
+        for (let i = 0; i < 4; i++) {
+          pageImages[i] = pickImage('square')?.id
+        }
+        layoutCounts.four++
       }
 
       pages.push({
         layout: layout.id,
-        images: pageImages,
+        images: pageImages.filter(Boolean),
       })
-
-      // Track counts
-      if (layout.slots === 1) layoutCounts.single++
-      else if (layout.slots === 2) layoutCounts.two++
-      else if (layout.slots === 3) layoutCounts.three++
-      else if (layout.slots === 4) layoutCounts.four++
     }
 
     setInfoMessage(
@@ -167,7 +201,7 @@ export default function PhotoLibrary({
   }
 
   /* ======================================================
-     JSX
+     JSX (UNCHANGED)
      ====================================================== */
 
   return (
@@ -215,11 +249,7 @@ export default function PhotoLibrary({
                 className="photo-library-img"
               />
 
-              {used && (
-                <div className="photo-library-used">
-                  Used
-                </div>
-              )}
+              {used && <div className="photo-library-used">Used</div>}
 
               <button
                 className="photo-library-remove"
