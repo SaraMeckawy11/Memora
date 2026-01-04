@@ -1,0 +1,291 @@
+/* ===========================================
+   FONT SELECT DROPDOWN STYLES
+=========================================== */
+
+/* ===== FONT SELECT ===== */
+.font-select-container {
+  position: relative;
+  width: 100%;
+}
+
+.font-select-trigger {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.font-select-trigger:hover {
+  border-color: #94a3b8;
+}
+
+.font-select-trigger .arrow {
+  font-size: 0.6rem;
+  color: #64748b;
+  transition: transform 0.2s;
+}
+
+.font-select-header {
+  display: none; /* Hidden by default on desktop, shown on mobile */
+}
+
+.font-select-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.font-select-close {
+  display: none;
+}
+
+.font-select-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 250px;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.font-search-wrapper {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fafbfc;
+}
+
+.font-search-input {
+  width: 100%;
+  padding: 0 0.75rem; /* Remove vertical padding, let line-height handle it */
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 16px; /* Prevent zoom on iOS (must be at least 16px) */
+  box-sizing: border-box;
+  height: 44px; /* Explicit height */
+  line-height: 42px; /* Center text vertically (height - borders) */
+  border-radius: 8px;
+}
+
+.font-search-input::placeholder {
+  color: #94a3b8;
+  opacity: 1; /* Firefox */
+}
+
+.font-list {
+  overflow-y: auto;
+  flex: 1;
+}
+
+.font-option {
+  padding: 0.625rem 0.75rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+
+.font-option:hover {
+  background-color: #f1f5f9;
+}
+
+.font-option.selected {
+  background-color: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.font-option.no-results {
+  color: #94a3b8;
+  font-style: italic;
+  text-align: center;
+  font-family: inherit !important;
+}
+
+/* ===========================================
+   TABLET STYLES (768px - 1024px)
+=========================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* Fix Font Select Dropdown on Tablet (Same as Mobile) */
+  .font-select-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 400px;
+    height: 60vh;
+    max-height: 600px;
+    margin: 0;
+    bottom: auto;
+    z-index: 10000;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 100vh rgba(0,0,0,0.5);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .font-select-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1rem 0.5rem;
+    background: #fff;
+    border-bottom: none;
+    flex-shrink: 0;
+  }
+
+  .font-select-close {
+    display: flex;
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #64748b;
+    cursor: pointer;
+  }
+
+  .font-search-wrapper {
+    display: block;
+    padding: 0.5rem 1rem 1rem;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0;
+  }
+
+  .font-search-input {
+    width: 100%;
+    padding: 0 0.75rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-size: 16px;
+    box-sizing: border-box;
+    height: 44px;
+    line-height: 42px;
+    border-radius: 8px;
+    color: #334155; /* Ensure text is visible */
+  }
+}
+
+/* ===========================================
+   MOBILE STYLES (<768px)
+=========================================== */
+@media (max-width: 767px) {
+  /* Fix Font Select Dropdown on Mobile to open as a centered modal */
+  .font-select-dropdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 340px;
+    height: 70vh; /* Fixed height for better scrolling */
+    max-height: 600px;
+    margin: 0;
+    bottom: auto;
+    z-index: 10000;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 100vh rgba(0,0,0,0.5); /* Dropdown + Backdrop */
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .font-select-header {
+    display: flex; /* Show header on mobile */
+  }
+
+  .font-select-close {
+    display: flex; /* Show close button on mobile */
+    background: #f1f5f9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #64748b;
+    cursor: pointer;
+  }
+
+  .font-search-wrapper {
+    display: block; /* Ensure visibility */
+    padding: 0.5rem 1rem 1rem;
+    background: #fff;
+    border-bottom: 1px solid #f1f5f9;
+    flex-shrink: 0;
+  }
+
+  .font-search-input {
+    width: 100%;
+    padding: 0 0.75rem; /* Remove vertical padding, let line-height handle it */
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    font-size: 16px; /* Prevent zoom on iOS (must be at least 16px) */
+    box-sizing: border-box;
+    height: 44px; /* Explicit height */
+    line-height: 42px; /* Center text vertically (height - borders) */
+    border-radius: 8px;
+  }
+
+  .font-search-input::placeholder {
+    color: #94a3b8;
+    opacity: 1; /* Firefox */
+  }
+
+  .font-list {
+    padding: 0.5rem 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    background: #fff;
+  }
+
+  .font-option {
+    padding: 1rem 1.25rem; /* Larger touch target */
+    font-size: 1.1rem;
+    border-bottom: 1px solid #f8fafc;
+  }
+  
+  .font-option:last-child {
+    border-bottom: none;
+  }
+
+  .font-option.selected {
+    background-color: #eff6ff;
+    color: #2563eb;
+    position: relative;
+  }
+  
+  .font-option.selected::after {
+    content: '✓';
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: bold;
+  }
+}

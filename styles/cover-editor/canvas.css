@@ -1,0 +1,177 @@
+/* ===========================================
+   CANVAS & ELEMENTS STYLES
+=========================================== */
+
+/* ===== CANVAS CONTAINER ===== */
+.canvas-wrapper {
+  flex: 1;
+  background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+  display: flex;
+  align-items: flex-start; /* Align top for scrolling */
+  /* justify-content: center; Removed to prevent clipping */
+  overflow: auto; /* Allow scrolling in both directions */
+  padding: 2rem;
+  position: relative;
+  container-type: size;
+  cursor: grab; /* Indicate panning is available */
+}
+
+.canvas-wrapper:active {
+  cursor: grabbing;
+}
+
+.canvas-wrapper.draw-mode {
+  cursor: default;
+}
+
+.canvas-container {
+  /* This is the inner wrapper from EditorCanvas.jsx */
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: auto; /* Allow width to fit content */
+  min-width: 100%; /* Ensure it fills at least the wrapper */
+  height: auto; /* Allow height to grow */
+  min-height: 100%;
+  margin: auto; /* Center content if smaller than wrapper */
+}
+
+.editor-canvas {
+  background-color: #fff;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  flex-shrink: 0; /* Prevent flex shrinking */
+  margin: auto; /* Center in the wrapper */
+  transform-origin: top left; /* Match JS */
+}
+
+.editor-canvas.draw-cursor {
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* ===== CANVAS ELEMENTS ===== */
+.canvas-element,
+.draggable-element {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.canvas-element.selected,
+.draggable-element.selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Resize Handles */
+.resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+  z-index: 101;
+  transition: transform 0.1s;
+}
+
+.resize-handle:hover {
+  transform: scale(1.2);
+  background-color: #3b82f6;
+}
+
+.resize-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
+.resize-handle.n { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+.resize-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
+.resize-handle.w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
+.resize-handle.e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
+.resize-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+.resize-handle.s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+.resize-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+/* ===========================================
+   TABLET STYLES (768px - 1024px)
+=========================================== */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .canvas-wrapper {
+    padding: 1rem;
+    overflow-y: auto;
+    align-items: flex-start;
+  }
+}
+
+/* ===========================================
+   MOBILE STYLES (<768px)
+=========================================== */
+@media (max-width: 767px) {
+  /* ===== MOBILE CANVAS - FULL WIDTH ===== */
+  .canvas-wrapper {
+    flex: 1;
+    padding: 2rem 1rem; /* More padding for better spacing */
+    min-height: 0;
+    display: flex;
+    /* align-items: flex-start;  Let margin: auto handle alignment */
+    background: #e8ecf0;
+    overflow: auto; 
+    -webkit-overflow-scrolling: touch;
+    
+    /* Ensure horizontal scrolling works */
+    flex-direction: row;
+    /* align-items: center;  Removed to allow top alignment if needed */
+    justify-content: flex-start; /* Allow horizontal scrolling from left */
+  }
+
+  /* Canvas takes up most of the screen width */
+  .editor-canvas {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    border-radius: 4px;
+    margin: auto; /* Centers vertically and horizontally, safe for overflow */
+    
+    /* Ensure transform origin is center for better scaling feel */
+    transform-origin: top center;
+    
+    /* Ensure it doesn't shrink below its scaled size */
+    flex-shrink: 0;
+    
+    /* Responsive behavior for mobile */
+    /* Zoom handled by JS state now */
+  }
+
+  /* Adjust zoom for slightly larger mobile screens */
+  @media (min-width: 400px) {
+    .editor-canvas {
+      /* zoom: 0.65; Removed static zoom */
+    }
+  }
+
+  /* Adjust canvas when panels are open */
+  .canvas-wrapper.with-panel {
+    padding-bottom: calc(50vh + 1rem);
+  }
+
+  /* Resize handles slightly larger on mobile for touch */
+  .resize-handle {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* ===========================================
+   SMALL MOBILE (<400px)
+=========================================== */
+@media (max-width: 400px) {
+  .editor-canvas {
+    --mobile-scale: 0.42;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .resize-handle {
+    border-width: 3px;
+  }
+}
