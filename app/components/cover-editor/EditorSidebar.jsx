@@ -18,7 +18,8 @@ export default function EditorSidebar({
   canvasSettings,
   onUpdateCanvas,
   drawingTool,
-  onUpdateDrawingTool
+  onUpdateDrawingTool,
+  isInteractingWithCanvas
 }) {
   const [activeTab, setActiveTab] = useState(null)
 
@@ -52,6 +53,18 @@ export default function EditorSidebar({
     <>
       <div className="editor-sidebar">
         <button 
+          className={`sidebar-btn ${!isDrawMode && !activeTab ? 'active' : ''}`}
+          onClick={() => {
+            if (isDrawMode) onToggleDrawMode()
+            setActiveTab(null)
+          }}
+          title="Cursor / Select"
+        >
+          <span className="sidebar-icon">👆</span>
+          <span className="sidebar-label">Cursor</span>
+        </button>
+
+        <button 
           className={`sidebar-btn ${activeTab === 'text' ? 'active' : ''}`}
           onClick={() => handleTabClick('text')}
         >
@@ -68,11 +81,38 @@ export default function EditorSidebar({
         </button>
 
         <button 
-          className={`sidebar-btn ${isDrawMode ? 'active' : ''}`}
-          onClick={() => handleTabClick('draw')}
+          className={`sidebar-btn ${isDrawMode && drawingTool.type === 'pen' ? 'active' : ''}`}
+          onClick={() => {
+            if (!isDrawMode || drawingTool.type !== 'pen') {
+              onToggleDrawMode(true) // Ensure draw mode is on
+              onUpdateDrawingTool({ ...drawingTool, type: 'pen' })
+              setActiveTab('draw-pen')
+            } else {
+              // Toggle off if already active? Or just keep it active?
+              // User wants separate options.
+              // If I click pen again, maybe close the settings panel?
+              setActiveTab(activeTab === 'draw-pen' ? null : 'draw-pen')
+            }
+          }}
         >
-          <span className="sidebar-icon">✏️</span>
-          <span className="sidebar-label">Draw</span>
+          <span className="sidebar-icon">🖊️</span>
+          <span className="sidebar-label">Pen</span>
+        </button>
+
+        <button 
+          className={`sidebar-btn ${isDrawMode && drawingTool.type === 'eraser' ? 'active' : ''}`}
+          onClick={() => {
+            if (!isDrawMode || drawingTool.type !== 'eraser') {
+              onToggleDrawMode(true) // Ensure draw mode is on
+              onUpdateDrawingTool({ ...drawingTool, type: 'eraser' })
+              setActiveTab('draw-eraser')
+            } else {
+              setActiveTab(activeTab === 'draw-eraser' ? null : 'draw-eraser')
+            }
+          }}
+        >
+          <span className="sidebar-icon">🧹</span>
+          <span className="sidebar-label">Eraser</span>
         </button>
 
         <button 
@@ -91,13 +131,14 @@ export default function EditorSidebar({
       </div>
 
       {/* Asset Panel */}
-      <div className={`asset-panel ${activeTab || (isDrawMode && activeTab === 'draw') ? '' : 'collapsed'}`}>
+      <div className={`asset-panel ${activeTab && !isInteractingWithCanvas ? '' : 'collapsed'}`}>
         <div className="panel-header">
           <div style={{ flex: 1 }}>
             {activeTab === 'shapes' && 'Elements'}
             {activeTab === 'text' && 'Text Options'}
             {activeTab === 'background' && 'Background'}
-            {activeTab === 'draw' && 'Drawing Tools'}
+            {activeTab === 'draw-pen' && 'Pen Settings'}
+            {activeTab === 'draw-eraser' && 'Eraser Settings'}
           </div>
           <button 
             className="close-panel-btn"
@@ -183,54 +224,52 @@ export default function EditorSidebar({
             </div>
           )}
 
-          {activeTab === 'draw' && (
+          {activeTab === 'draw-pen' && (
             <div className="asset-grid" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div style={{ display: 'flex', gap: '10px' }}>
-                <button
-                  className={`toolbar-btn ${drawingTool.type === 'pen' ? 'active' : ''}`}
-                  onClick={() => onUpdateDrawingTool({ ...drawingTool, type: 'pen' })}
-                  style={{ flexDirection: 'column', padding: '10px', height: 'auto' }}
-                >
-                  <span style={{ fontSize: '1.2rem', marginBottom: '5px' }}>🖊️</span>
-                  <span style={{ fontSize: '0.8rem' }}>Pen</span>
-                </button>
-                <button
-                  className={`toolbar-btn ${drawingTool.type === 'eraser' ? 'active' : ''}`}
-                  onClick={() => onUpdateDrawingTool({ ...drawingTool, type: 'eraser' })}
-                  style={{ flexDirection: 'column', padding: '10px', height: 'auto' }}
-                >
-                  <span style={{ fontSize: '1.2rem', marginBottom: '5px' }}>🧹</span>
-                  <span style={{ fontSize: '0.8rem' }}>Eraser</span>
-                </button>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Color</label>
+                <div className="color-picker-wrapper" style={{ width: '100%', height: '40px' }}>
+                  <input 
+                    type="color" 
+                    value={drawingTool.color} 
+                    onChange={(e) => onUpdateDrawingTool({ ...drawingTool, color: e.target.value })} 
+                  />
+                  <div style={{ width: '100%', height: '100%', backgroundColor: drawingTool.color, borderRadius: '4px' }} />
+                </div>
               </div>
 
-              {drawingTool.type !== 'eraser' && (
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Color</label>
-                  <div className="color-picker-wrapper" style={{ width: '100%', height: '40px' }}>
-                    <input 
-                      type="color" 
-                      value={drawingTool.color} 
-                      onChange={(e) => onUpdateDrawingTool({ ...drawingTool, color: e.target.value })} 
-                    />
-                    <div style={{ width: '100%', height: '100%', backgroundColor: drawingTool.color, borderRadius: '4px' }} />
-                  </div>
-                </div>
-              )}
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Size: {drawingTool.width}px</label>
+                <input 
+                  type="range" 
+                  min="1" 
+                  max="50" 
+                  value={drawingTool.width} 
+                  onChange={(e) => onUpdateDrawingTool({ ...drawingTool, width: parseInt(e.target.value) })}
+                  style={{ width: '100%' }}
+                />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Opacity: {Math.round(drawingTool.opacity * 100)}%</label>
+                <input 
+                  type="range" 
+                  min="0.1" 
+                  max="1" 
+                  step="0.1"
+                  value={drawingTool.opacity} 
+                  onChange={(e) => onUpdateDrawingTool({ ...drawingTool, opacity: parseFloat(e.target.value) })}
+                  style={{ width: '100%' }}
+                />
+              </div>
+            </div>
+          )}
 
-              {drawingTool.type !== 'eraser' && (
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Size: {drawingTool.width}px</label>
-                  <input 
-                    type="range" 
-                    min="1" 
-                    max="50" 
-                    value={drawingTool.width} 
-                    onChange={(e) => onUpdateDrawingTool({ ...drawingTool, width: Number(e.target.value) })}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-              )}
+          {activeTab === 'draw-eraser' && (
+            <div className="asset-grid" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '8px', fontSize: '0.9rem', color: '#64748b' }}>
+                Tap on elements to erase them.
+              </div>
             </div>
           )}
         </div>

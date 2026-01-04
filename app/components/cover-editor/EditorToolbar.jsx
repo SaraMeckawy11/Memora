@@ -126,10 +126,10 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
   }
 
   const renderMobileTextTools = () => (
-    <div className="mobile-tools-container">
-      {/* Font Family & Size Row */}
-      <div style={{ padding: '0 1rem 0.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <div style={{ flex: 1 }}>
+    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
+      {/* Font & Size Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+        <div>
           <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Font</div>
           <SearchableFontSelect 
             fonts={FONT_FAMILIES}
@@ -137,31 +137,33 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
             onChange={(font) => onUpdate({ fontFamily: font })}
           />
         </div>
-        <div style={{ width: '80px' }}>
+        <div>
           <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Size</div>
           <input 
             type="number" 
             className="toolbar-input" 
             value={selectedElement.fontSize} 
             onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
-            style={{ padding: '0.4rem' }}
+            style={{ width: '100%', padding: '0.5rem' }}
           />
         </div>
       </div>
 
       {/* Size Slider */}
-      <div className="mobile-active-tool-slider" style={{ paddingTop: 0 }}>
-        <input 
+      <div style={{ marginBottom: '1.5rem' }}>
+         <input 
           type="range" 
           min="10" 
           max="200" 
           value={selectedElement.fontSize} 
           onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+          style={{ width: '100%' }}
         />
       </div>
 
-      {/* Style Buttons Row */}
-      <div className="mobile-tools-scroll">
+      {/* Style & Alignment */}
+      <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Style</div>
+      <div className="mobile-tools-scroll" style={{ marginBottom: '1.5rem' }}>
         <div className="color-picker-wrapper mobile-tool-btn">
            <input 
               type="color" 
@@ -205,50 +207,169 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
         </button>
       </div>
       
-      {/* Layering & Delete */}
-      <div className="mobile-tools-scroll" style={{ borderTop: '1px solid #f1f5f9', marginTop: '0.5rem' }}>
+      {/* Delete Button */}
+      <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ width: '100%', justifyContent: 'center', color: '#ef4444', background: '#fef2f2', borderColor: '#fee2e2' }}>
+        <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fff' }}>🗑️</span>
+        <span className="tool-label">Delete Element</span>
+      </button>
+    </div>
+  )
+
+  // Mobile View for Layout (Position, Size, Layering)
+  const renderMobileLayoutTools = () => (
+    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+        <div>
+          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>X Position</div>
+          <input 
+            type="number" 
+            className="toolbar-input" 
+            value={Math.round(selectedElement.x)} 
+            onChange={(e) => onUpdate({ x: Number(e.target.value) })}
+            style={{ width: '100%', padding: '0.5rem' }}
+          />
+        </div>
+        <div>
+          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Y Position</div>
+          <input 
+            type="number" 
+            className="toolbar-input" 
+            value={Math.round(selectedElement.y)} 
+            onChange={(e) => onUpdate({ y: Number(e.target.value) })}
+            style={{ width: '100%', padding: '0.5rem' }}
+          />
+        </div>
+        <div>
+          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Width</div>
+          <input 
+            type="number" 
+            className="toolbar-input" 
+            value={Math.round(selectedElement.width)} 
+            onChange={(e) => onUpdate({ width: Number(e.target.value) })}
+            style={{ width: '100%', padding: '0.5rem' }}
+          />
+        </div>
+        <div>
+          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Height</div>
+          <input 
+            type="number" 
+            className="toolbar-input" 
+            value={Math.round(selectedElement.height)} 
+            onChange={(e) => onUpdate({ height: Number(e.target.value) })}
+            style={{ width: '100%', padding: '0.5rem' }}
+          />
+        </div>
+      </div>
+      
+      <div style={{ marginBottom: '1rem' }}>
+        <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Rotation: {Math.round(selectedElement.rotation || 0)}°</div>
+        <input 
+          type="range" 
+          min="0" 
+          max="360" 
+          value={selectedElement.rotation || 0} 
+          onChange={(e) => onUpdate({ rotation: Number(e.target.value) })}
+          style={{ width: '100%' }}
+        />
+      </div>
+
+      <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Layering</div>
+      <div className="mobile-tools-scroll" style={{ justifyContent: 'space-between', paddingBottom: '1rem' }}>
         <button className="mobile-tool-btn" onClick={() => onReorder('front')}>
           <span className="tool-icon">↑</span>
           <span className="tool-label">To Front</span>
         </button>
+        <button className="mobile-tool-btn" onClick={() => onReorder('forward')}>
+          <span className="tool-icon">↗</span>
+          <span className="tool-label">Forward</span>
+        </button>
+        <button className="mobile-tool-btn" onClick={() => onReorder('backward')}>
+          <span className="tool-icon">↙</span>
+          <span className="tool-label">Backward</span>
+        </button>
         <button className="mobile-tool-btn" onClick={() => onReorder('back')}>
           <span className="tool-icon">↓</span>
           <span className="tool-label">To Back</span>
-        </button>
-        <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ marginLeft: 'auto', color: '#ef4444' }}>
-          <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fef2f2' }}>🗑️</span>
-          <span className="tool-label">Delete</span>
         </button>
       </div>
     </div>
   )
 
   const renderMobileShapeTools = () => (
-    <div className="mobile-tools-container">
-       <div className="mobile-tools-scroll">
-        <div className="color-picker-wrapper mobile-tool-btn">
-           <input 
-              type="color" 
-              value={selectedElement.fill || selectedElement.stroke} 
-              onChange={(e) => onUpdate(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow' ? { stroke: e.target.value } : { fill: e.target.value })} 
+    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
+       <div style={{ marginBottom: '1.5rem' }}>
+          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Color</div>
+          <div className="color-picker-wrapper" style={{ width: '100%', height: '40px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+             <input 
+                type="color" 
+                value={selectedElement.fill || selectedElement.stroke} 
+                onChange={(e) => onUpdate(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow' ? { stroke: e.target.value } : { fill: e.target.value })} 
+                style={{ width: '100%', height: '100%', padding: 0, border: 'none', cursor: 'pointer' }}
+              />
+          </div>
+       </div>
+
+       {(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') && (
+         <div style={{ marginBottom: '1.5rem' }}>
+            <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Thickness: {selectedElement.strokeWidth}px</div>
+            <input 
+              type="range" 
+              min="1" max="20" 
+              value={selectedElement.strokeWidth} 
+              onChange={(e) => onUpdate({ strokeWidth: Number(e.target.value) })}
+              style={{ width: '100%' }}
             />
-            <span className="tool-icon" style={{backgroundColor: selectedElement.fill || selectedElement.stroke}}></span>
-            <span className="tool-label">Color</span>
-        </div>
+         </div>
+       )}
         
-        <button className="mobile-tool-btn" onClick={() => onReorder('front')}>
-          <span className="tool-icon">↑</span>
-          <span className="tool-label">To Front</span>
+        <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ width: '100%', justifyContent: 'center', color: '#ef4444', background: '#fef2f2', borderColor: '#fee2e2' }}>
+          <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fff' }}>🗑️</span>
+          <span className="tool-label">Delete Element</span>
         </button>
-        <button className="mobile-tool-btn" onClick={() => onReorder('back')}>
-          <span className="tool-icon">↓</span>
-          <span className="tool-label">To Back</span>
+    </div>
+  )
+
+  // Mobile View for Drawing (Stroke) Properties
+  const renderMobileDrawingTools = () => (
+    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
+       <div style={{ marginBottom: '1.5rem' }}>
+          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Color</div>
+          <div className="color-picker-wrapper" style={{ width: '100%', height: '40px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+             <input 
+                type="color" 
+                value={selectedElement.stroke} 
+                onChange={(e) => onUpdate({ stroke: e.target.value })} 
+                style={{ width: '100%', height: '100%', padding: 0, border: 'none', cursor: 'pointer' }}
+              />
+          </div>
+       </div>
+
+       <div style={{ marginBottom: '1.5rem' }}>
+          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Thickness: {selectedElement.strokeWidth}px</div>
+          <input 
+            type="range" 
+            min="1" max="50" 
+            value={selectedElement.strokeWidth} 
+            onChange={(e) => onUpdate({ strokeWidth: Number(e.target.value) })}
+            style={{ width: '100%' }}
+          />
+       </div>
+
+       <div style={{ marginBottom: '1.5rem' }}>
+          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Opacity: {Math.round((selectedElement.opacity || 1) * 100)}%</div>
+          <input 
+            type="range" 
+            min="0.1" max="1" step="0.1"
+            value={selectedElement.opacity || 1} 
+            onChange={(e) => onUpdate({ opacity: Number(e.target.value) })}
+            style={{ width: '100%' }}
+          />
+       </div>
+        
+        <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ width: '100%', justifyContent: 'center', color: '#ef4444', background: '#fef2f2', borderColor: '#fee2e2' }}>
+          <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fff' }}>🗑️</span>
+          <span className="tool-label">Delete Element</span>
         </button>
-        <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ marginLeft: 'auto', color: '#ef4444' }}>
-          <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fef2f2' }}>🗑️</span>
-          <span className="tool-label">Delete</span>
-        </button>
-      </div>
     </div>
   )
 
@@ -264,6 +385,12 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
             onClick={() => setActiveTab('adjust')}
           >
             Adjust
+          </button>
+          <button 
+            className={`mobile-tab-btn ${activeTab === 'layout' ? 'active' : ''}`}
+            onClick={() => setActiveTab('layout')}
+          >
+            Layout
           </button>
           {selectedElement.type === 'image' && (
             <button 
@@ -553,13 +680,13 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
 
       {/* Mobile Content Render */}
       <div className="mobile-toolbar-content">
-        {selectedElement.type === 'image' && renderMobileImageTools()}
-        {selectedElement.type === 'text' && renderMobileTextTools()}
-        {selectedElement.type === 'shape' && renderMobileShapeTools()}
-        {selectedElement.type === 'drawing' && (
-           <div style={{ padding: '1rem', textAlign: 'center', color: '#64748b' }}>
-            Drawing properties are set in the sidebar
-          </div>
+        {activeTab === 'layout' ? renderMobileLayoutTools() : (
+          <>
+            {selectedElement.type === 'image' && renderMobileImageTools()}
+            {selectedElement.type === 'text' && renderMobileTextTools()}
+            {selectedElement.type === 'shape' && renderMobileShapeTools()}
+            {selectedElement.type === 'drawing' && renderMobileDrawingTools()}
+          </>
         )}
       </div>
     </div>

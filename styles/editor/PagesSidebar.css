@@ -167,3 +167,260 @@
 }
 .icon-btn:hover { opacity: 1; }
 .icon-btn.delete { color: #e54848; }
+
+/* ===============================
+   Preview Modal
+================================ */
+.preview-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.preview-modal-content {
+  background: #fff;
+  width: 100%;
+  max-width: 900px;
+  height: 80vh;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+.preview-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+}
+
+.preview-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.preview-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.preview-btn:hover {
+  background: #f5f5f5;
+}
+
+.preview-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.preview-btn.primary {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.preview-btn.primary:hover {
+  background: #333;
+}
+
+.preview-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 24px;
+  background: #f9f9f9;
+}
+
+.preview-grid.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.preview-grid.list-view .preview-card {
+  flex-direction: row;
+  height: 400px; /* Increased from 320px */
+}
+
+.preview-grid.list-view .preview-card-header {
+  width: 160px;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  border-bottom: none;
+  border-right: 1px solid #eee;
+  background: #f9f9f9;
+}
+
+.preview-grid.list-view .preview-card-body {
+  padding: 24px;
+  height: 100%;
+  justify-content: center; /* Center the larger page */
+  background: #eef0f2; /* Slightly darker to make page pop */
+}
+
+.preview-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: grab;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px; /* Increased from 240px */
+}
+
+.preview-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.preview-card.active {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+}
+
+.preview-card-header {
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.page-pos-input {
+  width: 40px;
+  padding: 2px 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.preview-card-body {
+  padding: 16px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .preview-modal-content {
+    height: 90vh;
+    max-height: 90vh;
+  }
+
+  .preview-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .preview-card {
+    min-height: 220px; /* Increased from 180px */
+  }
+
+  /* Tablet List View */
+  .preview-grid.list-view .preview-card {
+    height: 280px; /* Increased from 220px */
+  }
+  
+  .preview-grid.list-view .preview-card-header {
+    width: 120px;
+  }
+}
+
+/* Small Mobile Adjustments */
+@media (max-width: 480px) {
+  .preview-modal-content {
+    height: 100vh;
+    border-radius: 0;
+    max-width: 100%;
+  }
+
+  .preview-header {
+    padding: 12px;
+  }
+
+  .preview-header h3 {
+    font-size: 1rem;
+  }
+
+  .preview-actions .preview-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  /* Grid View: 2 columns tight */
+  .preview-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .preview-card {
+    min-height: 180px; /* Increased from 160px */
+  }
+
+  .preview-card-header {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  /* List View: Stacked for maximum visibility */
+  .preview-grid.list-view {
+    gap: 20px;
+  }
+
+  .preview-grid.list-view .preview-card {
+    flex-direction: column;
+    height: auto;
+    min-height: 340px; /* Increased from 300px */
+  }
+
+  .preview-grid.list-view .preview-card-header {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .preview-grid.list-view .preview-card-body {
+    width: 100%;
+    height: 320px; /* Increased from 280px */
+    padding: 12px;
+  }
+}

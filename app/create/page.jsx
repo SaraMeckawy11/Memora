@@ -129,9 +129,54 @@ export default function CreatePage() {
   const [autoSave, setAutoSave] = useState(true)
   const [isExporting, setIsExporting] = useState(false)
 
-  const isStep1Valid = Boolean(selectedProduct && selectedSize)
+  const isStep1Valid = selectedProduct && selectedSize
 
- /* ================= SAVE ================= */
+  /* ================= History (Undo/Redo) ================= */
+  const [history, setHistory] = useState([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+
+  // Initialize history with first state
+  useEffect(() => {
+    if (pages.length > 0 && history.length === 0) {
+      setHistory([pages])
+      setHistoryIndex(0)
+    }
+  }, [pages, history.length])
+
+  const setPagesWithHistory = (newPagesOrFn) => {
+    let newPages
+    if (typeof newPagesOrFn === 'function') {
+      newPages = newPagesOrFn(pages)
+    } else {
+      newPages = newPagesOrFn
+    }
+
+    if (newPages === pages) return
+
+    const newHistory = history.slice(0, historyIndex + 1)
+    newHistory.push(newPages)
+    setHistory(newHistory)
+    setHistoryIndex(newHistory.length - 1)
+    setPages(newPages)
+  }
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1
+      setPages(history[newIndex])
+      setHistoryIndex(newIndex)
+    }
+  }
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1
+      setPages(history[newIndex])
+      setHistoryIndex(newIndex)
+    }
+  }
+
+  /* ================= SAVE ================= */
 
   const saveProgress = useCallback(() => {
     setIsSaving(true)
@@ -810,7 +855,11 @@ export default function CreatePage() {
         {step === 2 && (
           <StepEditor
             pages={pages}
-            setPages={setPages}
+            setPages={setPagesWithHistory}
+            undo={undo}
+            redo={redo}
+            canUndo={historyIndex > 0}
+            canRedo={historyIndex < history.length - 1}
             currentPageIdx={currentPageIdx}
             setCurrentPageIdx={setCurrentPageIdx}
             uploadedImages={uploadedImages}
