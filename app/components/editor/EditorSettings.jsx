@@ -167,7 +167,7 @@ export default function EditorSettings(props) {
               <input
                 type="number"
                 min="0"
-                max="20"
+                max="100"
                 value={imageBorderRadius}
                 onChange={e => setImageBorderRadius(+e.target.value)}
                 className="control-input"
