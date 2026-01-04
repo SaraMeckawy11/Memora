@@ -28,6 +28,7 @@ export default function CoverEditorPage() {
     opacity: 1
   })
   const [zoomLevel, setZoomLevel] = useState(1)
+  const [isInteractingWithCanvas, setIsInteractingWithCanvas] = useState(false)
   
   // History State
   const [history, setHistory] = useState([[]])
@@ -202,6 +203,35 @@ export default function CoverEditorPage() {
     setIsPanning(false)
   }
 
+  const handleZoom = (delta) => {
+    setZoomLevel(prevZoom => {
+      const newZoom = Math.min(Math.max(prevZoom + delta, 0.2), 3)
+      
+      // Center the zoom
+      if (wrapperRef.current) {
+        const wrapper = wrapperRef.current
+        const scale = newZoom / prevZoom
+        
+        // Calculate center point
+        const centerX = wrapper.scrollLeft + wrapper.clientWidth / 2
+        const centerY = wrapper.scrollTop + wrapper.clientHeight / 2
+        
+        // New center point
+        const newCenterX = centerX * scale
+        const newCenterY = centerY * scale
+        
+        // Scroll to new center
+        // Use setTimeout to allow render to update scrollHeight/Width first
+        setTimeout(() => {
+          wrapper.scrollLeft = newCenterX - wrapper.clientWidth / 2
+          wrapper.scrollTop = newCenterY - wrapper.clientHeight / 2
+        }, 0)
+      }
+      
+      return newZoom
+    })
+  }
+
   const selectedElement = elements.find(el => el.id === selectedId)
 
   return (
@@ -210,11 +240,16 @@ export default function CoverEditorPage() {
       <EditorSidebar 
         onAddElement={handleAddElement} 
         isDrawMode={isDrawMode}
-        onToggleDrawMode={() => setIsDrawMode(!isDrawMode)}
+        onToggleDrawMode={(force) => {
+          if (typeof force === 'boolean') setIsDrawMode(force)
+          else setIsDrawMode(!isDrawMode)
+        }}
         canvasSettings={canvasSettings}
         onUpdateCanvas={setCanvasSettings}
         drawingTool={drawingTool}
         onUpdateDrawingTool={setDrawingTool}
+        selectedElement={selectedElement}
+        isInteractingWithCanvas={isInteractingWithCanvas}
       />
       
       <div className="editor-main">
@@ -259,6 +294,9 @@ export default function CoverEditorPage() {
             canvasSettings={canvasSettings}
             drawingTool={drawingTool}
             zoomLevel={zoomLevel}
+            onZoomChange={setZoomLevel}
+            onDrawingStart={() => setIsInteractingWithCanvas(true)}
+            onDrawingEnd={() => setIsInteractingWithCanvas(false)}
           />
         </div>
 
@@ -276,29 +314,32 @@ export default function CoverEditorPage() {
           boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
         }}>
           <button 
-            onClick={() => setZoomLevel(z => Math.min(z + 0.1, 2))}
-            style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid #e2e8f0', background: 'white', fontSize: '18px', cursor: 'pointer' }}
+            onClick={() => handleZoom(0.1)}
+            style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid #e2e8f0', background: 'white', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             +
           </button>
-          <div style={{ textAlign: 'center', fontSize: '12px', color: '#64748b' }}>
+          <div style={{ display: 'flex', alignItems: 'center', fontSize: '12px', color: '#64748b', minWidth: '40px', justifyContent: 'center' }}>
             {Math.round(zoomLevel * 100)}%
           </div>
           <button 
-            onClick={() => setZoomLevel(z => Math.max(z - 0.1, 0.2))}
-            style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid #e2e8f0', background: 'white', fontSize: '18px', cursor: 'pointer' }}
+            onClick={() => handleZoom(-0.1)}
+            style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid #e2e8f0', background: 'white', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             -
           </button>
         </div>
       </div>
 
-      <EditorToolbar 
-        selectedElement={selectedElement} 
-        onUpdate={(updates, action) => handleUpdateElement(selectedId, updates, action)} 
-        onReorder={handleReorderElement}
-        onClose={() => setSelectedId(null)}
-      />
+      {/* Only show toolbar if NOT in draw mode AND an element is selected */}
+      {!isDrawMode && selectedElement && (
+        <EditorToolbar 
+          selectedElement={selectedElement} 
+          onUpdate={(updates, action) => handleUpdateElement(selectedId, updates, action)} 
+          onReorder={handleReorderElement}
+          onClose={() => setSelectedId(null)}
+        />
+      )}
     </div>
   )
 }
