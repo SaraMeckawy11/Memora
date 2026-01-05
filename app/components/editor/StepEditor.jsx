@@ -469,6 +469,10 @@ export default function StepEditor({
             currentLayoutObj={currentLayoutObj}
             imageCount={currentPage?.images?.length || 0}
             maxSlots={maxSlots}
+            undo={undo}
+            redo={redo}
+            canUndo={canUndo}
+            canRedo={canRedo}
           />
 
           <EditorCanvas
