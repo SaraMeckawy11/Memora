@@ -8,6 +8,7 @@ import jsPDF from 'jspdf'
 import StepSetup from '@/app/components/StepSetup'
 import StepEditor from '@/app/components/editor/StepEditor'
 import StepReview from '@/app/components/StepReview'
+import { saveProject, loadProject, clearProject } from '@/app/utils/storage'
 
 import '@/styles/CreatePage.css'
 
@@ -178,149 +179,150 @@ export default function CreatePage() {
 
   /* ================= SAVE ================= */
 
-  const saveProgress = useCallback(() => {
+  const saveProgress = useCallback(async () => {
     setIsSaving(true)
 
-    const draft = {
-  step,
+    try {
+      // Convert blob URLs to Blobs for storage
+      const imagesToSave = await Promise.all(uploadedImages.map(async (img) => {
+        if (img.src && img.src.startsWith('blob:')) {
+          try {
+            const response = await fetch(img.src)
+            const blob = await response.blob()
+            // Store blob, clear src (it will be regenerated on load)
+            return { ...img, src: null, blob }
+          } catch (e) {
+            console.error('Failed to fetch blob for saving', e)
+            return img
+          }
+        }
+        return img
+      }))
 
-  // ✅ SAVE STRUCTURE ONLY
-  pages: pages.map(p => ({
-    layout: p.layout,
-    images: p.images,              // ids only
-    caption: p.caption || '',
-    captionStyle: p.captionStyle || {},
-    layoutSplitX: p.layoutSplitX ?? 50,
-    layoutSplitY: p.layoutSplitY ?? 50,
-  })),
+      const draft = {
+        step,
+        pages: pages.map(p => ({
+          ...p,
+          // Ensure we save all properties needed
+        })),
+        uploadedImages: imagesToSave,
+        selectedProduct,
+        selectedSize,
+        coverImage,
+        coverText,
+        coverTheme,
+        settings: {
+          pageMargin,
+          pageGutter,
+          pageBgColor,
+          imageFitMode,
+          imageBorderRadius,
+          showPageNumbers,
+          selectedLayout,
+          captionDefaults: {
+            fontFamily: selectedFontFamily,
+            fontSize: selectedFontSize,
+            color: selectedFontColor,
+            position: captionPosition,
+            alignment: captionAlignment,
+          },
+          autoSave,
+          layoutSplitX,
+          layoutSplitY,
+        },
+        lastSaved: new Date().toISOString(),
+      }
 
-  selectedProduct,
-  selectedSize,
-  // Never persist base64/blob URLs; keep only a tiny reference.
-  coverImage: coverImage ? { id: coverImage.id, name: coverImage.name } : null,
-  coverText,
-  coverTheme,
-
-  settings: {
-    pageMargin,
-    pageGutter,
-    pageBgColor,
-    imageFitMode,
-    imageBorderRadius,
-    showPageNumbers,
-    selectedLayout,
-
-    captionDefaults: {
-      fontFamily: selectedFontFamily,
-      fontSize: selectedFontSize,
-      color: selectedFontColor,
-      position: captionPosition,
-      alignment: captionAlignment,
-    },
-
-    autoSave,
-  },
-
-  lastSaved: new Date().toISOString(),
-}
-
-
-   let serialized
-
-  try {
-    serialized = JSON.stringify(draft)
-  } catch (e) {
-    console.error('Draft too large to serialize', e)
-    return
-  }
-
-  if (serialized.length > 4_500_000) {
-    console.warn('Draft too large for localStorage')
-    return
-  }
-
-  localStorage.setItem('photobook_draft', serialized)
-
+      await saveProject(draft)
       setLastSaved(draft.lastSaved)
-
-    setTimeout(() => setIsSaving(false), 400)
+    } catch (e) {
+      console.error('Failed to save project', e)
+    } finally {
+      setTimeout(() => setIsSaving(false), 400)
+    }
   }, [
     step,
     pages,
+    uploadedImages,
     selectedProduct,
     selectedSize,
     coverImage,
     coverText,
     coverTheme,
-
     pageMargin,
     pageGutter,
     pageBgColor,
     imageFitMode,
     imageBorderRadius,
     showPageNumbers,
-
     layoutSplitX,
     layoutSplitY,
-
     selectedLayout,
-
     selectedFontFamily,
     selectedFontSize,
     selectedFontColor,
     captionPosition,
     captionAlignment,
-
     autoSave,
   ])
 
   /* ================= LOAD ================= */
 
   useEffect(() => {
-    const saved = localStorage.getItem('photobook_draft')
-    if (!saved) return
+    const load = async () => {
+      try {
+        const d = await loadProject()
+        if (!d) return
 
-    try {
-      const d = JSON.parse(saved)
+        // Restore Blobs to Blob URLs
+        const restoredImages = (d.uploadedImages || []).map(img => {
+          if (img.blob instanceof Blob) {
+            return { ...img, src: URL.createObjectURL(img.blob) }
+          }
+          return img
+        })
 
-      setStep(d.step || 1)
-      setPages(Array.isArray(d.pages) ? d.pages : [])
-      // setUploadedImages(Array.isArray(d.uploadedImages) ? d.uploadedImages : [])
-      setSelectedProduct(d.selectedProduct ?? null)
-      setSelectedSize(d.selectedSize ?? null)
-      setCoverImage(d.coverImage ?? null)
-      setCoverText(d.coverText ?? '')
-      setCoverTheme(d.coverTheme ?? 'classic')
-      setLastSaved(d.lastSaved ?? null)
+        setStep(d.step || 1)
+        setPages(Array.isArray(d.pages) ? d.pages : [])
+        setUploadedImages(restoredImages)
+        
+        setSelectedProduct(d.selectedProduct ?? null)
+        setSelectedSize(d.selectedSize ?? null)
+        setCoverImage(d.coverImage ?? null)
+        setCoverText(d.coverText ?? '')
+        setCoverTheme(d.coverTheme ?? 'classic')
+        setLastSaved(d.lastSaved ?? null)
 
-      /* ✅ RESTORE SETTINGS */
-      const s = d.settings || {}
+        /* ✅ RESTORE SETTINGS */
+        const s = d.settings || {}
 
-      setPageMargin(s.pageMargin ?? 8)
-      setPageGutter(s.pageGutter ?? 8)
-      setPageBgColor(s.pageBgColor ?? '#ffffff')
-      setImageFitMode(s.imageFitMode ?? 'cover')
-      setImageBorderRadius(s.imageBorderRadius ?? 0)
-      setShowPageNumbers(false)
+        setPageMargin(s.pageMargin ?? 8)
+        setPageGutter(s.pageGutter ?? 8)
+        setPageBgColor(s.pageBgColor ?? '#ffffff')
+        setImageFitMode(s.imageFitMode ?? 'cover')
+        setImageBorderRadius(s.imageBorderRadius ?? 0)
+        setShowPageNumbers(s.showPageNumbers ?? false)
 
-      setLayoutSplitX(s.layoutSplitX ?? 50)
-      setLayoutSplitY(s.layoutSplitY ?? 50)
+        setLayoutSplitX(s.layoutSplitX ?? 50)
+        setLayoutSplitY(s.layoutSplitY ?? 50)
 
-      setSelectedLayout(s.selectedLayout ?? 'single')
+        setSelectedLayout(s.selectedLayout ?? 'single')
 
-      if (s.captionDefaults) {
-        setSelectedFontFamily(s.captionDefaults.fontFamily ?? 'Inter')
-        setSelectedFontSize(s.captionDefaults.fontSize ?? 16)
-        setSelectedFontColor(s.captionDefaults.color ?? '#000000')
-        setCaptionPosition(s.captionDefaults.position ?? 'bottom')
-        setCaptionAlignment(s.captionDefaults.alignment ?? 'center')
+        if (s.captionDefaults) {
+          setSelectedFontFamily(s.captionDefaults.fontFamily ?? 'Inter')
+          setSelectedFontSize(s.captionDefaults.fontSize ?? 16)
+          setSelectedFontColor(s.captionDefaults.color ?? '#000000')
+          setCaptionPosition(s.captionDefaults.position ?? 'bottom')
+          setCaptionAlignment(s.captionDefaults.alignment ?? 'center')
+        }
+
+        setAutoSave(s.autoSave ?? true)
+
+      } catch (err) {
+        console.error('Failed to load draft', err)
       }
-
-      setAutoSave(s.autoSave ?? true)
-
-    } catch (err) {
-      console.error('Failed to load draft', err)
     }
+    load()
   }, [])
 
   /* ================= AUTOSAVE ================= */
@@ -355,10 +357,10 @@ export default function CreatePage() {
 
   /* ================= CLEAR SAVED PROGRESS ================= */
 
-  const clearProgress = () => {
+  const clearProgress = async () => {
     if (!confirm('Clear all saved progress?')) return
 
-    localStorage.removeItem('photobook_draft')
+    await clearProject()
 
     setPages([])
     setUploadedImages([])
