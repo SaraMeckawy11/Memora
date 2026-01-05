@@ -593,114 +593,115 @@ export default function CreatePage() {
             const imgRatio = imgW / imgH
             const slotRatio = slotW / slotH
 
-            // Get fit mode and crop data
+            // Calculate fit/crop dimensions
             const crop = imgData.crop
             const fitMode = imgData.fit || imageFitMode || 'cover'
 
-            let drawX, drawY, drawW, drawH
+            // --- OPTIMIZED IMAGE RENDERING (Prevents OOM) ---
+            // Always pipe through canvas to:
+            // 1. Resize/Crop correctly
+            // 2. Convert to JPEG (memory efficient)
+            // 3. Control DPI
+            
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d', { alpha: false }) // No alpha channel needed for JPEG
+
+            // Determine Target DPI Scale
+            let dpiScale = 2 // default (approx 192 DPI)
+            if (effectiveQuality === 'screen') dpiScale = 1 // 96 DPI
+            else if (effectiveQuality === 'print') dpiScale = 3.125 // 300 DPI
+            else if (effectiveQuality === 'original') {
+              const sourceDpiScale = Math.min(imgW / (slotW * 96), imgH / (slotH * 96))
+              // Cap at 3.5 (~336 DPI) to be safer on memory for large books
+              dpiScale = Math.max(3.125, Math.min(sourceDpiScale, 3.5)) 
+            }
+
+            let finalX, finalY, finalW, finalH // Position on PDF
+            let cvsW, cvsH // Canvas pixel size
+            let sx, sy, sw, sh // Source crop
 
             if (crop) {
-              // Custom crop from editor
-              drawW = slotW / (crop.w / 100)
-              drawH = slotH / (crop.h / 100)
-              drawX = slotX - (drawW * (crop.x / 100))
-              drawY = slotY - (drawH * (crop.y / 100))
-            } else if (fitMode === 'contain') {
-              // Contain: fit entire image, may have empty space
+              // Custom Editor Crop -> Fills the slot
+              finalX = slotX; finalY = slotY; finalW = slotW; finalH = slotH
+              
+              cvsW = slotW * 96 * dpiScale
+              cvsH = slotH * 96 * dpiScale
+              
+              sx = (crop.x / 100) * imgW
+              sy = (crop.y / 100) * imgH
+              sw = (crop.w / 100) * imgW
+              sh = (crop.h / 100) * imgH
+            } 
+            else if (fitMode === 'contain') {
+              // Contain -> Fit inside slot, maintain aspect ratio
               if (imgRatio > slotRatio) {
-                drawW = slotW
-                drawH = slotW / imgRatio
+                finalW = slotW
+                finalH = slotW / imgRatio
               } else {
-                drawH = slotH
-                drawW = slotH * imgRatio
+                finalH = slotH
+                finalW = slotH * imgRatio
               }
-              drawX = slotX + (slotW - drawW) / 2
-              drawY = slotY + (slotH - drawH) / 2
-            } else {
-              // Cover: fill slot, crop overflow
+              finalX = slotX + (slotW - finalW) / 2
+              finalY = slotY + (slotH - finalH) / 2
+
+              cvsW = finalW * 96 * dpiScale
+              cvsH = finalH * 96 * dpiScale
+
+              sx = 0; sy = 0; sw = imgW; sh = imgH
+            } 
+            else {
+              // Cover (Default) -> Fill slot, crop excess
+              finalX = slotX; finalY = slotY; finalW = slotW; finalH = slotH
+
+              cvsW = slotW * 96 * dpiScale
+              cvsH = slotH * 96 * dpiScale
+
               if (imgRatio > slotRatio) {
-                drawH = slotH
-                drawW = slotH * imgRatio
+                // Image wider -> crop sides
+                sh = imgH
+                sw = imgH * slotRatio
+                sx = (imgW - sw) / 2
+                sy = 0
               } else {
-                drawW = slotW
-                drawH = slotW / imgRatio
+                // Image taller -> crop top/bottom
+                sw = imgW
+                sh = imgW / slotRatio
+                sx = 0
+                sy = (imgH - sh) / 2
               }
-              drawX = slotX + (slotW - drawW) / 2
-              drawY = slotY + (slotH - drawH) / 2
             }
 
-            // For cover/crop mode, we need to crop the image to fit the slot
-            // Since jsPDF clipping is unreliable, we'll use canvas to pre-crop the image
-            if (crop || fitMode === 'cover') {
-              // Create a canvas to crop the image
-              const canvas = document.createElement('canvas')
-              const ctx = canvas.getContext('2d')
-              
-              // Determine scale based on quality setting
-              // Cap at 400 DPI equivalent to prevent browser crashes on huge images
-              // 1200 DPI (12.5x) causes OOM on large books. 400 DPI (~4.17x) is practically indistinguishable for print.
-              let dpiScale = 2 // default (approx 192 DPI)
-              if (effectiveQuality === 'screen') dpiScale = 1 // 96 DPI
-              else if (effectiveQuality === 'print') dpiScale = 3.125 // 300 DPI
-              else if (effectiveQuality === 'original') {
-                const sourceDpiScale = Math.min(imgW / (slotW * 96), imgH / (slotH * 96))
-                dpiScale = Math.max(3.125, Math.min(sourceDpiScale, 4.2)) 
-              }
+            // Set canvas size
+            canvas.width = Math.floor(cvsW)
+            canvas.height = Math.floor(cvsH)
 
-              canvas.width = slotW * 96 * dpiScale
-              canvas.height = slotH * 96 * dpiScale
-              
-              // Enable high quality image scaling
-              ctx.imageSmoothingEnabled = true;
-              ctx.imageSmoothingQuality = 'high';
-              
-              // Calculate source rectangle (what part of image to draw)
-              let sx, sy, sw, sh
-              
-              if (crop) {
-                // Custom crop from editor
-                sx = (crop.x / 100) * imgW
-                sy = (crop.y / 100) * imgH
-                sw = (crop.w / 100) * imgW
-                sh = (crop.h / 100) * imgH
-              } else {
-                // Default fit strategy
-                if (imgRatio > slotRatio) {
-                  // Image is wider - crop sides
-                  sh = imgH
-                  sw = imgH * slotRatio
-                  sx = (imgW - sw) / 2
-                  sy = 0
-                } else {
-                  // Image is taller - crop top/bottom
-                  sw = imgW
-                  sh = imgW / slotRatio
-                  sx = 0
-                  sy = (imgH - sh) / 2
-                }
-              }
-              
-              // Draw cropped portion to canvas
+            // Fill white background (handles transparency in PNGs converting to JPEG)
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+            // High Quality Scaling
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
+
+            try {
               ctx.drawImage(imgElement, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
               
-              // Get cropped image as data URL
-              // Optimize Memory: Use JPEG 1.0 instead of PNG even for 'original'. 
-              // PNG creates massive base64 strings that crash browser memory (OOM).
-              // JPEG at 1.0 is virtually lossless and 10x smaller in memory.
+              // Compress to JPEG
               const format = 'image/jpeg' 
-              const quality = effectiveQuality === 'screen' ? 0.8 : 1.0
+              // 0.95 is visually indistinguishable from 1.0 but significantly smaller file size
+              const q = effectiveQuality === 'screen' ? 0.8 : 0.95
               
-              const croppedDataUrl = canvas.toDataURL(format, quality)
-              
-              pdf.addImage(croppedDataUrl, 'JPEG', slotX, slotY, slotW, slotH)
-
-              // Force GC hints
-              canvas.width = 1;
-              canvas.height = 1;
-            } else {
-              // Contain mode - just draw centered, no cropping needed
-              pdf.addImage(imgData.src, 'JPEG', drawX, drawY, drawW, drawH)
+              const imgDataUrl = canvas.toDataURL(format, q)
+              pdf.addImage(imgDataUrl, 'JPEG', finalX, finalY, finalW, finalH)
+            } catch (err) {
+              console.warn('Image processing failed', err)
+              // Fallback?
             }
+
+            // Explicit cleanup
+            canvas.width = 1
+            canvas.height = 1
+
           }
         }
 
@@ -714,11 +715,40 @@ export default function CreatePage() {
       setExportProgress(100)
       await new Promise(resolve => setTimeout(resolve, 100))
 
-      pdf.save('photobook.pdf')
-      eventBus?.emit('pdf-exported', { pageCount: pages.length })
+      // pdf.save() can crash on large files in some browsers due to string limits.
+      // We use the Blob API directly for better stability.
+      try {
+        const blob = pdf.output('blob')
+        const filename = 'photobook.pdf'
+        
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          // IE11 compatibility
+          window.navigator.msSaveOrOpenBlob(blob, filename)
+        } else {
+          // Modern browsers
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = filename
+          document.body.appendChild(link)
+          link.click()
+          
+          // Cleanup
+          setTimeout(() => {
+            document.body.removeChild(link)
+            URL.revokeObjectURL(url)
+          }, 2000)
+        }
+
+        eventBus?.emit('pdf-exported', { pageCount: pages.length })
+      } catch (saveErr) {
+        console.error('PDF Save Failed:', saveErr)
+        alert('Created PDF but failed to save file. The file might be too large for your browser.')
+      }
+
     } catch (e) {
       console.error('PDF Export Error:', e)
-      alert('Failed to export PDF')
+      alert('Failed to export PDF: ' + (e.message || 'Unknown error'))
     }
 
     setIsExporting(false)
