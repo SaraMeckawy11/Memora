@@ -266,7 +266,24 @@ export default function PagesSidebar({
     setSwapSelection([]) // Clear selection after swap
   }
 
-  const renderCardContent = (page, idx) => (
+  const getSlotCount = (layoutId) => {
+    switch (layoutId) {
+      case 'single': return 1
+      case '2-horizontal': return 2
+      case '2-vertical': return 2
+      case '1-top-2-bottom': return 3
+      case '2-top-1-bottom': return 3
+      case '4-grid': return 4
+      case '6-grid': return 6
+      default: return 1
+    }
+  }
+
+  const renderCardContent = (page, idx) => {
+    const slotCount = getSlotCount(page.layout)
+    const images = page.images || []
+
+    return (
     <>
       <div className="preview-card-header">
         <span>Page {idx + 1}</span>
@@ -311,11 +328,11 @@ export default function PagesSidebar({
             backgroundColor: '#fff'
           }}
         >
-        {page.images && page.images.some(id => id) ? (
-          <div className="mini-page-content" style={getMiniLayoutStyles(page.layout, page.images.length)}>
-            {page.images.map((imgId, imgIdx) => {
+          <div className="mini-page-content" style={getMiniLayoutStyles(page.layout, slotCount)}>
+            {Array.from({ length: slotCount }).map((_, imgIdx) => {
+              const imgId = images[imgIdx] || null
               const src = getImageSrc(imgId)
-              const layoutStyles = getMiniLayoutStyles(page.layout, page.images.length)
+              const layoutStyles = getMiniLayoutStyles(page.layout, slotCount)
               
               let itemStyle = {
                 position: 'relative',
@@ -325,7 +342,8 @@ export default function PagesSidebar({
                 backgroundColor: '#f0f0f0',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                border: '1px solid #e0e0e0'
               }
 
               // Apply custom spans
@@ -373,23 +391,10 @@ export default function PagesSidebar({
               )
             })}
           </div>
-        ) : (
-          <div className="mini-layout" style={{ 
-            height: '100%', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            flexDirection: 'column',
-            gap: '4px'
-          }}>
-            <span>Empty</span>
-            <span style={{fontSize: '0.7em'}}>{getLayoutName(page.layout)}</span>
-          </div>
-        )}
         </div>
       </div>
     </>
-  )
+  )}
 
   return (
     <>
