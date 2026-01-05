@@ -131,6 +131,7 @@ export default function CreatePage() {
   const [isExporting, setIsExporting] = useState(false)
   const [exportProgress, setExportProgress] = useState(0)
   const [pdfQuality, setPdfQuality] = useState('print') // 'screen' | 'print' | 'original'
+  const [showPdfMenu, setShowPdfMenu] = useState(false)
 
   const isStep1Valid = selectedProduct && selectedSize
 
@@ -536,7 +537,8 @@ export default function CreatePage() {
     }
   }
 
-  const exportToPDF = useCallback(async () => {
+  const exportToPDF = useCallback(async (qualityOverride) => {
+    const effectiveQuality = typeof qualityOverride === 'string' ? qualityOverride : pdfQuality
     setIsExporting(true)
     setExportProgress(0)
 
@@ -635,15 +637,14 @@ export default function CreatePage() {
               const ctx = canvas.getContext('2d')
               
               // Determine scale based on quality setting
+              // Cap at 400 DPI equivalent to prevent browser crashes on huge images
+              // 1200 DPI (12.5x) causes OOM on large books. 400 DPI (~4.17x) is practically indistinguishable for print.
               let dpiScale = 2 // default (approx 192 DPI)
-              if (pdfQuality === 'screen') dpiScale = 1 // 96 DPI
-              else if (pdfQuality === 'print') dpiScale = 3.125 // 300 DPI
-              else if (pdfQuality === 'original') {
-                // Calculate scale to match source image resolution
-                // source pixels / target pixels (at 96 DPI)
+              if (effectiveQuality === 'screen') dpiScale = 1 // 96 DPI
+              else if (effectiveQuality === 'print') dpiScale = 3.125 // 300 DPI
+              else if (effectiveQuality === 'original') {
                 const sourceDpiScale = Math.min(imgW / (slotW * 96), imgH / (slotH * 96))
-                // Cap at 1200 DPI equivalent to prevent browser crashes on huge images
-                dpiScale = Math.max(3.125, Math.min(sourceDpiScale, 12.5)) 
+                dpiScale = Math.max(3.125, Math.min(sourceDpiScale, 4.2)) 
               }
 
               canvas.width = slotW * 96 * dpiScale
@@ -657,13 +658,13 @@ export default function CreatePage() {
               let sx, sy, sw, sh
               
               if (crop) {
-                // ...existing code...
+                // Custom crop from editor
                 sx = (crop.x / 100) * imgW
                 sy = (crop.y / 100) * imgH
                 sw = (crop.w / 100) * imgW
                 sh = (crop.h / 100) * imgH
               } else {
-                // ...existing code...
+                // Default fit strategy
                 if (imgRatio > slotRatio) {
                   // Image is wider - crop sides
                   sh = imgH
@@ -683,16 +684,19 @@ export default function CreatePage() {
               ctx.drawImage(imgElement, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
               
               // Get cropped image as data URL
-              // Use PNG for 'original' to avoid ALL compression artifacts. JPEG 1.0 is still lossy.
-              const format = pdfQuality === 'original' ? 'image/png' : 'image/jpeg'
-              const quality = pdfQuality === 'screen' ? 0.8 : 1.0
+              // Optimize Memory: Use JPEG 1.0 instead of PNG even for 'original'. 
+              // PNG creates massive base64 strings that crash browser memory (OOM).
+              // JPEG at 1.0 is virtually lossless and 10x smaller in memory.
+              const format = 'image/jpeg' 
+              const quality = effectiveQuality === 'screen' ? 0.8 : 1.0
               
               const croppedDataUrl = canvas.toDataURL(format, quality)
               
-              // Add the pre-cropped image to PDF (fits exactly in slot)
-              // PNG support in jsPDF is native and lossless
-              const pdfFormat = pdfQuality === 'original' ? 'PNG' : 'JPEG'
-              pdf.addImage(croppedDataUrl, pdfFormat, slotX, slotY, slotW, slotH)
+              pdf.addImage(croppedDataUrl, 'JPEG', slotX, slotY, slotW, slotH)
+
+              // Force GC hints
+              canvas.width = 1;
+              canvas.height = 1;
             } else {
               // Contain mode - just draw centered, no cropping needed
               pdf.addImage(imgData.src, 'JPEG', drawX, drawY, drawW, drawH)
@@ -786,38 +790,70 @@ export default function CreatePage() {
                 Save
               </button>
 
-              <div className="pdf-export-group">
-                <select
-                  value={pdfQuality}
-                  onChange={(e) => setPdfQuality(e.target.value)}
-                  className="pdf-quality-select"
-                  disabled={isExporting}
-                >
-                  <option value="screen">Screen (72 DPI)</option>
-                  <option value="print">Print (300 DPI)</option>
-                  <option value="original">High Res</option>
-                </select>
-                <div className="pdf-group-divider"></div>
+              <div className="pdf-export-container">
                 <button
                   type="button"
-                  onClick={exportToPDF}
+                  onClick={() => setShowPdfMenu(!showPdfMenu)}
+                  className="btn-pdf-trigger"
                   disabled={isExporting}
-                  className="pdf-export-btn"
                 >
                   {isExporting ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-                      <span style={{ fontSize: '0.75rem', marginBottom: '2px' }}>{exportProgress}%</span>
-                      <div style={{ width: '60px', height: '4px', background: '#ddd', borderRadius: '2px', overflow: 'hidden' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '60px' }}>
+                      <span style={{ fontSize: '0.7rem', marginBottom: '2px', color: '#fff' }}>{exportProgress}%</span>
+                       <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.3)', borderRadius: '2px', overflow: 'hidden' }}>
                         <div style={{ 
                           width: `${exportProgress}%`, 
                           height: '100%', 
-                          background: '#0ea5e9', 
+                          background: '#fff', 
                           transition: 'width 0.2s ease' 
                         }} />
                       </div>
                     </div>
-                  ) : 'PDF'}
+                  ) : (
+                    <>
+                      <span>PDF</span>
+                      <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>▼</span>
+                    </>
+                  )}
                 </button>
+
+                {showPdfMenu && !isExporting && (
+                  <div className="pdf-dropdown-menu">
+                    <button
+                      type="button"
+                      className="pdf-dropdown-item"
+                      onClick={() => {
+                        setPdfQuality('screen')
+                        setShowPdfMenu(false)
+                        exportToPDF('screen')
+                      }}
+                    >
+                      low (72 DPI)
+                    </button>
+                    <button
+                      type="button"
+                      className="pdf-dropdown-item"
+                      onClick={() => {
+                        setPdfQuality('print')
+                        setShowPdfMenu(false)
+                        exportToPDF('print')
+                      }}
+                    >
+                      medium (300 DPI)
+                    </button>
+                    <button
+                      type="button"
+                      className="pdf-dropdown-item"
+                      onClick={() => {
+                        setPdfQuality('original')
+                        setShowPdfMenu(false)
+                        exportToPDF('original')
+                      }}
+                    >
+                      High Resolution
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
