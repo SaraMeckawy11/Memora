@@ -4,7 +4,7 @@ import '@/styles/editor/image-editor.css'
 
 export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- GUARD ---------- */
-  if (!image?.src || !slot ) {
+  if (!image?.src || !slot) {
     return null
   }
 
@@ -15,18 +15,40 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- STATE ---------- */
   const [fit, setFit] = useState(image.fit || 'cover')
   const [isCropping, setIsCropping] = useState(false)
-  const [naturalSize, setNaturalSize] = useState({ width: slot.width, height: slot.height })
+  const [naturalSize, setNaturalSize] = useState({
+    width: slot.width,
+    height: slot.height,
+  })
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   // Use slot size for initial rendered/cropRect, will be updated after image load
   const [rendered, setRendered] = useState({
     width: slot.width,
     height: slot.height,
   })
-  const [cropRect, setCropRect] = useState({ x: 0, y: 0, w: slot.width, h: slot.height })
+  const [cropRect, setCropRect] = useState({
+    x: 0,
+    y: 0,
+    w: slot.width,
+    h: slot.height,
+  })
   const [dragging, setDragging] = useState(false)
   const [resizing, setResizing] = useState(false)
   const [resizeHandle, setResizeHandle] = useState(null)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+
+  // Track original src so we can revert after a destructive crop (dataURL)
+  const originalSrcRef = useRef(image.originalSrc || image.src)
+
+  useEffect(() => {
+    // If a new image is opened, reset original reference
+    originalSrcRef.current = image.originalSrc || image.src
+    setFit(image.fit || 'cover')
+    setOffset({ x: 0, y: 0 })
+    setIsCropping(false)
+  }, [image.id, image.src, image.originalSrc, image.fit])
+
+  const hasRevertableCrop =
+    Boolean(image.originalSrc) || (Boolean(originalSrcRef.current) && originalSrcRef.current !== image.src)
 
   /* ---------- PREVIEW SCALE ---------- */
   // When cropping, scale image to fit MAX_PREVIEW_SIZE (not slot)
@@ -38,11 +60,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         1
       )
     }
-    return Math.min(
-      MAX_PREVIEW_SIZE / slot.width,
-      MAX_PREVIEW_SIZE / slot.height,
-      1
-    )
+    return Math.min(MAX_PREVIEW_SIZE / slot.width, MAX_PREVIEW_SIZE / slot.height, 1)
   }, [slot.width, slot.height, isCropping, naturalSize.width, naturalSize.height])
 
   const previewSlot = useMemo(
@@ -140,11 +158,18 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         { name: 'e', x: cropRect.x + cropRect.w, y: cropRect.y + cropRect.h / 2, cursor: 'e-resize' },
       ]
 
-      const handle = handles.find(h => Math.abs(x - h.x) < 10 && Math.abs(y - h.y) < 10)
+      const handle = handles.find(
+        (h) => Math.abs(x - h.x) < 10 && Math.abs(y - h.y) < 10
+      )
       if (handle) {
         setResizing(true)
         setResizeHandle(handle.name)
-      } else if (x >= cropRect.x && x <= cropRect.x + cropRect.w && y >= cropRect.y && y <= cropRect.y + cropRect.h) {
+      } else if (
+        x >= cropRect.x &&
+        x <= cropRect.x + cropRect.w &&
+        y >= cropRect.y &&
+        y <= cropRect.y + cropRect.h
+      ) {
         setDragging(true)
       }
       e.target.setPointerCapture?.(e.pointerId)
@@ -160,16 +185,18 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       if (dragging) {
         const dx = e.clientX - dragStart.x
         const dy = e.clientY - dragStart.y
-        setCropRect(prev => clampCropRect({
-          ...prev,
-          x: prev.x + dx,
-          y: prev.y + dy
-        }))
+        setCropRect((prev) =>
+          clampCropRect({
+            ...prev,
+            x: prev.x + dx,
+            y: prev.y + dy,
+          })
+        )
         setDragStart({ x: e.clientX, y: e.clientY })
       } else if (resizing) {
         const dx = e.clientX - dragStart.x
         const dy = e.clientY - dragStart.y
-        setCropRect(prev => {
+        setCropRect((prev) => {
           let newRect = { ...prev }
           switch (resizeHandle) {
             case 'nw':
@@ -214,7 +241,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     } else if (fit === 'cover' && dragging) {
       const dx = e.clientX - dragStart.x
       const dy = e.clientY - dragStart.y
-      setOffset(prev => ({
+      setOffset((prev) => ({
         x: clamp(prev.x + dx, 'x'),
         y: clamp(prev.y + dy, 'y'),
       }))
@@ -246,8 +273,10 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       canvas.height = cropH
       ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH)
       const croppedSrc = canvas.toDataURL()
+
       onSave({
         ...image,
+        originalSrc: image.originalSrc || originalSrcRef.current || image.src,
         src: croppedSrc,
         fit: 'cover', // Default to cover after cropping
         crop: undefined,
@@ -255,6 +284,20 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       setIsCropping(false)
     }
     img.src = image.src
+  }
+
+  const revertToOriginal = () => {
+    const originalSrc = image.originalSrc || originalSrcRef.current
+    if (!originalSrc) return
+    onSave({
+      ...image,
+      src: originalSrc,
+      originalSrc: undefined,
+      fit: image.fit || fit || 'cover',
+      crop: undefined,
+    })
+    setIsCropping(false)
+    setOffset({ x: 0, y: 0 })
   }
 
   /* ---------- APPLY ---------- */
@@ -284,92 +327,26 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   }
 
   /* ---------- RENDER ---------- */
- return (
-  <div className="editor-modal-backdrop">
-    <div className="editor-modal">
-      {/* HEADER */}
-      <div className="editor-header">
-        <h3>Edit Image</h3>
-        <button className="close-btn" onClick={onClose}>
-          ✕
-        </button>
-      </div>
+  return (
+    <div className="editor-modal-backdrop">
+      <div className="editor-modal">
+        {/* HEADER */}
+        <div className="editor-header">
+          <h3>Edit Image</h3>
+          <button className="close-btn" onClick={onClose}>
+            ✕
+          </button>
+        </div>
 
-      {/* STAGE */}
-      <div
-        className="crop-stage"
-        style={{ minHeight: MAX_PREVIEW_SIZE }}
-      >
-        {isCropping ? (
-          <div
-            ref={containerRef}
-            className="crop-cropper-container"
-            style={{
-              width: rendered.width,
-              height: rendered.height,
-            }}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerLeave={onPointerUp}
-          >
-            <img
-              src={image.src}
-              draggable={false}
-              className="crop-cropper-image"
-            />
+        {/* STAGE */}
+        <div className="crop-stage" style={{ minHeight: MAX_PREVIEW_SIZE }}>
+          {isCropping ? (
             <div
-              className={`crop-cropper-rect${dragging ? ' dragging' : ''}`}
-              style={{
-                left: cropRect.x,
-                top: cropRect.y,
-                width: cropRect.w,
-                height: cropRect.h,
-              }}
-            >
-              {/* Resize handles */}
-              {[
-                { name: 'nw', class: 'handle-nw' },
-                { name: 'ne', class: 'handle-ne' },
-                { name: 'sw', class: 'handle-sw' },
-                { name: 'se', class: 'handle-se' },
-                { name: 'n', class: 'handle-n' },
-                { name: 's', class: 'handle-s' },
-                { name: 'w', class: 'handle-w' },
-                { name: 'e', class: 'handle-e' },
-              ].map(handle => (
-                <div
-                  key={handle.name}
-                  className={`crop-cropper-handle ${handle.class}`}
-                />
-              ))}
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* DIMMED IMAGE */}
-            <div
-              aria-hidden
-              className="crop-dimmed-bg"
+              ref={containerRef}
+              className="crop-cropper-container"
               style={{
                 width: rendered.width,
                 height: rendered.height,
-                transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
-              }}
-            >
-              <img
-                src={image.src}
-                draggable={false}
-                className="crop-dimmed-img"
-              />
-            </div>
-
-            {/* SLOT */}
-            <div
-              className="crop-viewport"
-              style={{
-                width: previewSlot.width,
-                height: previewSlot.height,
               }}
               onPointerDown={onPointerDown}
               onPointerMove={onPointerMove}
@@ -379,73 +356,185 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
               <img
                 src={image.src}
                 draggable={false}
-                className={`crop-viewport-img ${fit}`}
+                className="crop-cropper-image"
+              />
+              <div
+                className={`crop-cropper-rect${dragging ? ' dragging' : ''}`}
                 style={{
-                  left: `calc(50% - ${rendered.width / 2}px)`,
-                  top: `calc(50% - ${rendered.height / 2}px)`,
+                  left: cropRect.x,
+                  top: cropRect.y,
+                  width: cropRect.w,
+                  height: cropRect.h,
+                }}
+              >
+                {/* Resize handles */}
+                {[
+                  { name: 'nw', class: 'handle-nw' },
+                  { name: 'ne', class: 'handle-ne' },
+                  { name: 'sw', class: 'handle-sw' },
+                  { name: 'se', class: 'handle-se' },
+                  { name: 'n', class: 'handle-n' },
+                  { name: 's', class: 'handle-s' },
+                  { name: 'w', class: 'handle-w' },
+                  { name: 'e', class: 'handle-e' },
+                ].map((handle) => (
+                  <div
+                    key={handle.name}
+                    className={`crop-cropper-handle ${handle.class}`}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* DIMMED IMAGE */}
+              <div
+                aria-hidden
+                className="crop-dimmed-bg"
+                style={{
                   width: rendered.width,
                   height: rendered.height,
-                  transform: `translate(${offset.x}px, ${offset.y}px)`,
+                  transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
                 }}
-              />
-            </div>
-          </>
-        )}
-      </div>
+              >
+                <img
+                  src={image.src}
+                  draggable={false}
+                  className="crop-dimmed-img"
+                />
+              </div>
 
-      {/* CONTROLS */}
-      <div className="editor-controls">
-        <div className="control-row">
-          <button
-            className={`editor-btn secondary${isCropping ? ' disabled' : ''}`}
-            onClick={() => setIsCropping(true)}
-            disabled={isCropping}
-            type="button"
+              {/* SLOT */}
+              <div
+                className="crop-viewport"
+                style={{
+                  width: previewSlot.width,
+                  height: previewSlot.height,
+                }}
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerLeave={onPointerUp}
+              >
+                <img
+                  src={image.src}
+                  draggable={false}
+                  className={`crop-viewport-img ${fit}`}
+                  style={{
+                    left: `calc(50% - ${rendered.width / 2}px)`,
+                    top: `calc(50% - ${rendered.height / 2}px)`,
+                    width: rendered.width,
+                    height: rendered.height,
+                    transform: `translate(${offset.x}px, ${offset.y}px)`,
+                  }}
+                />
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* CONTROLS */}
+        <div className="editor-controls">
+          <div
+            className="control-row editor-toolbar"
+            role="toolbar"
+            aria-label="Image editing tools"
           >
-            Crop Image
+            {/* Crop actions */}
+            <div className="tool-group" role="group" aria-label="Crop tools">
+              {!isCropping ? (
+                <button
+                  className="ui-chip"
+                  onClick={() => setIsCropping(true)}
+                  disabled={isCropping}
+                  type="button"
+                  title="Crop this image"
+                >
+                  Crop
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="ui-chip"
+                    onClick={() => setIsCropping(false)}
+                    type="button"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="ui-chip ui-chip--primary"
+                    onClick={applyCrop}
+                    type="button"
+                  >
+                    Apply crop
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* Fit mode */}
+            <div className="tool-group" role="group" aria-label="Fit mode">
+              <span className="tool-label">Fit</span>
+              <div className="ui-segment" role="radiogroup" aria-label="Fit mode">
+                <button
+                  type="button"
+                  className={`ui-segment-btn${fit === 'cover' ? ' is-active' : ''}`}
+                  onClick={() => setFit('cover')}
+                  disabled={isCropping}
+                  aria-pressed={fit === 'cover'}
+                  title="Fill the slot (cover)"
+                >
+                  Cover
+                </button>
+                <button
+                  type="button"
+                  className={`ui-segment-btn${fit === 'contain' ? ' is-active' : ''}`}
+                  onClick={() => setFit('contain')}
+                  disabled={isCropping}
+                  aria-pressed={fit === 'contain'}
+                  title="Fit entire photo (contain)"
+                >
+                  Contain
+                </button>
+              </div>
+            </div>
+
+            {/* Revert */}
+            <div className="tool-group" role="group" aria-label="Revert">
+              <button
+                className="ui-chip ui-chip--danger"
+                onClick={revertToOriginal}
+                disabled={isCropping || !(hasRevertableCrop || image.crop)}
+                type="button"
+                title="Revert to original image"
+              >
+                Revert
+              </button>
+            </div>
+          </div>
+
+          {!isCropping && fit === 'cover' && (
+            <div className="ui-hint">
+              Tip: drag the image to reposition.
+            </div>
+          )}
+          {isCropping && (
+            <div className="ui-hint">
+              Drag the crop box or resize it from the edges/corners.
+            </div>
+          )}
+        </div>
+
+        {/* ACTIONS */}
+        <div className="editor-actions">
+          <button className="ghost" onClick={onClose}>
+            Cancel
+          </button>
+          <button className="primary" onClick={applyChanges} disabled={isCropping}>
+            Apply
           </button>
         </div>
-        {isCropping ? (
-          <div className="control-row crop-action-row">
-            <button
-              className="editor-btn ghost"
-              onClick={() => setIsCropping(false)}
-              type="button"
-            >
-              Cancel Crop
-            </button>
-            <button
-              className="editor-btn primary"
-              onClick={applyCrop}
-              type="button"
-            >
-              Apply Crop
-            </button>
-          </div>
-        ) : (
-          <div className="control-row">
-            <label>Mode</label>
-            <select
-              value={fit}
-              onChange={(e) => setFit(e.target.value)}
-            >
-              <option value="cover">Cover</option>
-              <option value="contain">Contain</option>
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* ACTIONS */}
-      <div className="editor-actions">
-        <button className="ghost" onClick={onClose}>
-          Cancel
-        </button>
-        <button className="primary" onClick={applyChanges} disabled={isCropping}>
-          Apply
-        </button>
       </div>
     </div>
-  </div>
-)
+  )
 }

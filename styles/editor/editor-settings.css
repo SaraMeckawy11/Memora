@@ -23,6 +23,202 @@
   font-weight: 600;
 }
 
+/* ================= Selected image (modern card) ================= */
+.image-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.01));
+}
+
+.image-card-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.image-card .btn-edit-img {
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+}
+
+.image-card-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.image-card-title {
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.image-card-sub {
+  font-size: 0.72rem;
+  color: #666;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.hint-muted {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: #777;
+  line-height: 1.35;
+}
+
+/* ================= Actions (modern rows + buttons) ================= */
+.action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.action-row-left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.action-title {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: #111;
+  line-height: 1.2;
+}
+
+.action-subtitle {
+  font-size: 0.72rem;
+  color: #666;
+  line-height: 1.25;
+}
+
+.action-danger {
+  border: 1px solid rgba(231, 76, 60, 0.20);
+  background: rgba(231, 76, 60, 0.06);
+}
+
+.btn-modern {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  background: #fff;
+  color: #111;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.03s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  white-space: nowrap;
+}
+
+.btn-modern:hover {
+  background: #fafafa;
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.07);
+}
+
+.btn-modern:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.btn-modern:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(0,0,0,0.10),
+    0 10px 24px rgba(0,0,0,0.07);
+}
+
+.btn-modern-primary {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.btn-modern-primary:hover {
+  background: #000;
+}
+
+.btn-modern-danger {
+  background: #fff;
+  border-color: rgba(231, 76, 60, 0.35);
+  color: #b42318;
+}
+
+.btn-modern-danger:hover {
+  background: rgba(231, 76, 60, 0.06);
+  border-color: rgba(231, 76, 60, 0.45);
+}
+
+.btn-modern .btn-icon-glyph {
+  margin-right: 0.45rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  vertical-align: -1px;
+}
+
+/* ================= Actions card polish ================= */
+.action-card .apply-btn {
+  width: 100%;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #111;
+  transition: transform 0.03s, box-shadow 0.15s, background 0.15s;
+}
+
+.action-card .apply-btn:hover {
+  background: #000;
+}
+
+.action-card .apply-btn:active {
+  transform: translateY(1px);
+}
+
+.action-card .clear-btn {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.action-card .auto-save {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+}
+
+.action-card .auto-save-label {
+  font-weight: 600;
+  color: #444;
+}
+
 /* ================= Layout ================= */
 .editor-settings .layout-grid {
   display: grid;
@@ -351,8 +547,8 @@
 .switch {
   position: relative;
   display: inline-block;
-  width: 44px;
-  height: 24px;
+  width: 46px;
+  height: 26px;
 }
 
 .switch input {
@@ -365,7 +561,7 @@
   position: absolute;
   inset: 0;
   cursor: pointer;
-  background-color: #ccc;
+  background-color: #d1d1d1;
   border-radius: 24px;
   transition: 0.3s;
 }
@@ -376,8 +572,8 @@
 
 .switch-thumb {
   position: absolute;
-  height: 18px;
-  width: 18px;
+  height: 20px;
+  width: 20px;
   bottom: 3px;
   background-color: white;
   border-radius: 50%;
@@ -532,6 +728,10 @@
   
   .mobile-drawer-content .editor-card h4 {
     display: none; /* Hide card title since Drawer has title */
+  }
+
+  .mobile-drawer-content .action-card .action-row {
+    padding: 0.9rem;
   }
 
   /* 5. Backdrop */

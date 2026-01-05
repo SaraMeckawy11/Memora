@@ -41,7 +41,14 @@ export default function EditorSettings(props) {
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
   } = props
 
-  const selectedImage = selectedSlotIdx !== null && currentPage?.images?.[selectedSlotIdx]
+  const selectedImageId =
+    selectedSlotIdx !== null && selectedSlotIdx !== undefined
+      ? currentPage?.images?.[selectedSlotIdx]
+      : null
+
+  const selectedImageObj = selectedImageId
+    ? uploadedImages?.find((img) => img.id === selectedImageId)
+    : null
 
   // STATE: Track which tab is open on mobile
   const [activeMobileTab, setActiveMobileTab] = useState(null)
@@ -85,6 +92,83 @@ export default function EditorSettings(props) {
           ))}
         </div>
       </div>
+  )
+
+  const renderImageActions = () =>
+    selectedImageId ? (
+      <div className="editor-card">
+        <h4>Selected image</h4>
+
+        <div className="image-card">
+          <div className="image-card-meta">
+            <div
+              className="image-card-title"
+              title={selectedImageObj?.name || 'Selected image'}
+            >
+              {selectedImageObj?.name || 'Selected image'}
+            </div>
+            <div className="image-card-sub">Slot {selectedSlotIdx + 1}</div>
+          </div>
+
+          <div className="image-card-actions">
+            <button
+              className="btn-modern btn-modern-primary btn-edit-img"
+              onClick={() => openImageEditor(selectedSlotIdx)}
+              type="button"
+            >
+              <span className="btn-icon-glyph" aria-hidden="true">✦</span>
+              Edit
+            </button>
+          </div>
+        </div>
+
+        <div className="hint-muted">
+          Tip: drag a filled slot onto another slot to swap images.
+        </div>
+      </div>
+    ) : null
+
+  const renderGlobalActions = () => (
+    <div className="editor-card action-card">
+      {/* Apply-to-all removed per request */}
+
+      <div className="action-row">
+        <div className="action-row-left">
+          <div className="action-title">Auto-save</div>
+          <div className="action-subtitle">Keep your progress saved automatically.</div>
+        </div>
+
+        <label
+          className={`switch ${autoSave ? 'checked' : 'unchecked'}`}
+          aria-label="Auto-save"
+        >
+          <input
+            type="checkbox"
+            checked={autoSave}
+            onChange={(e) => setAutoSave(e.target.checked)}
+          />
+          <span className="switch-track">
+            <span className="switch-thumb" />
+          </span>
+        </label>
+      </div>
+
+      <div className="action-row action-danger">
+        <div className="action-row-left">
+          <div className="action-title">Clear saved progress</div>
+          <div className="action-subtitle">This can’t be undone.</div>
+        </div>
+
+        <button
+          className="btn-modern btn-modern-danger"
+          onClick={clearProgress}
+          type="button"
+        >
+          <span className="btn-icon-glyph" aria-hidden="true">⟲</span>
+          Clear
+        </button>
+      </div>
+    </div>
   )
 
   const renderPageSettingsSection = () => (
@@ -259,45 +343,6 @@ export default function EditorSettings(props) {
       </div>
   )
 
-  const renderImageActions = () => selectedImage && (
-    <div className="editor-card">
-        <h4>Image</h4>
-
-        <button
-          className="btn-secondary"
-          onClick={() => openImageEditor(selectedSlotIdx)}
-        >
-          Edit selected image
-        </button>
-    </div>
-  )
-
-  const renderGlobalActions = () => (
-    <div className="editor-card action-card">
-      <button className="apply-btn" onClick={applyToAllPages}>
-        Apply settings to all pages
-      </button>
-
-      <div className="auto-save">
-        <span className="auto-save-label">💾 Auto-save</span>
-        <label className={`switch ${autoSave ? 'checked' : 'unchecked'}`}>
-          <input
-            type="checkbox"
-            checked={autoSave}
-            onChange={e => setAutoSave(e.target.checked)}
-          />
-          <span className="switch-track">
-            <span className="switch-thumb" />
-          </span>
-        </label>
-      </div>
-
-      <button className="clear-btn" onClick={clearProgress}>
-        Clear saved progress
-      </button>
-    </div>
-  )
-
   /* =========================================
      Definitions for Mobile Tabs
      ========================================= */
@@ -310,7 +355,7 @@ export default function EditorSettings(props) {
   ]
   
   // If an image is selected, add Image tab
-  if (selectedImage) {
+  if (selectedImageId) {
     mobileTabs.splice(1, 0, { id: 'image', label: 'Edit Img', icon: '🎨', content: renderImageActions })
   }
 

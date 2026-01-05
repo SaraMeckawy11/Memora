@@ -219,14 +219,14 @@ export default function StepEditor({
     if (selectedSlotIdx === null) return
 
     const newPages = [...pages]
-    const page = newPages[currentPageIdx]
+    const page = newPages[currentPageIdx] || {}
     const max = getMaxImages(currentLayoutObj)
 
-    const imgs = [...(page.images || [])]
+    const imgs = [...(Array.isArray(page.images) ? page.images : [])]
     while (imgs.length < max) imgs.push(null)
 
     imgs[selectedSlotIdx] = imageId
-    page.images = imgs
+    newPages[currentPageIdx] = { ...page, images: imgs }
 
     setPages(newPages)
     setSelectedSlotIdx(null)
@@ -234,12 +234,34 @@ export default function StepEditor({
 
   const removeImageFromPage = (imageId) => {
     const newPages = [...pages]
-    const imgs = [...newPages[currentPageIdx].images]
+    const page = newPages[currentPageIdx] || {}
+    const imgs = [...(Array.isArray(page.images) ? page.images : [])]
     const idx = imgs.indexOf(imageId)
     if (idx !== -1) imgs[idx] = null
-    newPages[currentPageIdx].images = imgs
+    newPages[currentPageIdx] = { ...page, images: imgs }
     setPages(newPages)
     setSelectedSlotIdx(null)
+  }
+
+  const swapSlots = (fromIdx, toIdx) => {
+    if (fromIdx === toIdx) return
+
+    const max = getMaxImages(currentLayoutObj)
+    const newPages = [...pages]
+    const page = { ...(newPages[currentPageIdx] || {}) }
+    const imgs = [...(Array.isArray(page.images) ? page.images : [])]
+    while (imgs.length < max) imgs.push(null)
+
+    const tmp = imgs[fromIdx]
+    imgs[fromIdx] = imgs[toIdx]
+    imgs[toIdx] = tmp
+
+    page.images = imgs
+    newPages[currentPageIdx] = page
+    setPages(newPages)
+
+    if (selectedSlotIdx === fromIdx) setSelectedSlotIdx(toIdx)
+    else if (selectedSlotIdx === toIdx) setSelectedSlotIdx(fromIdx)
   }
 
   /* ------------------------------
@@ -251,10 +273,13 @@ export default function StepEditor({
     const layout = layouts.find(l => l.id === layoutId) || layouts[0]
     const max = getMaxImages(layout)
 
+    const current = newPages[currentPageIdx] || {}
+    const currentImages = Array.isArray(current.images) ? current.images : []
+
     newPages[currentPageIdx] = {
-      ...newPages[currentPageIdx],
+      ...current,
       layout: layoutId,
-      images: newPages[currentPageIdx].images.slice(0, max),
+      images: currentImages.slice(0, max),
       layoutSplitX: 50,
       layoutSplitY: 50,
     }
@@ -289,12 +314,15 @@ export default function StepEditor({
     const layout = layouts.find(l => l.id === selectedLayout) || layouts[0]
     const max = getMaxImages(layout)
 
-    const newPages = pages.map(p => ({
-      ...p,
-      captionStyle: { ...style },
-      layout: selectedLayout,
-      images: p.images.slice(0, max),
-    }))
+    const newPages = pages.map(p => {
+      const imgs = Array.isArray(p.images) ? p.images : []
+      return {
+        ...p,
+        captionStyle: { ...style },
+        layout: selectedLayout,
+        images: imgs.slice(0, max),
+      }
+    })
 
     setPages(newPages)
   }
@@ -472,6 +500,7 @@ export default function StepEditor({
                 if (rect?.width && rect?.height) setEditingSlotRect(rect)
               },
               onRemoveImage: removeImageFromPage,
+              onSwapSlots: swapSlots,
             }}
           />
 
