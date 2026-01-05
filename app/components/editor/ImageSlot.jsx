@@ -15,6 +15,20 @@ export default function ImageSlot({
   const hasImage = Boolean(img)
   const [isDragOver, setIsDragOver] = useState(false)
 
+  // `app/create/page.jsx` expects crop in percent (0-100).
+  // Some older saved states may have crop in 0..1; normalize for rendering.
+  const crop = (() => {
+    const c = img?.crop
+    if (!c) return null
+    const numsOk = [c.x, c.y, c.w, c.h].every(v => Number.isFinite(v))
+    if (!numsOk) return null
+    const looksNormalized = c.w <= 1.5 && c.h <= 1.5 && c.x <= 1.5 && c.y <= 1.5
+    if (looksNormalized) {
+      return { x: c.x * 100, y: c.y * 100, w: c.w * 100, h: c.h * 100 }
+    }
+    return c
+  })()
+
   return (
     <div
       className={`editor-slot ${img ? 'has-image' : ''} ${
@@ -56,7 +70,7 @@ export default function ImageSlot({
       {img ? (
         <>
           {/* ================= REAL IMAGE RENDERING ================= */}
-          {img.crop ? (
+          {crop ? (
             <div
               className="editor-slot-image"
               style={{
@@ -74,12 +88,12 @@ export default function ImageSlot({
                   position: 'absolute',
 
                   /*  scale image so crop fills slot */
-                  width: `${100 / img.crop.w}%`,
-                  height: `${100 / img.crop.h}%`,
+                  width: `${100 / (crop.w / 100)}%`,
+                  height: `${100 / (crop.h / 100)}%`,
 
                   /*  shift image so crop aligns */
-                  left: `${-img.crop.x * (100 / img.crop.w)}%`,
-                  top: `${-img.crop.y * (100 / img.crop.h)}%`,
+                  left: `${-(crop.x / 100) * (100 / (crop.w / 100))}%`,
+                  top: `${-(crop.y / 100) * (100 / (crop.h / 100))}%`,
 
                   objectFit: 'cover', // important
                   userSelect: 'none',

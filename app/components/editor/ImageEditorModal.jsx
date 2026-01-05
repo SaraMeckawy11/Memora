@@ -311,10 +311,11 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         ...image,
         fit,
         crop: {
-          x: Math.max(0, Math.min(1, cropX)),
-          y: Math.max(0, Math.min(1, cropY)),
-          w: Math.min(1, cropW),
-          h: Math.min(1, cropH),
+          // Store crop as percent (0-100) to match PDF export logic in `app/create/page.jsx`
+          x: Math.max(0, Math.min(1, cropX)) * 100,
+          y: Math.max(0, Math.min(1, cropY)) * 100,
+          w: Math.max(0.0001, Math.min(1, cropW)) * 100,
+          h: Math.max(0.0001, Math.min(1, cropH)) * 100,
         },
       })
     } else {

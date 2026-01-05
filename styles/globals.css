@@ -6,6 +6,10 @@
   --muted: #6b7280;
   --text: #0f1724;
 
+  /* Selection (prevents “white selection” regressions) */
+  --selection-bg: rgba(27, 31, 59, 0.28);
+  --selection-text: #0f1724;
+
   /* Accent gradient */
   --accent-start: #1B1F3B;
   --accent-end: #06b6d4;
@@ -31,13 +35,28 @@ body {
 
 /* Text selection (keeps highlight readable across the app) */
 ::selection {
-  background: rgba(27, 31, 59, 0.28);
-  color: var(--text);
+  background: var(--selection-bg);
+  color: var(--selection-text);
 }
 
 ::-moz-selection {
-  background: rgba(27, 31, 59, 0.28);
-  color: var(--text);
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* Ensure form controls never end up white-on-white in some browsers */
+input,
+select,
+textarea,
+button {
+  color: inherit;
+  font: inherit;
+}
+
+input::selection,
+textarea::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
 }
 
 .container {
