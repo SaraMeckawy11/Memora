@@ -110,13 +110,16 @@ export default function EditorSettings(props) {
             <div className="image-card-sub">Slot {selectedSlotIdx + 1}</div>
           </div>
 
-          <button
-            className="btn-secondary btn-icon"
-            onClick={() => openImageEditor(selectedSlotIdx)}
-            type="button"
-          >
-            Edit image
-          </button>
+          <div className="image-card-actions">
+            <button
+              className="btn-modern btn-modern-primary btn-edit-img"
+              onClick={() => openImageEditor(selectedSlotIdx)}
+              type="button"
+            >
+              <span className="btn-icon-glyph" aria-hidden="true">✦</span>
+              Edit
+            </button>
+          </div>
         </div>
 
         <div className="hint-muted">
@@ -127,13 +130,18 @@ export default function EditorSettings(props) {
 
   const renderGlobalActions = () => (
     <div className="editor-card action-card">
-      <button className="apply-btn" onClick={applyToAllPages} type="button">
-        Apply settings to all pages
-      </button>
+      {/* Apply-to-all removed per request */}
 
-      <div className="auto-save">
-        <span className="auto-save-label">Auto-save</span>
-        <label className={`switch ${autoSave ? 'checked' : 'unchecked'}`}>
+      <div className="action-row">
+        <div className="action-row-left">
+          <div className="action-title">Auto-save</div>
+          <div className="action-subtitle">Keep your progress saved automatically.</div>
+        </div>
+
+        <label
+          className={`switch ${autoSave ? 'checked' : 'unchecked'}`}
+          aria-label="Auto-save"
+        >
           <input
             type="checkbox"
             checked={autoSave}
@@ -145,9 +153,21 @@ export default function EditorSettings(props) {
         </label>
       </div>
 
-      <button className="clear-btn" onClick={clearProgress} type="button">
-        Clear saved progress
-      </button>
+      <div className="action-row action-danger">
+        <div className="action-row-left">
+          <div className="action-title">Clear saved progress</div>
+          <div className="action-subtitle">This can’t be undone.</div>
+        </div>
+
+        <button
+          className="btn-modern btn-modern-danger"
+          onClick={clearProgress}
+          type="button"
+        >
+          <span className="btn-icon-glyph" aria-hidden="true">⟲</span>
+          Clear
+        </button>
+      </div>
     </div>
   )
 
