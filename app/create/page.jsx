@@ -129,6 +129,8 @@ export default function CreatePage() {
   const [lastSaved, setLastSaved] = useState(null)
   const [autoSave, setAutoSave] = useState(true)
   const [isExporting, setIsExporting] = useState(false)
+  const [exportProgress, setExportProgress] = useState(0)
+  const [pdfQuality, setPdfQuality] = useState('print') // 'screen' | 'print' | 'original'
 
   const isStep1Valid = selectedProduct && selectedSize
 
@@ -536,6 +538,7 @@ export default function CreatePage() {
 
   const exportToPDF = useCallback(async () => {
     setIsExporting(true)
+    setExportProgress(0)
 
     try {
       const size = SIZES.find(s => s.id === selectedSize)
@@ -548,6 +551,10 @@ export default function CreatePage() {
       })
 
       for (let i = 0; i < pages.length; i++) {
+        setExportProgress(Math.round(((i) / pages.length) * 100))
+        // Yield to allow UI update
+        await new Promise(resolve => setTimeout(resolve, 0))
+
         const page = pages[i]
         if (i > 0) pdf.addPage()
 
@@ -627,22 +634,36 @@ export default function CreatePage() {
               const canvas = document.createElement('canvas')
               const ctx = canvas.getContext('2d')
               
-              // Set canvas size to match slot aspect ratio at high resolution
-              const scale = 2 // Higher quality
-              canvas.width = slotW * 96 * scale  // 96 DPI
-              canvas.height = slotH * 96 * scale
+              // Determine scale based on quality setting
+              let dpiScale = 2 // default (approx 192 DPI)
+              if (pdfQuality === 'screen') dpiScale = 1 // 96 DPI
+              else if (pdfQuality === 'print') dpiScale = 3.125 // 300 DPI
+              else if (pdfQuality === 'original') {
+                // Calculate scale to match source image resolution
+                // source pixels / target pixels (at 96 DPI)
+                const sourceDpiScale = Math.min(imgW / (slotW * 96), imgH / (slotH * 96))
+                // Cap at 1200 DPI equivalent to prevent browser crashes on huge images
+                dpiScale = Math.max(3.125, Math.min(sourceDpiScale, 12.5)) 
+              }
+
+              canvas.width = slotW * 96 * dpiScale
+              canvas.height = slotH * 96 * dpiScale
+              
+              // Enable high quality image scaling
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
               
               // Calculate source rectangle (what part of image to draw)
               let sx, sy, sw, sh
               
               if (crop) {
-                // Custom crop
+                // ...existing code...
                 sx = (crop.x / 100) * imgW
                 sy = (crop.y / 100) * imgH
                 sw = (crop.w / 100) * imgW
                 sh = (crop.h / 100) * imgH
               } else {
-                // Cover mode - center crop
+                // ...existing code...
                 if (imgRatio > slotRatio) {
                   // Image is wider - crop sides
                   sh = imgH
@@ -662,10 +683,16 @@ export default function CreatePage() {
               ctx.drawImage(imgElement, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
               
               // Get cropped image as data URL
-              const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92)
+              // Use PNG for 'original' to avoid ALL compression artifacts. JPEG 1.0 is still lossy.
+              const format = pdfQuality === 'original' ? 'image/png' : 'image/jpeg'
+              const quality = pdfQuality === 'screen' ? 0.8 : 1.0
+              
+              const croppedDataUrl = canvas.toDataURL(format, quality)
               
               // Add the pre-cropped image to PDF (fits exactly in slot)
-              pdf.addImage(croppedDataUrl, 'JPEG', slotX, slotY, slotW, slotH)
+              // PNG support in jsPDF is native and lossless
+              const pdfFormat = pdfQuality === 'original' ? 'PNG' : 'JPEG'
+              pdf.addImage(croppedDataUrl, pdfFormat, slotX, slotY, slotW, slotH)
             } else {
               // Contain mode - just draw centered, no cropping needed
               pdf.addImage(imgData.src, 'JPEG', drawX, drawY, drawW, drawH)
@@ -679,6 +706,9 @@ export default function CreatePage() {
           pdf.text(page.caption, size.width / 2, size.height - 0.3, { align: 'center' })
         }
       }
+      
+      setExportProgress(100)
+      await new Promise(resolve => setTimeout(resolve, 100))
 
       pdf.save('photobook.pdf')
       eventBus?.emit('pdf-exported', { pageCount: pages.length })
@@ -688,6 +718,7 @@ export default function CreatePage() {
     }
 
     setIsExporting(false)
+    setExportProgress(0)
   }, [
     pages,
     uploadedImages,
@@ -697,6 +728,7 @@ export default function CreatePage() {
     pageBgColor,
     showPageNumbers,
     imageFitMode,
+    pdfQuality,
   ])
 
   /* ================= NAV ================= */
@@ -734,25 +766,10 @@ export default function CreatePage() {
 
           {/* BOTTOM ROW */}
          {step >= 2 && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '1rem',
-              marginTop: '0.75rem',
-            }}
-          >
+          <div className="header-controls-row">
             {/* Saved status */}
             {lastSaved && (
-              <span
-                style={{
-                  fontSize: '0.85rem',
-                  color: '#888',
-                  whiteSpace: 'nowrap',
-                  lineHeight: 1,
-                }}
-              >
+              <span className="header-saved-status">
                 {isSaving
                   ? 'Saving…'
                   : `Saved ${new Date(lastSaved).toLocaleTimeString()}`}
@@ -760,66 +777,48 @@ export default function CreatePage() {
             )}
 
             {/* Buttons */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',     // 🔥 forces same baseline
-                gap: '0.75rem',
-              }}
-            >
+            <div className="header-actions">
               <button
                 type="button"
                 onClick={saveProgress}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-
-                  height: '36px',
-                  padding: '0 1.25rem',
-                  lineHeight: 1,
-                  boxSizing: 'border-box',
-
-                  borderRadius: '8px',
-                  fontSize: '0.9rem',
-                  fontWeight: 500,
-
-                  background: '#f5f5f5',
-                  color: '#222',
-                  border: '1px solid #ddd',
-                  cursor: 'pointer',
-                }}
+                className="btn-header-save"
               >
                 Save
               </button>
 
-              <button
-                type="button"
-                onClick={exportToPDF}
-                disabled={isExporting}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-
-                  height: '36px',
-                  padding: '0 1.25rem',
-                  lineHeight: 1,
-                  boxSizing: 'border-box',
-
-                  borderRadius: '8px',
-                  fontSize: '0.9rem',
-                  fontWeight: 500,
-
-                  background: 'linear-gradient(135deg, #1e293b, #0ea5e9)',
-                  color: '#fff',
-                  border: 'none',
-                  cursor: isExporting ? 'not-allowed' : 'pointer',
-                  opacity: isExporting ? 0.6 : 1,
-                }}
-              >
-                {isExporting ? 'Exporting…' : 'Download PDF'}
-              </button>
+              <div className="pdf-export-group">
+                <select
+                  value={pdfQuality}
+                  onChange={(e) => setPdfQuality(e.target.value)}
+                  className="pdf-quality-select"
+                  disabled={isExporting}
+                >
+                  <option value="screen">Screen (72 DPI)</option>
+                  <option value="print">Print (300 DPI)</option>
+                  <option value="original">High Res</option>
+                </select>
+                <div className="pdf-group-divider"></div>
+                <button
+                  type="button"
+                  onClick={exportToPDF}
+                  disabled={isExporting}
+                  className="pdf-export-btn"
+                >
+                  {isExporting ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                      <span style={{ fontSize: '0.75rem', marginBottom: '2px' }}>{exportProgress}%</span>
+                      <div style={{ width: '60px', height: '4px', background: '#ddd', borderRadius: '2px', overflow: 'hidden' }}>
+                        <div style={{ 
+                          width: `${exportProgress}%`, 
+                          height: '100%', 
+                          background: '#0ea5e9', 
+                          transition: 'width 0.2s ease' 
+                        }} />
+                      </div>
+                    </div>
+                  ) : 'PDF'}
+                </button>
+              </div>
             </div>
           </div>
         )}
