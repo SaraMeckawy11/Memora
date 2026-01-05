@@ -35,7 +35,7 @@ export default function EditorSettings(props) {
     imageBorderRadius, setImageBorderRadius, imageFitMode, setImageFitMode,
     showPageNumbers, setShowPageNumbers,
     selectedCaption, updateCaption, fontFamilies, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle,
-    applyToAllPages, uploadedImages, currentPage, addImageToPage,
+    applyToAllPages, uploadedImages, pages, currentPage, addImageToPage,
     selectedSlotIdx, openImageEditor,
     autoSave, setAutoSave, clearProgress,
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
@@ -350,7 +350,7 @@ export default function EditorSettings(props) {
     { id: 'layout', label: 'Layout', icon: '⊞', content: renderLayoutSection },
     { id: 'page', label: 'Page', icon: '⚙️', content: renderPageSettingsSection },
     { id: 'caption', label: 'Text', icon: 'Aa', content: renderCaptionSection },
-    { id: 'photos', label: 'Photos', icon: '🖼️', content: () => <PhotoLibrary uploadedImages={uploadedImages} currentPage={currentPage} addImageToPage={addImageToPage} /> },
+    { id: 'photos', label: 'Photos', icon: '🖼️', content: () => <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} /> },
     { id: 'actions', label: 'Actions', icon: '💾', content: renderGlobalActions },
   ]
   
@@ -368,7 +368,7 @@ export default function EditorSettings(props) {
         {renderImageActions()}
         {renderCaptionSection()}
         {renderGlobalActions()}
-        <PhotoLibrary uploadedImages={uploadedImages} currentPage={currentPage} addImageToPage={addImageToPage} />
+        <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} />
       </div>
 
       {/* ================= MOBILE VIEW (Bottom Bar + Drawer) ================= */}

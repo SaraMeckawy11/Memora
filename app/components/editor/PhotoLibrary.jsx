@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import '@/styles/editor/PhotoLibrary.css'
 
 /* ======================================================
@@ -54,6 +54,7 @@ export default function PhotoLibrary({
   uploadedImages = [],
   currentPage,
   addImageToPage,
+  pages = [],
 }) {
   const [images, setImages] = useState(uploadedImages)
   const [selectedImageId, setSelectedImageId] = useState(null)
@@ -63,7 +64,24 @@ export default function PhotoLibrary({
     setImages(uploadedImages)
   }, [uploadedImages])
 
-  const isUsed = (id) => currentPage?.images?.includes(id)
+  // Used images should be detected across the whole book (all pages), not only the current page.
+  const usedIds = useMemo(() => {
+    const set = new Set()
+    for (const p of pages || []) {
+      for (const id of p?.images || []) set.add(id)
+    }
+    return set
+  }, [pages])
+
+  const usedCount = useMemo(() => {
+    let count = 0
+    for (const img of images) {
+      if (usedIds.has(img.id)) count++
+    }
+    return count
+  }, [images, usedIds])
+
+  const isUsed = (id) => usedIds.has(id)
 
   const removeImage = (imageId) => {
     setImages((prev) => prev.filter((img) => img.id !== imageId))
@@ -214,6 +232,9 @@ export default function PhotoLibrary({
       <div className="photo-library-header">
         <h4 className="photo-library-title">
           Photos ({images.length})
+          <span className="photo-library-counts">
+            Used {usedCount}/{images.length}
+          </span>
         </h4>
 
         <button
