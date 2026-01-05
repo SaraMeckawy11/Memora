@@ -199,20 +199,81 @@ export default function StepEditor({
   /* ------------------------------
      Image handling
   ------------------------------ */
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files || [])
-    files.forEach(file => {
-      if (file.size > 10 * 1024 * 1024) return
-      if (!file.type.startsWith('image/')) return
+    if (!files.length) return
 
-      const reader = new FileReader()
-      reader.onload = ev =>
-        setUploadedImages(prev => [
-          ...prev,
-          { id: Date.now() + Math.random(), src: ev.target.result, name: file.name },
-        ])
-      reader.readAsDataURL(file)
-    })
+    // Create a small thumbnail for fast grids/sidebars.
+    // Keep the full image as a blob: URL so the editor stays responsive.
+    const createThumbnail = (file, maxSize = 256) =>
+      new Promise((resolve) => {
+        const img = new Image()
+        const tmpUrl = URL.createObjectURL(file)
+
+        img.onload = () => {
+          const w = img.naturalWidth || 0
+          const h = img.naturalHeight || 0
+          const scale = Math.min(1, maxSize / Math.max(w || 1, h || 1))
+          const tw = Math.max(1, Math.round(w * scale))
+          const th = Math.max(1, Math.round(h * scale))
+
+          const canvas = document.createElement('canvas')
+          canvas.width = tw
+          canvas.height = th
+          const ctx = canvas.getContext('2d')
+          if (ctx) ctx.drawImage(img, 0, 0, tw, th)
+
+          URL.revokeObjectURL(tmpUrl)
+          resolve({
+            thumbSrc: ctx ? canvas.toDataURL('image/jpeg', 0.72) : null,
+            width: w,
+            height: h,
+          })
+        }
+
+        img.onerror = () => {
+          URL.revokeObjectURL(tmpUrl)
+          resolve({ thumbSrc: null, width: null, height: null })
+        }
+
+        img.src = tmpUrl
+      })
+
+    const BATCH_SIZE = 10
+
+    for (let i = 0; i < files.length; i += BATCH_SIZE) {
+      const batch = files.slice(i, i + BATCH_SIZE)
+
+      const prepared = await Promise.all(
+        batch.map(async (file) => {
+          if (file.size > 10 * 1024 * 1024) return null
+          if (!file.type.startsWith('image/')) return null
+
+          const src = URL.createObjectURL(file) // blob:
+          const { thumbSrc, width, height } = await createThumbnail(file, 256)
+
+          return {
+            id: Date.now() + Math.random(),
+            src,
+            thumbSrc,
+            width,
+            height,
+            name: file.name,
+          }
+        })
+      )
+
+      const cleaned = prepared.filter(Boolean)
+      if (cleaned.length) {
+        setUploadedImages(prev => [...prev, ...cleaned])
+      }
+
+      // Yield so the UI stays responsive with 100s of photos.
+      await new Promise(r => setTimeout(r, 0))
+    }
+
+    // allow re-uploading same file
+    e.target.value = ''
   }
 
   const addImageToPage = (imageId) => {
