@@ -384,6 +384,28 @@ export default function StepEditor({
       : { height: SLOT_MAX, width: SLOT_MAX * ratio }
   }, [editingSlotIdx, slotRects, editingSlotRect])
 
+  const swapImages = (pageIdx1, imgIdx1, pageIdx2, imgIdx2) => {
+    const newPages = [...pages]
+    
+    // Ensure images arrays exist and are long enough
+    const ensureImages = (pIdx, iIdx) => {
+      if (!newPages[pIdx].images) newPages[pIdx].images = []
+      while (newPages[pIdx].images.length <= iIdx) {
+        newPages[pIdx].images.push(null)
+      }
+    }
+
+    ensureImages(pageIdx1, imgIdx1)
+    ensureImages(pageIdx2, imgIdx2)
+
+    const img1 = newPages[pageIdx1].images[imgIdx1]
+    const img2 = newPages[pageIdx2].images[imgIdx2]
+
+    newPages[pageIdx1].images[imgIdx1] = img2
+    newPages[pageIdx2].images[imgIdx2] = img1
+
+    setPages(newPages)
+  }
 
   /* ------------------------------
      JSX
@@ -403,6 +425,7 @@ export default function StepEditor({
           getMaxImages={getMaxImages}
           isOpen={isSidebarOpen}
           setIsOpen={setIsSidebarOpen}
+          swapImages={swapImages}
           undo={undo}
           redo={redo}
           canUndo={canUndo}

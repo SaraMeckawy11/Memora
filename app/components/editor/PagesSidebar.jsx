@@ -20,6 +20,7 @@ export default function PagesSidebar({
   uploadedImages = [],
   selectedSize,
   sizes = [],
+  swapImages,
 }) {
   const [draggedIndex, setDraggedIndex] = useState(null)
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
@@ -27,6 +28,9 @@ export default function PagesSidebar({
   const scrollContainerRef = useRef(null)
   const touchTimer = useRef(null)
   
+  // Swap Selection State
+  const [swapSelection, setSwapSelection] = useState([]) // Array of { pageIdx, imgIdx }
+
   // Floating Drag State
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 })
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
@@ -234,6 +238,34 @@ export default function PagesSidebar({
     setIsTouchDragging(false)
   }
 
+  const handleSwapSelect = (pageIdx, imgIdx) => {
+    if (!isPreviewOpen) return
+
+    setSwapSelection(prev => {
+      // Check if already selected
+      const exists = prev.find(s => s.pageIdx === pageIdx && s.imgIdx === imgIdx)
+      if (exists) {
+        // Deselect
+        return prev.filter(s => s !== exists)
+      }
+      
+      // If 2 selected, replace the second one (or reset?)
+      // Let's allow max 2. If 2 are selected, clicking a 3rd replaces the 2nd.
+      if (prev.length >= 2) {
+        return [prev[0], { pageIdx, imgIdx }]
+      }
+      
+      return [...prev, { pageIdx, imgIdx }]
+    })
+  }
+
+  const handleExecuteSwap = () => {
+    if (swapSelection.length !== 2) return
+    const [s1, s2] = swapSelection
+    swapImages(s1.pageIdx, s1.imgIdx, s2.pageIdx, s2.imgIdx)
+    setSwapSelection([]) // Clear selection after swap
+  }
+
   const renderCardContent = (page, idx) => (
     <>
       <div className="preview-card-header">
@@ -304,8 +336,20 @@ export default function PagesSidebar({
                 itemStyle.gridColumn = 'span 2'
               }
 
+              const isSelectedForSwap = swapSelection.some(s => s.pageIdx === idx && s.imgIdx === imgIdx)
+
               return (
-                <div key={imgIdx} className="mini-img-wrapper" style={itemStyle}>
+                <div 
+                  key={imgIdx} 
+                  className={`mini-img-wrapper ${isSelectedForSwap ? 'swap-selected' : ''}`} 
+                  style={itemStyle}
+                  onClick={(e) => {
+                    if (isPreviewOpen) {
+                      e.stopPropagation()
+                      handleSwapSelect(idx, imgIdx)
+                    }
+                  }}
+                >
                   {src ? (
                     <img 
                       src={src} 
@@ -319,6 +363,11 @@ export default function PagesSidebar({
                     />
                   ) : (
                     <span style={{ fontSize: '10px', color: '#ccc' }}>+</span>
+                  )}
+                  {isSelectedForSwap && (
+                    <div className="swap-overlay">
+                      <span>Selected</span>
+                    </div>
                   )}
                 </div>
               )
@@ -445,6 +494,28 @@ export default function PagesSidebar({
             <div className="preview-header">
               <h3>Page Preview</h3>
               <div className="preview-actions">
+                {swapSelection.length > 0 && (
+                  <div className="swap-controls">
+                    <span style={{ fontSize: '0.8rem', marginRight: '8px' }}>
+                      {swapSelection.length === 1 ? 'Select another to swap' : 'Ready to swap'}
+                    </span>
+                    <button 
+                      className="preview-btn primary" 
+                      onClick={handleExecuteSwap}
+                      disabled={swapSelection.length !== 2}
+                      style={{ background: swapSelection.length === 2 ? '#2196F3' : '#ccc', borderColor: 'transparent' }}
+                    >
+                      Swap Images
+                    </button>
+                    <button 
+                      className="preview-btn" 
+                      onClick={() => setSwapSelection([])}
+                      style={{ marginLeft: '4px' }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
                 <button className="preview-btn" onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}>
                   {viewMode === 'grid' ? 'List View' : 'Grid View'}
                 </button>
