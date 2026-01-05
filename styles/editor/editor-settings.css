@@ -23,6 +23,87 @@
   font-weight: 600;
 }
 
+/* ================= Selected image (modern card) ================= */
+.image-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.image-card-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.image-card-title {
+  font-size: 0.85rem;
+  font-weight: 650;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.image-card-sub {
+  font-size: 0.72rem;
+  color: #666;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.hint-muted {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  color: #777;
+  line-height: 1.35;
+}
+
+/* ================= Actions card polish ================= */
+.action-card .apply-btn {
+  width: 100%;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #111;
+  transition: transform 0.03s, box-shadow 0.15s, background 0.15s;
+}
+
+.action-card .apply-btn:hover {
+  background: #000;
+}
+
+.action-card .apply-btn:active {
+  transform: translateY(1px);
+}
+
+.action-card .clear-btn {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.action-card .auto-save {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+}
+
+.action-card .auto-save-label {
+  font-weight: 600;
+  color: #444;
+}
+
 /* ================= Layout ================= */
 .editor-settings .layout-grid {
   display: grid;

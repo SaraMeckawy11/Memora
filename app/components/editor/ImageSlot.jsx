@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 export default function ImageSlot({
   img,
   idx,
@@ -8,12 +10,16 @@ export default function ImageSlot({
   imageBorderRadius,
   onSelect,
   onRemove,
+  onSwap,
 }) {
+  const hasImage = Boolean(img)
+  const [isDragOver, setIsDragOver] = useState(false)
+
   return (
     <div
       className={`editor-slot ${img ? 'has-image' : ''} ${
         selected ? 'selected' : ''
-      }`}
+      }${isDragOver ? ' drag-over' : ''}`}
       style={{
         borderRadius: imageBorderRadius,
         overflow: 'hidden',
@@ -21,6 +27,30 @@ export default function ImageSlot({
       onClick={(e) => {
         const r = e.currentTarget.getBoundingClientRect()
         onSelect(idx, { width: r.width, height: r.height })
+      }}
+      draggable={hasImage}
+      onDragStart={(e) => {
+        if (!hasImage) return
+        e.dataTransfer.effectAllowed = 'move'
+        e.dataTransfer.setData('text/plain', String(idx))
+      }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+        if (!isDragOver) setIsDragOver(true)
+      }}
+      onDragEnter={(e) => {
+        e.preventDefault()
+        setIsDragOver(true)
+      }}
+      onDragLeave={() => setIsDragOver(false)}
+      onDrop={(e) => {
+        e.preventDefault()
+        setIsDragOver(false)
+        const fromIdx = Number(e.dataTransfer.getData('text/plain'))
+        const toIdx = idx
+        if (Number.isNaN(fromIdx) || fromIdx === toIdx) return
+        onSwap?.(fromIdx, toIdx)
       }}
     >
       {img ? (

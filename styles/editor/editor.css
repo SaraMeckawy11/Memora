@@ -72,6 +72,22 @@
 .editor-photo-count {
   font-size: 0.75rem;
   font-weight: 500;
+
+/* ===============================
+   Drag & drop swap affordances
+================================ */
+.editor-slot[draggable='true'] {
+  cursor: grab;
+}
+
+.editor-slot[draggable='true']:active {
+  cursor: grabbing;
+}
+
+.editor-slot.drag-over {
+  outline: 2px solid var(--accent-solid);
+  outline-offset: -2px;
+}
   color: var(--text-muted);
   background: #f4f4f4;
   padding: 0.25rem 0.6rem;

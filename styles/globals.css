@@ -29,6 +29,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Text selection (keeps highlight readable across the app) */
+::selection {
+  background: rgba(27, 31, 59, 0.28);
+  color: var(--text);
+}
+
+::-moz-selection {
+  background: rgba(27, 31, 59, 0.28);
+  color: var(--text);
+}
+
 .container {
   max-width: var(--container);
   margin: 0 auto;

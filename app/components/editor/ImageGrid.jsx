@@ -13,6 +13,7 @@ export default function ImageGrid({
   imageBorderRadius,
   onSelectSlot,
   onRemoveImage,
+  onSwapSlots,
 }) {
   const images = currentPage?.images || []
   const t = currentLayoutObj?.template
@@ -29,6 +30,7 @@ export default function ImageGrid({
       imageBorderRadius={imageBorderRadius}
       onSelect={onSelectSlot}
       onRemove={onRemoveImage}
+      onSwap={onSwapSlots}
     />
   )
 
