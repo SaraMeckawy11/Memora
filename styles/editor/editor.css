@@ -72,6 +72,7 @@
 .editor-photo-count {
   font-size: 0.75rem;
   font-weight: 500;
+}
 
 /* ===============================
    Drag & drop swap affordances
@@ -88,6 +89,8 @@
   outline: 2px solid var(--accent-solid);
   outline-offset: -2px;
 }
+
+.editor-photo-count {
   color: var(--text-muted);
   background: #f4f4f4;
   padding: 0.25rem 0.6rem;
@@ -497,5 +500,59 @@
   /* Collapsible card adjustments */
   .editor-card h4 {
     font-size: 0.95rem;
+  }
+}
+
+/* ===============================
+   Mobile Navigation Bar (Under Canvas)
+================================ */
+.mobile-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  border: 1px solid #eee;
+}
+
+.mobile-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mobile-nav-btn:active {
+  background-color: #f5f5f5;
+  transform: translateY(1px);
+}
+
+.mobile-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #eee;
+}
+
+.mobile-nav-info {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+/* Hide navigation bar on larger screens */
+@media (min-width: 1025px) {
+  .mobile-nav-bar {
+    display: none;
   }
 }

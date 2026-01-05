@@ -76,6 +76,48 @@ export default function StepEditor({
     return () => window.removeEventListener('auto-generate-pages', handler)
   }, [setPages])
 
+  /* ------------------------------
+     Keyboard Navigation
+  ------------------------------ */
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ignore if user is typing in an input/textarea
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return
+      // Ignore if modal is open (editingSlotIdx is not null)
+      if (editingSlotIdx !== null) return
+      
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault()
+        if (currentPageIdx < pages.length - 1) {
+          setCurrentPageIdx(currentPageIdx + 1)
+          
+          // Scroll sidebar to show active page
+          const sidebar = document.querySelector('.pages-sidebar')
+          if (sidebar) {
+            const activeItem = sidebar.children[1]?.children[currentPageIdx + 1] // pages-list is 2nd child
+            // A better query might be needed
+            setTimeout(() => {
+               const active = document.querySelector('.page-item.active')
+               if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+            }, 0)
+          }
+        }
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault()
+        if (currentPageIdx > 0) {
+          setCurrentPageIdx(currentPageIdx - 1)
+          setTimeout(() => {
+               const active = document.querySelector('.page-item.active')
+               if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+            }, 0)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentPageIdx, pages.length, setCurrentPageIdx, editingSlotIdx])
+
   const openImageEditor = (slotIdx) => {
     setEditingSlotIdx(slotIdx)
   }
@@ -188,6 +230,27 @@ export default function StepEditor({
       layout.template === '2-top-1-bottom'
     ) return 3
     return layout.cols * layout.rows
+  }
+
+  // --- Mobile Navigation helpers ---
+   const goToPrevPage = () => {
+    if (currentPageIdx > 0) {
+      setCurrentPageIdx(currentPageIdx - 1)
+      setTimeout(() => {
+        const active = document.querySelector('.page-item.active')
+        if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }, 0)
+    }
+  }
+
+  const goToNextPage = () => {
+    if (currentPageIdx < pages.length - 1) {
+      setCurrentPageIdx(currentPageIdx + 1)
+      setTimeout(() => {
+        const active = document.querySelector('.page-item.active')
+        if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      }, 0)
+    }
   }
 
   const maxSlots = getMaxImages(currentLayoutObj)
@@ -568,6 +631,35 @@ export default function StepEditor({
               onSwapSlots: swapSlots,
             }}
           />
+
+          {/* Mobile Navigation Controls */}
+          <div className="mobile-nav-bar">
+            <button 
+              className="mobile-nav-btn" 
+              onClick={goToPrevPage} 
+              disabled={currentPageIdx === 0}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+              <span>Prev</span>
+            </button>
+            
+            <span className="mobile-nav-info">
+              {currentPageIdx + 1} / {pages.length}
+            </span>
+
+            <button 
+              className="mobile-nav-btn" 
+              onClick={goToNextPage}
+              disabled={currentPageIdx === pages.length - 1}
+            >
+              <span>Next</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
 
           <UploadArea onUpload={handleImageUpload} />
         </div>

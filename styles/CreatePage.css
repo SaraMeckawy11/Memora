@@ -337,10 +337,130 @@
   border-color: #d1d5db;
 }
 
-/* 🔥 Hide on large screens */
-@media (min-width: 1024px) {
-  .select-page-btn {
-    display: none;
+/* ================= Header Controls (Save & PDF) ================= */
+.header-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.header-saved-status {
+  font-size: 0.85rem;
+  color: #888;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-header-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 1.25rem;
+  line-height: 1;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: #f5f5f5;
+  color: #222;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-header-save:hover {
+  background: #eee;
+}
+
+/* PDF Control Group */
+.pdf-export-group {
+  display: flex;
+  align-items: center;
+  background: #f5f5f5;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  height: 36px;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.pdf-quality-select {
+  border: none;
+  background: transparent;
+  height: 100%;
+  padding: 0 0.5rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  outline: none;
+  color: #444;
+  max-width: 140px;
+}
+
+.pdf-group-divider {
+  width: 1px;
+  height: 20px;
+  background: #ccc;
+  flex-shrink: 0;
+}
+
+.pdf-export-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 1rem;
+  line-height: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: transparent;
+  color: #222;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  min-width: 60px; /* Ensure click area */
+}
+
+/* Header Responsive */
+@media (max-width: 640px) {
+  .header-controls-row {
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 0.5rem;
+  }
+  
+  .header-saved-status {
+    display: none; /* Hide 'Saved...' text on very small screens to save space */
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .pdf-export-group {
+    flex: 1; /* Take remaining space */
+    justify-content: space-between;
+  }
+
+  .pdf-quality-select {
+    flex: 1;
+    min-width: 0; /* Allow shrinking */
+  }
+}
+
+@media (max-width: 380px) {
+  .btn-header-save {
+    padding: 0 0.8rem;
+    font-size: 0.85rem;
   }
 }
 
