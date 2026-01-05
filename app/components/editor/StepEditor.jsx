@@ -534,6 +534,7 @@ export default function StepEditor({
           updateCaptionStyle={updateCaptionStyle}
           applyToAllPages={applyToAllPages}
           uploadedImages={uploadedImages}
+          pages={pages}
           currentPage={currentPage}
           addImageToPage={addImageToPage}
           autoSave={autoSave}
