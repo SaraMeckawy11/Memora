@@ -196,7 +196,8 @@ export default function CreatePage() {
 
   selectedProduct,
   selectedSize,
-  coverImage,
+  // Never persist base64/blob URLs; keep only a tiny reference.
+  coverImage: coverImage ? { id: coverImage.id, name: coverImage.name } : null,
   coverText,
   coverTheme,
 
@@ -246,7 +247,6 @@ export default function CreatePage() {
   }, [
     step,
     pages,
-    uploadedImages,
     selectedProduct,
     selectedSize,
     coverImage,

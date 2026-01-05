@@ -46,7 +46,7 @@ export default function PagesSidebar({
     if (typeof imgId === 'string' && (imgId.startsWith('http') || imgId.startsWith('data:'))) return imgId
     // Otherwise look it up
     const found = uploadedImages.find(u => u.id === imgId)
-    return found ? found.src : null
+    return found ? (found.thumbSrc || found.src) : null
   }
 
   const getLayoutName = (layoutId) => {
