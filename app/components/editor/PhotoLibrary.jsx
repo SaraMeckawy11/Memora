@@ -269,10 +269,11 @@ export default function PhotoLibrary({
               }}
             >
               <img
-                src={img.src}
+                src={img.thumbSrc || img.src}
                 alt=""
                 draggable={false}
                 className="photo-library-img"
+                loading="lazy"
               />
 
               {used && <div className="photo-library-used">Used</div>}
