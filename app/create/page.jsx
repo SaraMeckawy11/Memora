@@ -611,10 +611,12 @@ export default function CreatePage() {
             if (effectiveQuality === 'screen') dpiScale = 1 // 96 DPI
             else if (effectiveQuality === 'print') dpiScale = 3.125 // 300 DPI
             else if (effectiveQuality === 'original') {
-              // Use source resolution but CAP at 360 DPI (3.75x) to prevent OOM
-              const sourceDpiScale = Math.max(imgW / (slotW * 96), imgH / (slotH * 96))
-              dpiScale = Math.min(sourceDpiScale, 3.75) 
-            }            let finalX, finalY, finalW, finalH // Position on PDF
+              const sourceDpiScale = Math.min(imgW / (slotW * 96), imgH / (slotH * 96))
+              // Cap at 3.5 (~336 DPI) to be safer on memory for large books
+              dpiScale = Math.max(3.125, Math.min(sourceDpiScale, 3.5)) 
+            }
+
+            let finalX, finalY, finalW, finalH // Position on PDF
             let cvsW, cvsH // Canvas pixel size
             let sx, sy, sw, sh // Source crop
 
@@ -687,10 +689,8 @@ export default function CreatePage() {
               // Compress to JPEG
               const format = 'image/jpeg' 
               // 0.95 is visually indistinguishable from 1.0 but significantly smaller file size
-              // For 'original', user requested max quality, so we use 1.0
-              const q = (effectiveQuality === 'screen') ? 0.8 : 
-                        (effectiveQuality === 'original') ? 1.0 : 0.95
-
+              const q = effectiveQuality === 'screen' ? 0.8 : 0.95
+              
               const imgDataUrl = canvas.toDataURL(format, q)
               pdf.addImage(imgDataUrl, 'JPEG', finalX, finalY, finalW, finalH)
             } catch (err) {
@@ -849,16 +849,16 @@ export default function CreatePage() {
 
                 {showPdfMenu && !isExporting && (
                   <div className="pdf-dropdown-menu">
-                     <button
+                    <button
                       type="button"
                       className="pdf-dropdown-item"
                       onClick={() => {
-                        setPdfQuality('original')
+                        setPdfQuality('screen')
                         setShowPdfMenu(false)
-                        exportToPDF('original')
+                        exportToPDF('screen')
                       }}
                     >
-                      High Resolution 
+                      low (72 DPI)
                     </button>
                     <button
                       type="button"
@@ -869,18 +869,18 @@ export default function CreatePage() {
                         exportToPDF('print')
                       }}
                     >
-                      Standard (300 DPI)
+                      medium (300 DPI)
                     </button>
                     <button
                       type="button"
                       className="pdf-dropdown-item"
                       onClick={() => {
-                        setPdfQuality('screen')
+                        setPdfQuality('original')
                         setShowPdfMenu(false)
-                        exportToPDF('screen')
+                        exportToPDF('original')
                       }}
                     >
-                      Screen (72 DPI)
+                      High Resolution
                     </button>
                   </div>
                 )}
