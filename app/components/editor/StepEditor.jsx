@@ -132,6 +132,12 @@ export default function StepEditor({
   
   const selectedSizeObj = sizes.find(s => s.id === selectedSize)
 
+  // Per-page overrides (fallback to global defaults)
+  const effectivePageMargin =
+    typeof currentPage?.pageMargin === 'number' ? currentPage.pageMargin : pageMargin
+  const effectivePageGutter =
+    typeof currentPage?.pageGutter === 'number' ? currentPage.pageGutter : pageGutter
+
   const layoutSplitX = currentPage?.layoutSplitX ?? 50
   const layoutSplitY = currentPage?.layoutSplitY ?? 50
 
@@ -139,8 +145,8 @@ export default function StepEditor({
     const PIXELS_PER_INCH = 96; // Assuming 96 DPI for preview; adjust if needed for higher quality
     const pageW = selectedSizeObj.width * PIXELS_PER_INCH;
     const pageH = selectedSizeObj.height * PIXELS_PER_INCH;
-    const innerW = pageW - pageMargin * 2; // pageMargin assumed in pixels
-    const innerH = pageH - pageMargin * 2;
+  const innerW = pageW - effectivePageMargin * 2; // margin assumed in pixels
+  const innerH = pageH - effectivePageMargin * 2;
     const splitX = (layoutSplitX ?? 50) / 100;
     const splitY = (layoutSplitY ?? 50) / 100;
 
@@ -149,64 +155,64 @@ export default function StepEditor({
         return [{ x: 0, y: 0, width: innerW, height: innerH }];
 
       case '2-horizontal': {
-        const h = (innerH - pageGutter) / 2;
+        const h = (innerH - effectivePageGutter) / 2;
         return [
           { x: 0, y: 0, width: innerW, height: h },
-          { x: 0, y: h + pageGutter, width: innerW, height: h },
+          { x: 0, y: h + effectivePageGutter, width: innerW, height: h },
         ];
       }
 
       case '2-vertical': {
-        const w = (innerW - pageGutter) / 2;
+        const w = (innerW - effectivePageGutter) / 2;
         return [
           { x: 0, y: 0, width: w, height: innerH },
-          { x: w + pageGutter, y: 0, width: w, height: innerH },
+          { x: w + effectivePageGutter, y: 0, width: w, height: innerH },
         ];
       }
 
       case '1-top-2-bottom': {
         const topH = innerH * splitY;
-        const bottomH = innerH - topH - pageGutter;
-        const w = (innerW - pageGutter) / 2;
+        const bottomH = innerH - topH - effectivePageGutter;
+        const w = (innerW - effectivePageGutter) / 2;
         return [
           { x: 0, y: 0, width: innerW, height: topH },
-          { x: 0, y: topH + pageGutter, width: w, height: bottomH },
-          { x: w + pageGutter, y: topH + pageGutter, width: w, height: bottomH },
+          { x: 0, y: topH + effectivePageGutter, width: w, height: bottomH },
+          { x: w + effectivePageGutter, y: topH + effectivePageGutter, width: w, height: bottomH },
         ];
       }
 
       case '2-top-1-bottom': {
         const bottomH = innerH * (1 - splitY);
-        const topH = innerH - bottomH - pageGutter;
-        const w = (innerW - pageGutter) / 2;
+        const topH = innerH - bottomH - effectivePageGutter;
+        const w = (innerW - effectivePageGutter) / 2;
         return [
           { x: 0, y: 0, width: w, height: topH },
-          { x: w + pageGutter, y: 0, width: w, height: topH },
-          { x: 0, y: topH + pageGutter, width: innerW, height: bottomH },
+          { x: w + effectivePageGutter, y: 0, width: w, height: topH },
+          { x: 0, y: topH + effectivePageGutter, width: innerW, height: bottomH },
         ];
       }
 
       case '4-grid': {
-        const w = (innerW - pageGutter) / 2;
-        const h = (innerH - pageGutter) / 2;
+        const w = (innerW - effectivePageGutter) / 2;
+        const h = (innerH - effectivePageGutter) / 2;
         return [
           { x: 0, y: 0, width: w, height: h },
-          { x: w + pageGutter, y: 0, width: w, height: h },
-          { x: 0, y: h + pageGutter, width: w, height: h },
-          { x: w + pageGutter, y: h + pageGutter, width: w, height: h },
+          { x: w + effectivePageGutter, y: 0, width: w, height: h },
+          { x: 0, y: h + effectivePageGutter, width: w, height: h },
+          { x: w + effectivePageGutter, y: h + effectivePageGutter, width: w, height: h },
         ];
       }
 
       case '6-grid': {
-        const w = (innerW - pageGutter * 2) / 3;
-        const h = (innerH - pageGutter) / 2;
+        const w = (innerW - effectivePageGutter * 2) / 3;
+        const h = (innerH - effectivePageGutter) / 2;
         return [
           { x: 0, y: 0, width: w, height: h },
-          { x: w + pageGutter, y: 0, width: w, height: h },
-          { x: (w + pageGutter) * 2, y: 0, width: w, height: h },
-          { x: 0, y: h + pageGutter, width: w, height: h },
-          { x: w + pageGutter, y: h + pageGutter, width: w, height: h },
-          { x: (w + pageGutter) * 2, y: h + pageGutter, width: w, height: h },
+          { x: w + effectivePageGutter, y: 0, width: w, height: h },
+          { x: (w + effectivePageGutter) * 2, y: 0, width: w, height: h },
+          { x: 0, y: h + effectivePageGutter, width: w, height: h },
+          { x: w + effectivePageGutter, y: h + effectivePageGutter, width: w, height: h },
+          { x: (w + effectivePageGutter) * 2, y: h + effectivePageGutter, width: w, height: h },
         ];
       }
 
@@ -266,6 +272,10 @@ export default function StepEditor({
     const files = Array.from(e.target.files || [])
     if (!files.length) return
 
+    // Upload limit (keep in sync with the UI text in `UploadArea.jsx`).
+    const MAX_FILE_MB = 50
+    const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
+
     // Create a small thumbnail for fast grids/sidebars.
     // Keep the full image as a blob: URL so the editor stays responsive.
     const createThumbnail = (file, maxSize = 256) =>
@@ -309,7 +319,7 @@ export default function StepEditor({
 
       const prepared = await Promise.all(
         batch.map(async (file) => {
-          if (file.size > 10 * 1024 * 1024) return null
+          if (file.size > MAX_FILE_BYTES) return null
           if (!file.type.startsWith('image/')) return null
 
           const src = URL.createObjectURL(file) // blob:
@@ -605,8 +615,8 @@ export default function StepEditor({
             currentLayoutObj={currentLayoutObj}
             selectedSizeObj={selectedSizeObj}
             pageBgColor={pageBgColor}
-            pageMargin={pageMargin}
-            pageGutter={pageGutter}
+            pageMargin={effectivePageMargin}
+            pageGutter={effectivePageGutter}
             captionPosition={captionPosition}
             captionAlignment={captionAlignment}
             selectedFontSize={selectedFontSize}
@@ -617,7 +627,7 @@ export default function StepEditor({
             imageGridProps={{
               currentPage,
               currentLayoutObj,
-              pageGutter,
+              pageGutter: effectivePageGutter,
               maxSlots,
               uploadedImages,
               selectedSlotIdx,
@@ -672,6 +682,34 @@ export default function StepEditor({
           setPageMargin={setPageMargin}
           pageGutter={pageGutter}
           setPageGutter={setPageGutter}
+          pageMarginEffective={effectivePageMargin}
+          pageGutterEffective={effectivePageGutter}
+          setPageMarginForCurrentPage={(v) => {
+            const newPages = [...pages]
+            const oldPage = newPages[currentPageIdx] || {}
+            newPages[currentPageIdx] = { ...oldPage, pageMargin: v }
+            setPages(newPages)
+          }}
+          setPageGutterForCurrentPage={(v) => {
+            const newPages = [...pages]
+            const oldPage = newPages[currentPageIdx] || {}
+            newPages[currentPageIdx] = { ...oldPage, pageGutter: v }
+            setPages(newPages)
+          }}
+          clearPageMarginOverride={() => {
+            const newPages = [...pages]
+            const oldPage = newPages[currentPageIdx] || {}
+            const { pageMargin: _pm, ...rest } = oldPage
+            newPages[currentPageIdx] = rest
+            setPages(newPages)
+          }}
+          clearPageGutterOverride={() => {
+            const newPages = [...pages]
+            const oldPage = newPages[currentPageIdx] || {}
+            const { pageGutter: _pg, ...rest } = oldPage
+            newPages[currentPageIdx] = rest
+            setPages(newPages)
+          }}
           pageBgColor={pageBgColor}
           setPageBgColor={setPageBgColor}
           imageBorderRadius={imageBorderRadius}

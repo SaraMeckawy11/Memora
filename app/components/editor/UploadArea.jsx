@@ -16,7 +16,7 @@ export default function UploadArea({ onUpload }) {
         <p className="editor-upload-title">Upload photos</p>
         <p className="editor-upload-sub">
           Click to browse or drag images here<br />
-          Max 10MB per image
+          Max 50MB per image
         </p>
       </label>
     </div>

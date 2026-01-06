@@ -32,6 +32,9 @@ export default function EditorSettings(props) {
   const {
     layouts, selectedLayout, updatePageLayout,
     pageMargin, setPageMargin, pageGutter, setPageGutter, pageBgColor, setPageBgColor,
+    pageMarginEffective, pageGutterEffective,
+    setPageMarginForCurrentPage, setPageGutterForCurrentPage,
+    clearPageMarginOverride, clearPageGutterOverride,
     imageBorderRadius, setImageBorderRadius, imageFitMode, setImageFitMode,
     showPageNumbers, setShowPageNumbers,
     selectedCaption, updateCaption, fontFamilies, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle,
@@ -175,10 +178,65 @@ export default function EditorSettings(props) {
     <div className="editor-card">
         <h4>Page Settings</h4>
 
+        {/* Per-page overrides (fallback to globals) */}
         <div className="control-group">
           <div className="control-subgroup">
             <div className='control-sub'>
-              <label className="control-label">Margin (px)</label>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+                <label className="control-label">Margin (this page)</label>
+                {typeof currentPage?.pageMargin === 'number' && (
+                  <button
+                    type="button"
+                    className="btn-modern"
+                    onClick={clearPageMarginOverride}
+                    title="Reset per-page margin"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="60"
+                value={typeof pageMarginEffective === 'number' ? pageMarginEffective : pageMargin}
+                onChange={e => setPageMarginForCurrentPage(+e.target.value)}
+                className="control-range"
+              />
+              <span className="control-value">{(typeof pageMarginEffective === 'number' ? pageMarginEffective : pageMargin)}px</span>
+            </div>
+
+            <div className='control-sub'>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
+                <label className="control-label">Gutter (this page)</label>
+                {typeof currentPage?.pageGutter === 'number' && (
+                  <button
+                    type="button"
+                    className="btn-modern"
+                    onClick={clearPageGutterOverride}
+                    title="Reset per-page gutter"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="40"
+                value={typeof pageGutterEffective === 'number' ? pageGutterEffective : pageGutter}
+                onChange={e => setPageGutterForCurrentPage(+e.target.value)}
+                className="control-range"
+              />
+              <span className="control-value">{(typeof pageGutterEffective === 'number' ? pageGutterEffective : pageGutter)}px</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="control-group">
+          <div className="control-subgroup">
+            <div className='control-sub'>
+              <label className="control-label">Margin (global)</label>
               <input
                 type="range"
                 min="0"
@@ -191,7 +249,7 @@ export default function EditorSettings(props) {
             </div>
 
             <div className='control-sub'>
-              <label className="control-label">Gutter (px)</label>
+              <label className="control-label">Gutter (global)</label>
               <input
                 type="range"
                 min="0"

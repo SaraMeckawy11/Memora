@@ -455,8 +455,11 @@ export default function CreatePage() {
   const getSlotRectsInInches = (layout, size, pageMargin, pageGutter, layoutSplitX, layoutSplitY) => {
     const pageW = size.width
     const pageH = size.height
-    const marginInInches = pageMargin / 25.4  // Assuming pageMargin is in mm
-    const gutterInInches = pageGutter / 25.4
+
+    // Editor controls are in pixels; PDF uses inches.
+    // Convert px -> inches assuming 96 DPI to match preview math.
+    const marginInInches = (pageMargin || 0) / 96
+    const gutterInInches = (pageGutter || 0) / 96
     const innerW = pageW - marginInInches * 2
     const innerH = pageH - marginInInches * 2
     const splitX = (layoutSplitX ?? 50) / 100
@@ -565,7 +568,16 @@ export default function CreatePage() {
 
         if (page.images?.length) {
           const layout = LAYOUTS.find(l => l.id === page.layout) || LAYOUTS[0]
-          const slotRects = getSlotRectsInInches(layout, size, pageMargin, pageGutter, page.layoutSplitX ?? 50, page.layoutSplitY ?? 50)
+          const effectiveMargin = typeof page.pageMargin === 'number' ? page.pageMargin : pageMargin
+          const effectiveGutter = typeof page.pageGutter === 'number' ? page.pageGutter : pageGutter
+          const slotRects = getSlotRectsInInches(
+            layout,
+            size,
+            effectiveMargin,
+            effectiveGutter,
+            page.layoutSplitX ?? 50,
+            page.layoutSplitY ?? 50
+          )
 
           for (let idx = 0; idx < page.images.length; idx++) {
             const imgId = page.images[idx]
@@ -575,8 +587,8 @@ export default function CreatePage() {
             if (!imgData || !slotRects[idx]) continue
 
             const rect = slotRects[idx]
-            const slotX = (pageMargin / 25.4) + rect.x
-            const slotY = (pageMargin / 25.4) + rect.y
+            const slotX = (effectiveMargin / 96) + rect.x
+            const slotY = (effectiveMargin / 96) + rect.y
             const slotW = rect.width
             const slotH = rect.height
 
