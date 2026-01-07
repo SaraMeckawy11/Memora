@@ -130,15 +130,16 @@ export default function StepEditor({
     )
   }
   
-  const selectedSizeObj = sizes.find(s => s.id === selectedSize)
+  const selectedSizeObj = sizes.find(s => s.id === selectedSize) || sizes[0]
 
   const layoutSplitX = currentPage?.layoutSplitX ?? 50
   const layoutSplitY = currentPage?.layoutSplitY ?? 50
 
   const getSlotRects = () => {
+    if (!selectedSizeObj) return []
     const PIXELS_PER_INCH = 96; // Assuming 96 DPI for preview; adjust if needed for higher quality
-    const pageW = selectedSizeObj.width * PIXELS_PER_INCH;
-    const pageH = selectedSizeObj.height * PIXELS_PER_INCH;
+    const pageW = (selectedSizeObj?.width || 8.27) * PIXELS_PER_INCH;
+    const pageH = (selectedSizeObj?.height || 11.69) * PIXELS_PER_INCH;
     const innerW = pageW - pageMargin * 2; // pageMargin assumed in pixels
     const innerH = pageH - pageMargin * 2;
     const splitX = (layoutSplitX ?? 50) / 100;

@@ -242,9 +242,12 @@ export default function CoverEditorPage() {
 
   const handleSave = () => {
     // In a real app, we would export the canvas to an image or JSON
-    // For now, we'll just go back
-    alert('Cover design saved! (Mock)')
-    router.back()
+    // For now, we'll navigate to the review step
+    router.replace('/create?step=3')
+  }
+
+  const handleBack = () => {
+    router.push('/create/select-cover')
   }
 
   // Close dropdown when clicking outside
@@ -419,6 +422,7 @@ export default function CoverEditorPage() {
               )}
             </div>
 
+            <button className="save-btn" style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', marginRight: '8px' }} onClick={handleBack}>Back</button>
             <button className="save-btn" onClick={handleSave}>Done</button>
           </div>
         </div>
