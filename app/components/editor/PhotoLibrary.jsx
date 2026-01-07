@@ -3,19 +3,11 @@ import { useState, useEffect, useMemo } from 'react'
 import '@/styles/editor/PhotoLibrary.css'
 
 /* ======================================================
-   AUTO GENERATION CONFIG — EDIT ONLY HERE
-   ====================================================== */
-
-const MAX_SINGLE_PAGES = 4
-const MAX_TWO_PAGES = 10
-
-/* ======================================================
    LAYOUT DEFINITIONS
    ====================================================== */
 
 const LAYOUTS = {
   single: { id: 'single', slots: 1 },
-  twoV: { id: '2-vertical', slots: 2 },
   threeA: { id: '1-top-2-bottom', slots: 3 },
   threeB: { id: '2-top-1-bottom', slots: 3 },
   four: { id: '4-grid', slots: 4 },
@@ -28,7 +20,6 @@ const LAYOUTS = {
 const getOrientation = (img) => {
   if (!img.width || !img.height) return 'square'
   const ratio = img.width / img.height
-  // Use slightly more standard thresholds
   if (ratio >= 1.05) return 'landscape'
   if (ratio <= 0.95) return 'portrait'
   return 'square'
@@ -40,19 +31,18 @@ const getOrientation = (img) => {
 
 export default function PhotoLibrary({
   uploadedImages = [],
-  currentPage,
   addImageToPage,
   pages = [],
 }) {
   const [images, setImages] = useState(uploadedImages)
   const [selectedImageId, setSelectedImageId] = useState(null)
   const [infoMessage, setInfoMessage] = useState(null)
+  const [showModal, setShowModal] = useState(false)
 
   useEffect(() => {
     setImages(uploadedImages)
   }, [uploadedImages])
 
-  // Used images should be detected across the whole book (all pages), not only the current page.
   const usedIds = useMemo(() => {
     const set = new Set()
     for (const p of pages || []) {
@@ -77,144 +67,103 @@ export default function PhotoLibrary({
   }
 
   /* ======================================================
-     AUTO GENERATE (WITH FORCED INTRO PAGES)
+     AUTO GENERATE
      ====================================================== */
 
-  const autoGenerate = () => {
+  const handleGenerationRequest = (mode) => {
+    setShowModal(false)
     if (!images.length) {
       setInfoMessage('Upload photos first to generate your book.')
       return
     }
 
-    /* ---------- classify images (preserve original order) ---------- */
-    const prepared = images
-      .map((img) => ({
-        ...img,
-        orientation: getOrientation(img),
+    let generatedPages = []
+    let stats = { single: 0, two: 0, three: 0, four: 0 }
+
+    if (mode === 'singleOnly') {
+      generatedPages = images.map((img) => ({
+        layout: 'single',
+        images: [img.id],
       }))
-
-    // pool preserves original order; pickImage will remove items from pool
-    const pool = prepared.slice()
-
-    // Small scale reordering: Look-ahead to find best orientation match
-    const pickImage = (preferred, strict = false) => {
-      if (!pool.length) return null
-      
-      // 1. Try to find the exact preferred orientation in look-ahead
-      let idx = pool.slice(0, 10).findIndex(i => i.orientation === preferred)
-      
-      // 2. If not found, try square
-      if (idx === -1 && preferred !== 'square') {
-        idx = pool.slice(0, 10).findIndex(i => i.orientation === 'square')
+      stats.single = generatedPages.length
+    } else if (mode === 'twoSlotsOnly') {
+      const pool = [...images]
+      while (pool.length > 0) {
+        const pageImages = pool.splice(0, 2).map((img) => img.id)
+        generatedPages.push({
+          layout: '2-vertical',
+          images: pageImages,
+        })
+        stats.two++
       }
-
-      // 3. If strict is true and we found nothing, return null (don't force a wrong orientation)
-      if (strict && idx === -1) return null
-
-      // 4. Default to first if not strict
-      if (idx === -1) idx = 0 
-      
-      return pool.splice(idx, 1)[0] || null
-    }
-
-    const remainingCount = () => pool.length
-
-    const pages = []
-    const layoutCounts = { single: 0, two: 0, three: 0, four: 0 }
-
-    /* ---------- layout chooser ---------- */
-    const chooseLayout = () => {
-      const nextBatch = pool.slice(0, 6)
-      const orientations = nextBatch.map(i => i.orientation)
-      
-      const pCount = orientations.filter(o => o === 'portrait' || o === 'square').length
-      const lCount = orientations.filter(o => o === 'landscape' || o === 'square').length
-
-      /* ✅ FORCE FIRST 2 PAGES TO BE SINGLE */
-      if (pages.length < 2) return LAYOUTS.single
-
-      // Use 4-grid ONLY if 4 portraits/squares are available
-      if (pCount >= 4 && pool.length >= 4) return LAYOUTS.four
-
-      // Use 3-slots ONLY if we have at least 1 landscape specifically
-      const hasActualLandscape = pool.slice(0, 10).some(img => img.orientation === 'landscape' || img.orientation === 'square')
-      if (hasActualLandscape && pCount >= 2 && pool.length >= 3) {
-        return Math.random() > 0.5 ? LAYOUTS.threeA : LAYOUTS.threeB
-      }
-
-      // Respect specified user limits for 1 and 2 slot layouts
-      if (layoutCounts.single < MAX_SINGLE_PAGES && (orientations[0] === 'portrait' || orientations[0] === 'square')) {
-        return LAYOUTS.single
-      }
-
-      // Vertical only for 2-slot
-      if (layoutCounts.two < MAX_TWO_PAGES && pool.length >= 2 && pCount >= 2) {
-        return LAYOUTS.twoV
-      }
-
-      // Default fallbacks prioritize multi-image layouts to keep book compact
-      if (pool.length >= 4 && pCount >= 4) return LAYOUTS.four
-      if (pool.length >= 3 && hasActualLandscape) return LAYOUTS.threeA
-      if (pool.length >= 2) return LAYOUTS.twoV
-      return LAYOUTS.single
-    }
-
-    /* ---------- page loop ---------- */
-    while (remainingCount() > 0) {
-      const layout = chooseLayout()
-      const pageImages = []
-
-      if (layout.id === 'single') {
-        pageImages.push(pickImage('portrait')?.id)
-        layoutCounts.single++
-      } 
-      else if (layout.id === '2-vertical') {
-        pageImages.push(pickImage('portrait')?.id, pickImage('portrait')?.id)
-        layoutCounts.two++
-      } 
-      else if (layout.slots === 3) {
-        // Enforce landscape slot getting a landscape/square image
-        const lImg = pickImage('landscape', true) // strict mode
-        const p1 = pickImage('portrait')
-        const p2 = pickImage('portrait')
-
-        if (layout.id === '1-top-2-bottom') {
-          // Slot 0 is Top (Landscape), Slots 1 & 2 are Bottom (Portrait)
-          pageImages.push(lImg?.id, p1?.id, p2?.id)
-        } else {
-          // Layout is '2-top-1-bottom': Slots 0 & 1 are Top (Portrait), Slot 2 is Bottom (Landscape)
-          pageImages.push(p1?.id, p2?.id, lImg?.id)
+    } else if (mode === 'smartGrid') {
+      // This is the existing complex logic
+      const prepared = images.map((img) => ({ ...img, orientation: getOrientation(img) }))
+      const pool = [...prepared]
+      const pickImage = (preferred, strict = false) => {
+        if (!pool.length) return null
+        let idx = pool.slice(0, 10).findIndex((i) => i.orientation === preferred)
+        if (idx === -1 && preferred !== 'square') {
+          idx = pool.slice(0, 10).findIndex((i) => i.orientation === 'square')
         }
-        layoutCounts.three++
-      } 
-      else if (layout.slots === 4) {
-        for (let i = 0; i < 4; i++) {
+        if (strict && idx === -1) return null
+        if (idx === -1) idx = 0
+        return pool.splice(idx, 1)[0] || null
+      }
+
+      const chooseLayout = () => {
+        const nextBatch = pool.slice(0, 6)
+        const orientations = nextBatch.map((i) => i.orientation)
+        const pCount = orientations.filter((o) => o === 'portrait' || o === 'square').length
+        const hasActualLandscape = pool
+          .slice(0, 10)
+          .some((img) => img.orientation === 'landscape' || img.orientation === 'square')
+
+        if (pCount >= 4 && pool.length >= 4) return LAYOUTS.four
+        if (hasActualLandscape && pCount >= 2 && pool.length >= 3) {
+          return Math.random() > 0.5 ? LAYOUTS.threeA : LAYOUTS.threeB
+        }
+        if (pool.length >= 4 && pCount >= 4) return LAYOUTS.four
+        if (pool.length >= 3 && hasActualLandscape) return LAYOUTS.threeA
+        // Fallback to a 3 or 4 slot layout if possible, otherwise single
+        if (pool.length >= 4) return LAYOUTS.four
+        if (pool.length >= 3) return LAYOUTS.threeA
+        return LAYOUTS.single // Fallback for remaining images
+      }
+
+      while (pool.length > 0) {
+        const layout = chooseLayout()
+        const pageImages = []
+        if (layout.id === 'single') {
           pageImages.push(pickImage('portrait')?.id)
+          stats.single++
+        } else if (layout.slots === 3) {
+          const lImg = pickImage('landscape', true)
+          const p1 = pickImage('portrait')
+          const p2 = pickImage('portrait')
+          if (layout.id === '1-top-2-bottom') {
+            pageImages.push(lImg?.id, p1?.id, p2?.id)
+          } else {
+            pageImages.push(p1?.id, p2?.id, lImg?.id)
+          }
+          stats.three++
+        } else if (layout.slots === 4) {
+          for (let i = 0; i < 4; i++) pageImages.push(pickImage('portrait')?.id)
+          stats.four++
         }
-        layoutCounts.four++
+        generatedPages.push({ layout: layout.id, images: pageImages.filter(Boolean) })
       }
-
-      pages.push({
-        layout: layout.id,
-        images: pageImages.filter(Boolean),
-      })
     }
 
     setInfoMessage(
-      `Auto-generated ${pages.length} pages · ` +
-      `1-img:${layoutCounts.single}, ` +
-      `2-img:${layoutCounts.two}, ` +
-      `3-img:${layoutCounts.three}, ` +
-      `4-img:${layoutCounts.four}`
+      `Auto-generated ${generatedPages.length} pages · ` +
+        `1-img:${stats.single}, 2-img:${stats.two}, 3-img:${stats.three}, 4-img:${stats.four}`,
     )
-
-    window.dispatchEvent(
-      new CustomEvent('auto-generate-pages', { detail: pages })
-    )
+    window.dispatchEvent(new CustomEvent('auto-generate-pages', { detail: generatedPages }))
   }
 
   /* ======================================================
-     JSX (UNCHANGED)
+     JSX
      ====================================================== */
 
   return (
@@ -226,18 +175,38 @@ export default function PhotoLibrary({
             Used {usedCount}/{images.length}
           </span>
         </h4>
-
-        <button
-          onClick={autoGenerate}
-          className="photo-library-auto-btn"
-        >
+        <button onClick={() => setShowModal(true)} className="photo-library-auto-btn">
           ✨ Auto generate
         </button>
       </div>
 
-      {infoMessage && (
-        <div className="photo-library-info">
-          {infoMessage}
+      {infoMessage && <div className="photo-library-info">{infoMessage}</div>}
+
+      {showModal && (
+        <div className="photo-library-modal-backdrop">
+          <div className="photo-library-modal">
+            <h3>Auto Generate Book</h3>
+            <p className="modal-subtitle">Choose a style for your book layout.</p>
+            <div className="modal-options vertical">
+              <button className="modal-choice-btn" onClick={() => handleGenerationRequest('singleOnly')}>
+                <strong>Full Page Photos</strong>
+                <small>Showcase each photo on its own dedicated page.</small>
+              </button>
+              <button className="modal-choice-btn" onClick={() => handleGenerationRequest('twoSlotsOnly')}>
+                <strong>Paired Layout</strong>
+                <small>Place two photos per page. Ideal for landscape shots.</small>
+              </button>
+              <button className="modal-choice-btn" onClick={() => handleGenerationRequest('smartGrid')}>
+                <strong>Smart Collage</strong>
+                <small>Create dynamic pages with a mix of 3 and 4 photo layouts.</small>
+              </button>
+            </div>
+            <div className="modal-actions">
+              <button className="modal-btn-secondary" onClick={() => setShowModal(false)}>
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -245,29 +214,17 @@ export default function PhotoLibrary({
         {images.map((img) => {
           const used = isUsed(img.id)
           const selected = selectedImageId === img.id
-
           return (
             <div
               key={img.id}
-              className={`photo-library-item
-                ${selected ? 'selected' : ''}
-                ${used ? 'used' : ''}
-              `}
+              className={`photo-library-item ${selected ? 'selected' : ''} ${used ? 'used' : ''}`}
               onClick={() => {
                 setSelectedImageId(img.id)
                 addImageToPage?.(img.id)
               }}
             >
-              <img
-                src={img.thumbSrc || img.src}
-                alt=""
-                draggable={false}
-                className="photo-library-img"
-                loading="lazy"
-              />
-
+              <img src={img.thumbSrc || img.src} alt="" draggable={false} className="photo-library-img" loading="lazy" />
               {used && <div className="photo-library-used">Used</div>}
-
               <button
                 className="photo-library-remove"
                 title="Remove photo"
