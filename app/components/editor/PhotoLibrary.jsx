@@ -6,20 +6,8 @@ import '@/styles/editor/PhotoLibrary.css'
    AUTO GENERATION CONFIG — EDIT ONLY HERE
    ====================================================== */
 
-const AUTO_MIN_PAGES = 25
-const MAX_IMAGES = 400
-const MAX_PAGES = 180
-
 const MAX_SINGLE_PAGES = 4
 const MAX_TWO_PAGES = 10
-
-const OUTRO_TWO_VERTICAL_PAGES = 2
-
-const THREE_IMAGE_RATIO = 0.45
-const FOUR_IMAGE_RATIO  = 0.55
-
-const TWO_HORIZONTAL_RATIO = 0
-const TWO_VERTICAL_RATIO   = 1
 
 /* ======================================================
    LAYOUT DEFINITIONS
@@ -27,7 +15,6 @@ const TWO_VERTICAL_RATIO   = 1
 
 const LAYOUTS = {
   single: { id: 'single', slots: 1 },
-  twoH: { id: '2-horizontal', slots: 2 },
   twoV: { id: '2-vertical', slots: 2 },
   threeA: { id: '1-top-2-bottom', slots: 3 },
   threeB: { id: '2-top-1-bottom', slots: 3 },
@@ -41,8 +28,9 @@ const LAYOUTS = {
 const getOrientation = (img) => {
   if (!img.width || !img.height) return 'square'
   const ratio = img.width / img.height
-  if (ratio > 1.15) return 'landscape'
-  if (ratio < 0.85) return 'portrait'
+  // Use slightly more standard thresholds
+  if (ratio >= 1.05) return 'landscape'
+  if (ratio <= 0.95) return 'portrait'
   return 'square'
 }
 
@@ -98,108 +86,110 @@ export default function PhotoLibrary({
       return
     }
 
-    /* ---------- classify images ---------- */
+    /* ---------- classify images (preserve original order) ---------- */
     const prepared = images
-      .slice(0, MAX_IMAGES)
       .map((img) => ({
         ...img,
         orientation: getOrientation(img),
       }))
 
-    const portraits   = prepared.filter(i => i.orientation === 'portrait')
-    const landscapes  = prepared.filter(i => i.orientation === 'landscape')
-    const squares     = prepared.filter(i => i.orientation === 'square')
+    // pool preserves original order; pickImage will remove items from pool
+    const pool = prepared.slice()
 
-    const pickImage = (preferred) => {
-      if (preferred === 'portrait' && portraits.length) return portraits.shift()
-      if (preferred === 'landscape' && landscapes.length) return landscapes.shift()
-      if (preferred === 'square' && squares.length) return squares.shift()
-      return portraits.shift() || landscapes.shift() || squares.shift() || null
+    // Small scale reordering: Look-ahead to find best orientation match
+    const pickImage = (preferred, strict = false) => {
+      if (!pool.length) return null
+      
+      // 1. Try to find the exact preferred orientation in look-ahead
+      let idx = pool.slice(0, 10).findIndex(i => i.orientation === preferred)
+      
+      // 2. If not found, try square
+      if (idx === -1 && preferred !== 'square') {
+        idx = pool.slice(0, 10).findIndex(i => i.orientation === 'square')
+      }
+
+      // 3. If strict is true and we found nothing, return null (don't force a wrong orientation)
+      if (strict && idx === -1) return null
+
+      // 4. Default to first if not strict
+      if (idx === -1) idx = 0 
+      
+      return pool.splice(idx, 1)[0] || null
     }
 
-    const remainingCount = () =>
-      portraits.length + landscapes.length + squares.length
+    const remainingCount = () => pool.length
 
     const pages = []
     const layoutCounts = { single: 0, two: 0, three: 0, four: 0 }
 
     /* ---------- layout chooser ---------- */
     const chooseLayout = () => {
-      const remainingImages = remainingCount()
-      const remainingPagesEstimate = Math.ceil(remainingImages / 3)
+      const nextBatch = pool.slice(0, 6)
+      const orientations = nextBatch.map(i => i.orientation)
+      
+      const pCount = orientations.filter(o => o === 'portrait' || o === 'square').length
+      const lCount = orientations.filter(o => o === 'landscape' || o === 'square').length
 
       /* ✅ FORCE FIRST 2 PAGES TO BE SINGLE */
-      if (pages.length < 2) {
+      if (pages.length < 2) return LAYOUTS.single
+
+      // Use 4-grid ONLY if 4 portraits/squares are available
+      if (pCount >= 4 && pool.length >= 4) return LAYOUTS.four
+
+      // Use 3-slots ONLY if we have at least 1 landscape specifically
+      const hasActualLandscape = pool.slice(0, 10).some(img => img.orientation === 'landscape' || img.orientation === 'square')
+      if (hasActualLandscape && pCount >= 2 && pool.length >= 3) {
+        return Math.random() > 0.5 ? LAYOUTS.threeA : LAYOUTS.threeB
+      }
+
+      // Respect specified user limits for 1 and 2 slot layouts
+      if (layoutCounts.single < MAX_SINGLE_PAGES && (orientations[0] === 'portrait' || orientations[0] === 'square')) {
         return LAYOUTS.single
       }
 
-      /* ---------- outro ---------- */
-      if (remainingPagesEstimate <= OUTRO_TWO_VERTICAL_PAGES && portraits.length >= 2) {
+      // Vertical only for 2-slot
+      if (layoutCounts.two < MAX_TWO_PAGES && pool.length >= 2 && pCount >= 2) {
         return LAYOUTS.twoV
       }
 
-      /* ---------- single image ---------- */
-      if (layoutCounts.single < MAX_SINGLE_PAGES && portraits.length) {
-        return LAYOUTS.single
-      }
-
-      /* ---------- two images ---------- */
-      if (layoutCounts.two < MAX_TWO_PAGES) {
-        if (portraits.length >= 2) return LAYOUTS.twoV
-        if (landscapes.length >= 2) return LAYOUTS.twoH
-        return Math.random() < TWO_HORIZONTAL_RATIO
-          ? LAYOUTS.twoH
-          : LAYOUTS.twoV
-      }
-
-      /* ---------- three vs four ---------- */
-      const totalDense = layoutCounts.three + layoutCounts.four || 1
-      const currentThreeRatio = layoutCounts.three / totalDense
-
-      if (currentThreeRatio < THREE_IMAGE_RATIO) {
-        return layoutCounts.three % 2 === 0
-          ? LAYOUTS.threeA
-          : LAYOUTS.threeB
-      }
-
-      return LAYOUTS.four
+      // Default fallbacks prioritize multi-image layouts to keep book compact
+      if (pool.length >= 4 && pCount >= 4) return LAYOUTS.four
+      if (pool.length >= 3 && hasActualLandscape) return LAYOUTS.threeA
+      if (pool.length >= 2) return LAYOUTS.twoV
+      return LAYOUTS.single
     }
 
     /* ---------- page loop ---------- */
-    while (
-      (pages.length < AUTO_MIN_PAGES || remainingCount() > 0) &&
-      pages.length < MAX_PAGES
-    ) {
+    while (remainingCount() > 0) {
       const layout = chooseLayout()
-      const pageImages = Array(layout.slots).fill(null)
+      const pageImages = []
 
       if (layout.id === 'single') {
-        pageImages[0] = pickImage('portrait')?.id
+        pageImages.push(pickImage('portrait')?.id)
         layoutCounts.single++
-      }
-
+      } 
       else if (layout.id === '2-vertical') {
-        pageImages[0] = pickImage('portrait')?.id
-        pageImages[1] = pickImage('portrait')?.id
+        pageImages.push(pickImage('portrait')?.id, pickImage('portrait')?.id)
         layoutCounts.two++
-      }
-
-      else if (layout.id === '2-horizontal') {
-        pageImages[0] = pickImage('landscape')?.id
-        pageImages[1] = pickImage('landscape')?.id
-        layoutCounts.two++
-      }
-
+      } 
       else if (layout.slots === 3) {
-        pageImages[0] = pickImage('landscape')?.id
-        pageImages[1] = pickImage('portrait')?.id
-        pageImages[2] = pickImage('portrait')?.id
-        layoutCounts.three++
-      }
+        // Enforce landscape slot getting a landscape/square image
+        const lImg = pickImage('landscape', true) // strict mode
+        const p1 = pickImage('portrait')
+        const p2 = pickImage('portrait')
 
+        if (layout.id === '1-top-2-bottom') {
+          // Slot 0 is Top (Landscape), Slots 1 & 2 are Bottom (Portrait)
+          pageImages.push(lImg?.id, p1?.id, p2?.id)
+        } else {
+          // Layout is '2-top-1-bottom': Slots 0 & 1 are Top (Portrait), Slot 2 is Bottom (Landscape)
+          pageImages.push(p1?.id, p2?.id, lImg?.id)
+        }
+        layoutCounts.three++
+      } 
       else if (layout.slots === 4) {
         for (let i = 0; i < 4; i++) {
-          pageImages[i] = pickImage('square')?.id
+          pageImages.push(pickImage('portrait')?.id)
         }
         layoutCounts.four++
       }
