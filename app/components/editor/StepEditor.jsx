@@ -130,7 +130,7 @@ export default function StepEditor({
     )
   }
   
-  const selectedSizeObj = sizes.find(s => s.id === selectedSize)
+  const selectedSizeObj = sizes.find(s => s.id === selectedSize) || sizes[0]
 
   // Per-page overrides (fallback to global defaults)
   const effectivePageMargin =
