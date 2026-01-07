@@ -496,6 +496,22 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
             </div>
 
             <div className="control-group">
+              <label className="control-label">Line Spacing</label>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input 
+                  type="range" 
+                  min="0.5" 
+                  max="3.0" 
+                  step="0.1"
+                  value={selectedElement.lineHeight || 1.2} 
+                  onChange={(e) => onUpdate({ lineHeight: Number(e.target.value) })}
+                  style={{ flex: 1 }}
+                />
+                <span style={{ fontSize: '12px', width: '24px' }}>{selectedElement.lineHeight || 1.2}</span>
+              </div>
+            </div>
+
+            <div className="control-group">
               <label className="control-label">Color</label>
               <div className="color-picker-wrapper">
                 <input 

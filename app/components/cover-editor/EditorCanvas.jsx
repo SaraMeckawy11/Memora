@@ -20,6 +20,7 @@ export default function EditorCanvas({
   const canvasRef = useRef(null)
   const [currentPath, setCurrentPath] = useState([])
   const [isDrawing, setIsDrawing] = useState(false)
+  const [activeGuides, setActiveGuides] = useState([]) // Array of { type: 'horizontal'|'vertical', pos: number }
 
   // Ref to track gesture state (Pan & Zoom)
   const gestureRef = useRef({
@@ -124,6 +125,97 @@ export default function EditorCanvas({
       })
     }
     setCurrentPath([])
+  }
+
+  // Snapping Logic
+  const handleSnap = (id, updates) => {
+    if (!updates || (updates.x === undefined && updates.y === undefined)) {
+      // Not a position update
+      setDragEnd()
+      return updates
+    }
+    
+    // If multiple items select/moved, snapping might be complex. Assuming single select drag.
+    const element = elements.find(el => el.id === id)
+    if (!element) return updates
+
+    const { width: startWidth, height: startHeight } = element
+    const x = updates.x !== undefined ? updates.x : element.x
+    const y = updates.y !== undefined ? updates.y : element.y
+    const w = updates.width !== undefined ? updates.width : startWidth
+    const h = updates.height !== undefined ? updates.height : startHeight
+
+    const SNAP_THRESHOLD = 10
+    const guides = []
+    
+    let newX = x
+    let newY = y
+
+    // Centers
+    const centerX = x + w / 2
+    const centerY = y + h / 2
+    
+    // Canvas Centers
+    const canvasW = canvasSettings?.width || 800
+    const canvasH = canvasSettings?.height || 1000
+    
+    const canvasCenterX = canvasW / 2
+    const canvasCenterY = canvasH / 2
+
+    // Snap Horizontal (Vertical Line)
+    if (Math.abs(centerX - canvasCenterX) < SNAP_THRESHOLD) {
+      newX = canvasCenterX - w / 2
+      guides.push({ type: 'vertical', pos: canvasCenterX })
+    } else if (Math.abs(x - 0) < SNAP_THRESHOLD) {
+         newX = 0
+         guides.push({ type: 'vertical', pos: 0 })
+    } else if (Math.abs(x + w - canvasW) < SNAP_THRESHOLD) {
+         newX = canvasW - w
+         guides.push({ type: 'vertical', pos: canvasW })
+    } else {
+        // Snap to other elements
+        for (const el of elements) {
+            if (el.id === id) continue
+            const elCenterX = el.x + el.width / 2
+            // Center to Center
+            if (Math.abs(centerX - elCenterX) < SNAP_THRESHOLD) {
+                newX = elCenterX - w / 2
+                guides.push({ type: 'vertical', pos: elCenterX })
+                break
+            }
+            // Edges logic could be added here
+        }
+    }
+
+    // Snap Vertical (Horizontal Line)
+    if (Math.abs(centerY - canvasCenterY) < SNAP_THRESHOLD) {
+      newY = canvasCenterY - h / 2
+      guides.push({ type: 'horizontal', pos: canvasCenterY })
+    } else if (Math.abs(y - 0) < SNAP_THRESHOLD) {
+         newY = 0
+         guides.push({ type: 'horizontal', pos: 0 })
+    } else if (Math.abs(y + h - canvasH) < SNAP_THRESHOLD) {
+         newY = canvasH - h
+         guides.push({ type: 'horizontal', pos: canvasH })
+    } else {
+        // Snap to other elements
+        for (const el of elements) {
+            if (el.id === id) continue
+            const elCenterY = el.y + el.height / 2
+            if (Math.abs(centerY - elCenterY) < SNAP_THRESHOLD) {
+                newY = elCenterY - h / 2
+                guides.push({ type: 'horizontal', pos: elCenterY })
+                break
+            }
+        }
+    }
+    
+    setActiveGuides(guides)
+    return { ...updates, x: newX, y: newY }
+  }
+
+  const setDragEnd = () => {
+    setActiveGuides([])
   }
 
   // --- Touch & Wheel Handlers (Attached via Ref for non-passive control) ---
@@ -274,8 +366,6 @@ export default function EditorCanvas({
     }
   }, [onAddDrawing]) // Re-bind only if callbacks change
 
-  // ...existing code...
-
   const width = canvasSettings?.width || 800
   const height = canvasSettings?.height || 1000
   
@@ -320,14 +410,40 @@ export default function EditorCanvas({
             element={el}
             isSelected={selectedId === el.id}
             onSelect={onSelect}
-            onChange={onUpdate}
+            onChange={(id, updates) => {
+               // Intercept updates for snapping
+               const snappedUpdates = handleSnap(id, updates)
+               onUpdate(id, snappedUpdates)
+            }}
             onDelete={() => onUpdate(el.id, null, 'delete')}
+            onDragStart={() => {
+                // Drag start logic if needed
+            }}
+            onDragEnd={() => setDragEnd()}
             isLocked={isDrawMode && drawingTool.type !== 'eraser'} // Lock elements while drawing (except eraser)
             isEraserActive={isDrawMode && drawingTool.type === 'eraser'}
             canvasScale={zoomLevel}
           />
         ))}
         
+        {/* Alignment Guides */}
+        {activeGuides.map((guide, i) => (
+            <div
+                key={i}
+                style={{
+                    position: 'absolute',
+                    left: guide.type === 'vertical' ? guide.pos : 0,
+                    top: guide.type === 'horizontal' ? guide.pos : 0,
+                    width: guide.type === 'vertical' ? 1 : '100%',
+                    height: guide.type === 'horizontal' ? 1 : '100%',
+                    backgroundColor: '#ec4899', // Pink guide line
+                    zIndex: 9999,
+                    pointerEvents: 'none',
+                    boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)'
+                }}
+            />
+        ))}
+
         {/* Current drawing path */}
         {isDrawing && currentPath.length > 0 && (
           <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 9999 }}>

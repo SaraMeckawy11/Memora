@@ -54,6 +54,22 @@
   color: var(--text-primary);
 }
 
+/* ===== ZOOM CONTROLS ===== */
+.zoom-controls {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: white;
+  padding: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+}
+
 /* ===== UTILITIES & ANIMATIONS ===== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -79,24 +95,24 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
 /* ===========================================
-   TABLET STYLES (768px - 1024px)
+   RESPONSIVE STYLES
 =========================================== */
-@media (min-width: 768px) and (max-width: 1024px) {
+
+/* Tablet & Mobile shared adjustments */
+@media (max-width: 1024px) {
   :root {
     --sidebar-width: 60px;
-    --panel-width: 240px;
-    --toolbar-width: 260px;
   }
 }
 
-/* ===========================================
-   MOBILE STYLES (<768px)
-=========================================== */
+/* Mobile */
 @media (max-width: 767px) {
   .cover-editor-root {
     flex-direction: column;
@@ -121,5 +137,19 @@
 
   .editor-header h3 {
     font-size: 0.85rem;
+  }
+
+  /* Move Zoom Controls to TOP RIGHT (Below Header) for mobile */
+  .zoom-controls {
+    bottom: auto;
+    top: 60px;
+    right: 12px;
+    padding: 4px;
+    transform: scale(0.85);
+    transform-origin: top right;
+    backdrop-filter: blur(8px); /* Ensure readability */
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
 }

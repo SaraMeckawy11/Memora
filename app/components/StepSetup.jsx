@@ -1,5 +1,6 @@
 'use client'
 import { useRef } from 'react'
+import { useRouter } from 'next/navigation'
 
 const COVER_THEMES = [
   {
@@ -60,6 +61,7 @@ export default function StepSetup({
   products,
   sizes
 }) {
+  const router = useRouter()
   const fileInputRef = useRef(null);
 
   const handleCoverUpload = (e) => {
@@ -277,209 +279,103 @@ export default function StepSetup({
       </div>
     );
   };
-// ...existing code...
+
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease' }}>
+    <div style={{ animation: 'fadeIn 0.3s ease', padding: '1rem' }}>
       <h2 style={{
         textAlign: 'center',
         marginBottom: '0.5rem',
         fontSize: '2rem',
-        color: 'var(--text-dark)',
+        color: '#1e293b',
         fontWeight: 700
       }}>
         Create Your Photo Book
       </h2>
       <p style={{
         textAlign: 'center',
-        color: 'var(--text-muted)',
+        color: '#64748b',
         marginBottom: '3rem',
         fontSize: '1.05rem'
       }}>
         Choose your book type, size, and cover theme
       </p>
+
       {/* Product Selection */}
       <div style={{ marginBottom: '3rem' }}>
-        <h3 style={{
-          marginBottom: '1rem',
-          fontSize: '1rem',
-          fontWeight: 600,
-          color: 'var(--text-dark)'
-        }}>
-          Book Type
+        <h3 style={{ marginBottom: '1.25rem', fontSize: '1.1rem', fontWeight: 600, color: '#1e293b' }}>
+          1. Select Book Type
         </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.5rem' }}>
-          {products.map((product) => (
-            <div
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {products?.map(product => (
+            <button
               key={product.id}
-              onClick={() => setSelectedProduct(product.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  setSelectedProduct(product.id)
-                }
-              }}
+              onClick={() => setSelectedProduct(product)}
               style={{
+                background: 'white',
+                border: selectedProduct?.id === product.id ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                borderRadius: '16px',
                 padding: '1.5rem',
-                backgroundColor: selectedProduct === product.id ? 'var(--accent-soft)' : '#fff',
-                borderRadius: 'var(--radius)',
-                border: selectedProduct === product.id ? '2px solid var(--accent-solid)' : '2px solid var(--border)',
+                textAlign: 'left',
                 cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                boxShadow: selectedProduct === product.id ? '0 4px 16px rgba(0, 0, 0, 0.08)' : 'none',
+                transition: 'all 0.2s',
+                boxShadow: selectedProduct?.id === product.id ? '0 10px 15px -3px rgba(59, 130, 246, 0.1)' : 'none'
               }}
             >
-              <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem', textAlign: 'center' }}>
-                {product.icon}
-              </div>
-              <h4 style={{
-                margin: '0 0 0.25rem 0',
-                textAlign: 'center',
-                fontSize: '1.1rem',
-                color: 'var(--text-dark)',
-                fontWeight: 600
-              }}>
-                {product.name}
-              </h4>
-              <p style={{
-                margin: '0.25rem 0 0.75rem 0',
-                color: 'var(--text-muted)',
-                fontSize: '0.85rem',
-                textAlign: 'center',
-                lineHeight: 1.4
-              }}>
-                {product.description}
-              </p>
-              <p style={{
-                textAlign: 'center',
-                fontWeight: 600,
-                color: 'var(--accent-solid)',
-                margin: 0,
-                fontSize: '1.1rem'
-              }}>
-                From ${product.price}
-              </p>
-            </div>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>{product.icon}</div>
+              <div style={{ fontWeight: 700, fontSize: '1.1rem', color: '#1e293b', marginBottom: '0.25rem' }}>{product.name}</div>
+              <div style={{ color: '#64748b', fontSize: '0.9rem', lineHeight: '1.4' }}>{product.description}</div>
+            </button>
           ))}
         </div>
       </div>
-      {/* Size Selection - Improved Visualization */}
+
+      {/* Size Selection */}
       <div style={{ marginBottom: '3rem' }}>
-        <h3 style={{
-          marginBottom: '1rem',
-          fontSize: '1rem',
-          fontWeight: 600,
-          color: 'var(--text-dark)'
-        }}>
-          Book Size
+        <h3 style={{ marginBottom: '1.25rem', fontSize: '1.1rem', fontWeight: 600, color: '#1e293b' }}>
+          2. Select Size
         </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '1rem' }}>
-          {sizes.map((size) => {
-            const shapeStyle = getBookShapeStyle(size)
-            return (
-              <div
-                key={size.id}
-                onClick={() => setSelectedSize(size.id)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setSelectedSize(size.id)
-                  }
-                }}
-                style={{
-                  padding: '1.25rem',
-                  backgroundColor: selectedSize === size.id ? 'var(--accent-soft)' : '#fff',
-                  borderRadius: 'var(--radius)',
-                  border: selectedSize === size.id ? '2px solid var(--accent-solid)' : '2px solid var(--border)',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  position: 'relative',
-                }}
-              >
-                {size.popular && (
-                  <span style={{
-                    position: 'absolute',
-                    top: '-10px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    backgroundColor: 'var(--accent-solid)',
-                    color: '#fff',
-                    padding: '0.2rem 0.6rem',
-                    borderRadius: '20px',
-                    fontSize: '0.7rem',
-                    fontWeight: 600,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
-                    Popular
-                  </span>
-                )}
-                {/* Visual Book Shape */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  height: '90px',
-                  marginBottom: '0.75rem',
-                }}>
-                  <div style={{
-                    ...shapeStyle,
-                    backgroundColor: selectedSize === size.id ? 'var(--accent-solid)' : 'var(--bg-soft)',
-                    borderRadius: '4px',
-                    boxShadow: selectedSize === size.id
-                      ? '4px 4px 0 rgba(0,0,0,0.1)'
-                      : '2px 2px 0 var(--border)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    position: 'relative',
-                  }}>
-                    <span style={{
-                      fontSize: '0.65rem',
-                      color: selectedSize === size.id ? '#fff' : 'var(--text-muted)',
-                      fontWeight: 500,
-                    }}>
-                      {size.width}×{size.height}
-                    </span>
-                  </div>
-                </div>
-                <h4 style={{
-                  margin: '0 0 0.25rem 0',
-                  textAlign: 'center',
-                  fontSize: '0.9rem',
-                  color: 'var(--text-dark)',
-                  fontWeight: 600
-                }}>
-                  {size.name}
-                </h4>
-                <p style={{
-                  margin: 0,
-                  color: 'var(--text-muted)',
-                  fontSize: '0.75rem',
-                  textAlign: 'center'
-                }}>
-                  {size.label}
-                </p>
-              </div>
-            )
-          })}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1.2rem' }}>
+          {sizes?.map(size => (
+            <button
+              key={size.id}
+              onClick={() => setSelectedSize(size)}
+              style={{
+                background: 'white',
+                border: selectedSize?.id === size.id ? '2px solid #3b82f6' : '1px solid #e2e8f0',
+                borderRadius: '12px',
+                padding: '1rem',
+                textAlign: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+            >
+              <div style={{ 
+                width: '40px', 
+                height: size.id % 2 === 0 ? '30px' : '50px', 
+                background: '#f1f5f9', 
+                margin: '0 auto 1rem',
+                border: '1px solid #cbd5e1'
+              }} />
+              <div style={{ fontWeight: 600, fontSize: '0.9rem', color: '#1e293b' }}>{size.name}</div>
+              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{size.label}</div>
+            </button>
+          ))}
         </div>
       </div>
-      {/* Cover Theme (includes upload) */}
+
+      {/* Cover Theme Selection */}
       <div style={{ marginBottom: '2rem' }}>
         <h3 style={{
           marginBottom: '1.5rem',
-          fontSize: '1rem',
+          fontSize: '1.1rem',
           fontWeight: 600,
-          color: 'var(--text-dark)',
+          color: '#1e293b',
           textAlign: 'left',
         }}>
-          Cover Theme
+          3. Choose a Background Theme
         </h3>
         {renderThemeCards()}
       </div>
     </div>
-  )
+  );
 }

@@ -8,6 +8,8 @@ export default function DraggableElement({
   onSelect,
   onChange,
   onDelete,
+  onDragStart,
+  onDragEnd,
   canvasScale = 1,
   isLocked = false,
   isEraserActive = false
@@ -34,6 +36,7 @@ export default function DraggableElement({
     setIsDragging(true)
     setDragStart({ x: e.clientX, y: e.clientY })
     setInitialDims({ x: element.x, y: element.y, w: element.width, h: element.height })
+    if (onDragStart) onDragStart()
   }
 
   const handleTouchStart = (e) => {
@@ -50,6 +53,7 @@ export default function DraggableElement({
     const touch = e.touches[0]
     setDragStart({ x: touch.clientX, y: touch.clientY })
     setInitialDims({ x: element.x, y: element.y, w: element.width, h: element.height })
+    if (onDragStart) onDragStart()
   }
 
   const handleDoubleClick = () => {
@@ -114,6 +118,7 @@ export default function DraggableElement({
     }
 
     const handleEnd = () => {
+      if (isDragging && onDragEnd) onDragEnd()
       setIsDragging(false)
       setIsResizing(false)
       setResizeHandle(null)
@@ -132,7 +137,7 @@ export default function DraggableElement({
       window.removeEventListener('touchmove', handleTouchMove)
       window.removeEventListener('touchend', handleEnd)
     }
-  }, [isDragging, isResizing, dragStart, initialDims, canvasScale, element.id, onChange, resizeHandle])
+  }, [isDragging, isResizing, dragStart, initialDims, canvasScale, element.id, onChange, resizeHandle, onDragEnd])
 
   const style = {
     left: `${element.x}px`,
@@ -177,7 +182,7 @@ export default function DraggableElement({
               outline: 'none',
               padding: 0,
               margin: 0,
-              lineHeight: 1.2,
+              lineHeight: element.lineHeight || 1.2,
               overflow: 'hidden'
             }}
           />
@@ -196,7 +201,7 @@ export default function DraggableElement({
           width: '100%',
           height: '100%',
           whiteSpace: 'pre-wrap',
-          lineHeight: 1.2
+          lineHeight: element.lineHeight || 1.2
         }}>
           {element.content}
         </div>

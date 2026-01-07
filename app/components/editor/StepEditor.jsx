@@ -142,6 +142,7 @@ export default function StepEditor({
   const layoutSplitY = currentPage?.layoutSplitY ?? 50
 
   const getSlotRects = () => {
+    if (!selectedSizeObj) return []
     const PIXELS_PER_INCH = 96; // Assuming 96 DPI for preview; adjust if needed for higher quality
     const pageW = selectedSizeObj.width * PIXELS_PER_INCH;
     const pageH = selectedSizeObj.height * PIXELS_PER_INCH;

@@ -1,8 +1,8 @@
 'use client'
 
 import { usePhotoBook } from '@/app/components/editor/PhotoBookProvider'
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import jsPDF from 'jspdf'
 
 import StepSetup from '@/app/components/StepSetup'
@@ -86,9 +86,24 @@ const FONT_FAMILIES = [
 
 export default function CreatePage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { state, eventBus, isLoaded } = usePhotoBook()
 
   const [step, setStep] = useState(1)
+
+  // Use a ref to track if we've already initialized the step from the URL or draft
+  const hasInitializedStep = useRef(false)
+
+  useEffect(() => {
+    const s = searchParams.get('step')
+    if (s) {
+      const parsed = parseInt(s)
+      if (parsed !== step) {
+        setStep(parsed)
+        hasInitializedStep.current = true
+      }
+    }
+  }, [searchParams, step])
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
@@ -285,9 +300,21 @@ export default function CreatePage() {
           return img
         })
 
-        setStep(d.step || 1)
         setPages(Array.isArray(d.pages) ? d.pages : [])
         setUploadedImages(restoredImages)
+        
+        // Priority: URL search param
+        // We no longer automatically jump based on draft.step when coming from home.
+        // This prevents the "toggling" glitch.
+        const sParam = new URLSearchParams(window.location.search).get('step')
+        if (sParam) {
+          setStep(parseInt(sParam))
+        } else {
+          setStep(1)
+          // Ensure URL matches step 1 if no param
+          // router.replace('/create?step=1') // Optional: can be annoying if they want clean URL
+        }
+        hasInitializedStep.current = true
         
         setSelectedProduct(d.selectedProduct ?? null)
         setSelectedSize(d.selectedSize ?? null)
@@ -780,20 +807,33 @@ export default function CreatePage() {
   /* ================= NAV ================= */
 
   const handleNext = () => {
-    if (step === 1 && selectedProduct && selectedSize) setStep(2)
-    else if (step === 2) setStep(3)
-    else {
+    if (step === 1 && selectedProduct && selectedSize) {
+      router.push('/create?step=2')
+    }
+    else if (step === 2) {
+      // Instead of going to step 3, go to the cover selection page
+      router.replace('/create/select-cover')
+    }
+    else if (step === 3) {
       state.set('selectedProduct', selectedProduct)
       state.set('selectedSize', selectedSize)
       state.set('pages', pages)
       state.set('uploadedImages', uploadedImages)
-      router.push('/order')
+      router.replace('/order')
     }
   }
 
   const handleBack = () => {
-    if (step === 1) router.push('/')
-    else setStep(step - 1)
+    if (step === 1) {
+      router.push('/')
+    }
+    else if (step === 3) {
+      router.push('/create/select-cover')
+    }
+    else {
+      const prevStep = step - 1
+      router.push(`/create?step=${prevStep}`)
+    }
   }
 
   if (!isLoaded) return null
@@ -999,7 +1039,7 @@ export default function CreatePage() {
       </div>
 
       {/* ================= BOTTOM NAV ================= */}
-      <footer className="create-bottom-nav">
+      <footer className={`create-bottom-nav ${step === 2 ? 'is-step-2' : ''}`}>
         <div
           className="create-bottom-inner container"
           style={{
@@ -1043,7 +1083,7 @@ export default function CreatePage() {
               onClick={() => setIsSidebarOpen(true)}
               className="select-page-btn"
             >
-              📄 Select Page
+              Select Page
             </button>
           )}
 
@@ -1074,7 +1114,7 @@ export default function CreatePage() {
               opacity: step === 1 && !isStep1Valid ? 0.6 : 1,
             }}
           >
-            {step === 3 ? 'Complete Order' : 'Next'}
+            {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
           </button>
         </div>
       </footer>

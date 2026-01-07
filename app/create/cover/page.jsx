@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 import EditorSidebar from '@/app/components/cover-editor/EditorSidebar'
 import EditorCanvas from '@/app/components/cover-editor/EditorCanvas'
 import EditorToolbar from '@/app/components/cover-editor/EditorToolbar'
@@ -29,7 +31,9 @@ export default function CoverEditorPage() {
   })
   const [zoomLevel, setZoomLevel] = useState(1)
   const [isInteractingWithCanvas, setIsInteractingWithCanvas] = useState(false)
-  
+  const [isExporting, setIsExporting] = useState(false)
+  const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false)
+
   // History State
   const [history, setHistory] = useState([[]])
   const [historyIndex, setHistoryIndex] = useState(0)
@@ -87,6 +91,7 @@ export default function CoverEditorPage() {
       fontFamily: props.fontFamily || 'Arial',
       fontWeight: props.fontWeight || 'normal',
       textAlign: props.textAlign || 'center',
+      lineHeight: props.lineHeight || 1.2,
       fill: props.fill || '#3b82f6',
       stroke: props.stroke || '#000000',
       strokeWidth: props.strokeWidth || 0,
@@ -168,12 +173,93 @@ export default function CoverEditorPage() {
     addToHistory(newElements)
   }
 
+  const handleDownload = async (format) => {
+    setIsExporting(true)
+    try {
+      // Find the element
+      const element = document.querySelector('.editor-canvas')
+      if (!element) {
+        throw new Error('Canvas element not found')
+      }
+
+      // Deselect any selected element before capturing (to remove selection boxes)
+      const prevSelection = selectedId
+      setSelectedId(null)
+      
+      // Wait for React to render the removal of selection indicators
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      const canvas = await html2canvas(element, {
+        scale: 3, // 3x resolution for high quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.querySelector('.editor-canvas')
+          if (clonedElement) {
+            // Reset transform to capture actual size without zoom scaling
+            clonedElement.style.transform = 'scale(1)'
+            clonedElement.style.transformOrigin = 'top left'
+          }
+        }
+      })
+
+      // Restore selection
+      if (prevSelection) setSelectedId(prevSelection)
+
+      if (format === 'pdf') {
+        const imgWidth = canvas.width
+        const imgHeight = canvas.height
+        
+        // Create PDF matching the image dimensions
+        const pdf = new jsPDF({
+          orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+          unit: 'px',
+          format: [imgWidth, imgHeight]
+        })
+        
+        const imgData = canvas.toDataURL('image/jpeg', 1.0)
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight)
+        pdf.save('cover-design.pdf')
+      } else {
+        const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png'
+        const link = document.createElement('a')
+        link.download = `cover-design.${format}`
+        link.href = canvas.toDataURL(mimeType, format === 'jpeg' ? 0.92 : 1.0)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }
+
+    } catch (error) {
+      console.error('Export failed:', error)
+      alert(`Failed to save cover: ${error.message}`)
+    } finally {
+      setIsExporting(false)
+      setIsDownloadMenuOpen(false)
+    }
+  }
+
   const handleSave = () => {
     // In a real app, we would export the canvas to an image or JSON
-    // For now, we'll just go back
-    alert('Cover design saved! (Mock)')
-    router.back()
+    // For now, we'll navigate to the review step
+    router.replace('/create?step=3')
   }
+
+  const handleBack = () => {
+    router.push('/create/select-cover')
+  }
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const closeMenu = (e) => {
+      if (isDownloadMenuOpen && !e.target.closest('.download-dropdown-container')) {
+        setIsDownloadMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', closeMenu)
+    return () => document.removeEventListener('mousedown', closeMenu)
+  }, [isDownloadMenuOpen])
 
   // Panning Handlers
   const handleMouseDown = (e) => {
@@ -255,7 +341,7 @@ export default function CoverEditorPage() {
       <div className="editor-main">
         <div className="editor-header">
           <h3>Cover Editor</h3>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button 
               className="toolbar-btn" 
               onClick={handleUndo} 
@@ -272,7 +358,72 @@ export default function CoverEditorPage() {
             >
               ↪
             </button>
-            <button className="save-btn" onClick={handleSave}>Save Cover</button>
+            
+            <div className="download-dropdown-container" style={{ position: 'relative' }}>
+              <button 
+                className="save-btn secondary"
+                onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
+                disabled={isExporting}
+                style={{ 
+                  padding: '6px 12px', 
+                  fontSize: '13px', 
+                  background: '#f1f5f9', 
+                  color: '#334155',
+                  display: 'flex',
+                  gap: '6px',
+                  alignItems: 'center'
+                }}
+              >
+                {isExporting ? 'Saving...' : 'Download'}
+                <span style={{ fontSize: '10px' }}>▼</span>
+              </button>
+
+              {isDownloadMenuOpen && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '4px',
+                  background: 'white',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '6px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  zIndex: 200,
+                  minWidth: '140px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  padding: '4px'
+                }}>
+                  <button 
+                    onClick={() => handleDownload('png')} 
+                    style={{ textAlign: 'left', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: '4px', fontSize: '13px', color: '#334155' }}
+                    onMouseEnter={e => e.target.style.background = '#f1f5f9'}
+                    onMouseLeave={e => e.target.style.background = 'none'}
+                  >
+                    Download PNG
+                  </button>
+                  <button 
+                    onClick={() => handleDownload('jpeg')} 
+                    style={{ textAlign: 'left', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: '4px', fontSize: '13px', color: '#334155' }}
+                    onMouseEnter={e => e.target.style.background = '#f1f5f9'}
+                    onMouseLeave={e => e.target.style.background = 'none'}
+                  >
+                    Download JPG
+                  </button>
+                  <button 
+                    onClick={() => handleDownload('pdf')} 
+                    style={{ textAlign: 'left', padding: '8px 12px', background: 'none', border: 'none', cursor: 'pointer', borderRadius: '4px', fontSize: '13px', color: '#334155' }}
+                    onMouseEnter={e => e.target.style.background = '#f1f5f9'}
+                    onMouseLeave={e => e.target.style.background = 'none'}
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button className="save-btn" style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', marginRight: '8px' }} onClick={handleBack}>Back</button>
+            <button className="save-btn" onClick={handleSave}>Done</button>
           </div>
         </div>
         
@@ -300,19 +451,7 @@ export default function CoverEditorPage() {
           />
         </div>
 
-        <div className="zoom-controls" style={{
-          position: 'absolute',
-          bottom: '80px',
-          right: '20px',
-          zIndex: 100,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          background: 'white',
-          padding: '8px',
-          borderRadius: '8px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
-        }}>
+        <div className="zoom-controls">
           <button 
             onClick={() => handleZoom(0.1)}
             style={{ width: '32px', height: '32px', borderRadius: '4px', border: '1px solid #e2e8f0', background: 'white', fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
