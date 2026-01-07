@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import { PhotoBookProvider } from '@/app/components/editor/PhotoBookProvider'
 
 export const metadata = {
 	title: 'Memora – Photo Book Maker',
@@ -19,9 +18,7 @@ export default function RootLayout({ children }) {
 				/>
 			</head>
 			<body>
-				<PhotoBookProvider>
-					{children}
-				</PhotoBookProvider>
+				{children}
 			</body>
 		</html>
 	)

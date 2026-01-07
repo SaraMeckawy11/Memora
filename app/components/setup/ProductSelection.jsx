@@ -1,12 +1,17 @@
 'use client'
 import '@/styles/setup/step-setup.css'
 
-export default function ProductSelection({ products, selectedProduct, setSelectedProduct }) {
+const PRODUCTS = [
+  { id: 1, name: 'Hardcover', icon: '📕', description: 'Premium hardcover with dust jacket', price: 29.99 },
+  { id: 2, name: 'Softcover', icon: '📔', description: 'Flexible softcover binding', price: 19.99 },
+]
+
+export default function ProductSelection({ selectedProduct, setSelectedProduct }) {
   return (
     <div className="section-container">
       <h3 className="section-title">Book Type</h3>
       <div className="product-grid">
-        {products.map((product) => (
+        {PRODUCTS.map((product) => (
           <div
             key={product.id}
             onClick={() => setSelectedProduct(product.id)}
@@ -29,3 +34,5 @@ export default function ProductSelection({ products, selectedProduct, setSelecte
     </div>
   )
 }
+
+export { PRODUCTS }

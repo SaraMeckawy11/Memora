@@ -15,22 +15,18 @@ export default function StepSetup({
   coverText,
   setCoverText,
   coverTheme,
-  setCoverTheme,
-  products,
-  sizes
+  setCoverTheme
 }) {
   return (
     <div className="setup-container">
       <SetupHeader />
       
       <ProductSelection 
-        products={products}
         selectedProduct={selectedProduct}
         setSelectedProduct={setSelectedProduct}
       />
       
       <SizeSelection 
-        sizes={sizes}
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}
       />
