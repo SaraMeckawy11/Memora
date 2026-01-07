@@ -8,6 +8,7 @@ import '@/styles/editor/PhotoLibrary.css'
 
 const LAYOUTS = {
   single: { id: 'single', slots: 1 },
+  two: { id: '2-vertical', slots: 2 },
   threeA: { id: '1-top-2-bottom', slots: 3 },
   threeB: { id: '2-top-1-bottom', slots: 3 },
   four: { id: '4-grid', slots: 4 },
@@ -112,6 +113,15 @@ export default function PhotoLibrary({
       }
 
       const chooseLayout = () => {
+        // Prioritize a 2-slot layout if the next two images are landscapes
+        if (
+          pool.length >= 2 &&
+          pool[0].orientation === 'landscape' &&
+          pool[1].orientation === 'landscape'
+        ) {
+          return LAYOUTS.two
+        }
+
         const nextBatch = pool.slice(0, 6)
         const orientations = nextBatch.map((i) => i.orientation)
         const pCount = orientations.filter((o) => o === 'portrait' || o === 'square').length
@@ -137,6 +147,9 @@ export default function PhotoLibrary({
         if (layout.id === 'single') {
           pageImages.push(pickImage('portrait')?.id)
           stats.single++
+        } else if (layout.id === '2-vertical') {
+          pageImages.push(pickImage('landscape')?.id, pickImage('landscape')?.id)
+          stats.two++
         } else if (layout.slots === 3) {
           const lImg = pickImage('landscape', true)
           const p1 = pickImage('portrait')
@@ -198,7 +211,7 @@ export default function PhotoLibrary({
               </button>
               <button className="modal-choice-btn" onClick={() => handleGenerationRequest('smartGrid')}>
                 <strong>Smart Collage</strong>
-                <small>Create dynamic pages with a mix of 3 and 4 photo layouts.</small>
+                <small>Creates dynamic pages with a mix of 2, 3, and 4 photo layouts.</small>
               </button>
             </div>
             <div className="modal-actions">
