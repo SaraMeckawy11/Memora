@@ -22,34 +22,6 @@
   padding: 0 1.5rem;
 }
 
-/* ================= LOADING ================= */
-.create-loading {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--page-bg);
-}
-
-.create-loading-inner {
-  text-align: center;
-}
-
-.create-spinner {
-  width: 48px;
-  height: 48px;
-  border: 3px solid var(--border-light);
-  border-top-color: var(--accent-solid);
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-  margin: 0 auto 1rem;
-}
-
-.create-loading-text {
-  font-size: 0.9rem;
-  color: #666;
-}
-
 /* ================= HEADER ================= */
 .create-header {
   position: sticky;
@@ -117,33 +89,6 @@
 
   font-size: 0.9rem;
   font-weight: 600;
-}
-
-/* ================= PROGRESS ================= */
-.create-progress {
-  background-color: #f8f9fa; /* Lighter background */
-  border-bottom: 1px solid var(--border-light);
-}
-
-.create-progress-bar {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0.75rem 1.5rem; /* Reduced padding */
-
-  display: flex;
-  gap: 0.75rem;
-}
-
-.create-progress-step {
-  flex: 1;
-  height: 5px; /* Slightly thicker */
-  background-color: #e9ecef; /* Lighter inactive color */
-  border-radius: 3px;
-  transition: background-color 0.25s ease;
-}
-
-.create-progress-step.active {
-  background-color: var(--accent-solid);
 }
 
 /* ================= CONTENT ================= */
@@ -253,30 +198,6 @@
   justify-content: center;
 }
 
-
-/* ================= PAGE NUMBER ================= */
-.page-number-indicator {
-  min-width: 96px;
-  height: 36px;
-  padding: 0 0.75rem;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-
-  color: var(--text-muted);
-  background-color: #f6f6f6;
-  border: 1px solid var(--border-light);
-  border-radius: 999px;
-
-  white-space: nowrap;
-  user-select: none;
-}
-
 /* ================= UTILITIES ================= */
 .hidden {
   display: none !important;
@@ -284,13 +205,6 @@
 
 .text-muted {
   color: var(--text-muted);
-}
-
-/* ================= ANIMATION ================= */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* ================= RESPONSIVE ================= */
@@ -349,147 +263,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-  }
-}
-
-/* ================= Header Controls (Save & PDF) ================= */
-.header-controls-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-top: 0.75rem;
-}
-
-.header-saved-status {
-  font-size: 0.85rem;
-  color: #888;
-  white-space: nowrap;
-  line-height: 1;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.btn-header-save {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 36px;
-  padding: 0 1.25rem;
-  line-height: 1;
-  box-sizing: border-box;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: #f5f5f5;
-  color: #222;
-  border: 1px solid #ddd;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-header-save:hover {
-  background: #eee;
-}
-
-/* PDF Export - Dropdown */
-.pdf-export-container {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.btn-pdf-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  height: 36px;
-  padding: 0 1.25rem;
-  line-height: 1;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, #1e293b, #0ea5e9);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn-pdf-trigger:hover {
-  opacity: 0.92;
-}
-
-.btn-pdf-trigger:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.pdf-dropdown-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.4rem;
-  background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  min-width: 170px;
-  z-index: 50;
-  display: flex;
-  flex-direction: column;
-  padding: 0.4rem 0;
-  animation: pdfMenuFade 0.1s ease-out;
-}
-
-@keyframes pdfMenuFade {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.pdf-dropdown-item {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding: 0.6rem 1rem;
-  text-align: left;
-  background: transparent;
-  border: none;
-  font-size: 0.85rem;
-  color: #333;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.pdf-dropdown-item:hover {
-  background: #f3f4f6;
-  color: #000;
-}
-
-/* Header Responsive */
-@media (max-width: 640px) {
-  .header-controls-row {
-    flex-wrap: wrap; /* Allow wrapping */
-    gap: 0.5rem;
-  }
-
-  .header-saved-status {
-    display: none; /* Hide 'Saved...' text on very small screens to save space */
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .pdf-export-container {
-    flex: 1;
-    justify-content: flex-end; /* Align right */
   }
 }
 @media (max-width: 380px) {

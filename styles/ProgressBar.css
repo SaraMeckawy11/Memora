@@ -1,0 +1,24 @@
+.create-progress {
+  background-color: #f8f9fa; /* Lighter background */
+  border-bottom: 1px solid var(--border-light);
+}
+
+.create-progress-bar {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0.75rem 1.5rem; /* Reduced padding */
+  display: flex;
+  gap: 0.75rem;
+}
+
+.create-progress-step {
+  flex: 1;
+  height: 5px; /* Slightly thicker */
+  background-color: #e9ecef; /* Lighter inactive color */
+  border-radius: 3px;
+  transition: background-color 0.25s ease;
+}
+
+.create-progress-step.active {
+  background-color: var(--accent-solid);
+}

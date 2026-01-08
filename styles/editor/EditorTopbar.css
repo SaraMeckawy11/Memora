@@ -49,13 +49,12 @@
   background: #f4f4f4;
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
-  display: inline-block;
+  line-height: 1;
 }
 
 .editor-photo-count.full {
-  font-weight: 600;
-  color: #e54848;
-  background: rgba(229, 72, 72, 0.08);
+  color: #16a34a;
+  background: #f0fdf4;
 }
 
 .editor-topbar-right {
@@ -66,27 +65,95 @@
 
 .editor-history-controls {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f4f4f4;
+  padding: 0.25rem;
+  border-radius: 9px;
+  border: 1px solid #e5e5e5;
 }
 
 .history-button {
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 6px 10px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #444;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
 .history-button:hover:not(:disabled) {
-  background: #f5f5f5;
+  background: #fff;
+  color: #000;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .history-button:disabled {
-  cursor: not-allowed;
   opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ================= Header Controls (Save & PDF) ================= */
+.header-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+
+.header-saved-status {
+  font-size: 0.85rem;
+  color: #888;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-header-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 1.25rem;
+  line-height: 1;
+  box-sizing: border-box;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: #f5f5f5;
+  color: #222;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-header-save:hover {
+  background: #eee;
+}
+
+@media (max-width: 640px) {
+  .header-controls-row {
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 0.5rem;
+  }
+
+  .header-saved-status {
+    display: none; /* Hide 'Saved...' text on very small screens to save space */
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
 }

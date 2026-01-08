@@ -1,5 +1,6 @@
 'use client'
 import { usePDFExporter } from './PDFExporter'
+import '@/styles/editor/PDFExportButton.css'
 
 export default function PDFExportButton({
   pages,

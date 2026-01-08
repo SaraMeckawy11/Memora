@@ -14,6 +14,9 @@ import { useSaveManager } from '@/app/components/editor/save/SaveManager'
 import PDFExportButton from '@/app/components/editor/pdf/PDFExportButton'
 
 import '@/styles/CreatePage.css'
+import '@/styles/Loading.css'
+import '@/styles/ProgressBar.css'
+import '@/styles/editor/EditorTopbar.css'
 
 /* ================= PAGE ================= */
 
