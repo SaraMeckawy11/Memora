@@ -11,7 +11,7 @@
     max-height: calc(100vh - 160px); /* Adjust as needed */
     overflow-y: auto;
     position: sticky;
-    top: 140px;
+    top: 80px;
     padding-right: 0.5rem; /* Add some space for the scrollbar */
   }
 }

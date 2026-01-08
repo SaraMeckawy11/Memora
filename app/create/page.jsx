@@ -262,7 +262,7 @@ export default function CreatePage() {
       </div>
 
       {/* ===== CONTENT ===== */}
-      <div className="create-content">
+      <div className={`create-content step-${step}`}>
         {step === 1 && (
           <StepSetup
             selectedProduct={selectedProduct}
@@ -342,7 +342,7 @@ export default function CreatePage() {
       </div>
 
       {/* ================= BOTTOM NAV ================= */}
-      <footer className={`create-bottom-nav ${step === 2 ? 'is-step-2' : ''}`}>
+      <footer className={`create-bottom-nav ${step === 1 ? 'is-step-1' : ''} ${step === 2 ? 'is-step-2' : ''}`}>
         <div
           className="create-bottom-inner container"
           style={{

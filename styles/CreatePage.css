@@ -152,7 +152,11 @@
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 1.5rem 0;
+  padding: 1.5rem 0rem; /* Kept spacious for Step 2 */
+}
+
+.create-content.step-1 {
+  padding: 1.5rem 0; /* Reduced side padding for Step 1 */
 }
 
 /* ================= BOTTOM NAV ================= */
@@ -173,6 +177,12 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+
+/* Reduced padding for step 1 on desktop */
+.create-bottom-nav.is-step-1 .create-bottom-inner {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
 }
 
 /* ================= BUTTONS ================= */
@@ -285,11 +295,20 @@
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
-  .create-content {
-    padding: 1.5rem 1rem 11rem;
+  .create-content.step-2 {
+    padding: 1.5rem 1rem 11rem; /* Original Step 2 spacing */
   }
+  
+  .create-content.step-1 {
+    padding: 1rem 1rem 6rem; /* Reduced Step 1 spacing */
+  }
+
   .create-bottom-inner {
     padding-bottom: 5rem;
+  }
+
+  .create-bottom-nav.is-step-1 .create-bottom-inner {
+    padding-bottom: 1.25rem;
   }
 }
 @media (max-width: 768px) {
