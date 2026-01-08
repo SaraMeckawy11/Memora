@@ -1,5 +1,7 @@
 'use client'
 
+import '@/styles/editor/UploadArea.css'
+
 export default function UploadArea({ onUpload }) {
   return (
     <div className="editor-upload-wrapper">

@@ -1,5 +1,7 @@
 'use client'
 
+import '@/styles/editor/EditorTopbar.css';
+
 export default function EditorTopbar({
   currentPageIdx,
   currentLayoutObj,
@@ -23,27 +25,13 @@ export default function EditorTopbar({
         </span>
       </div>
 
-      <div className="editor-topbar-right" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div className="editor-history-controls" style={{ display: 'flex', gap: '4px' }}>
+      <div className="editor-topbar-right">
+        <div className="editor-history-controls">
           <button
+            className="history-button"
             onClick={undo}
             disabled={!canUndo}
             title="Undo"
-            style={{
-              background: 'none',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              padding: '6px 10px',
-              cursor: canUndo ? 'pointer' : 'not-allowed',
-              opacity: canUndo ? 1 : 0.4,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#444',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => canUndo && (e.currentTarget.style.background = '#f5f5f5')}
-            onMouseOut={(e) => (e.currentTarget.style.background = 'none')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 7v6h6" />
@@ -51,24 +39,10 @@ export default function EditorTopbar({
             </svg>
           </button>
           <button
+            className="history-button"
             onClick={redo}
             disabled={!canRedo}
             title="Redo"
-            style={{
-              background: 'none',
-              border: '1px solid #ddd',
-              borderRadius: '6px',
-              padding: '6px 10px',
-              cursor: canRedo ? 'pointer' : 'not-allowed',
-              opacity: canRedo ? 1 : 0.4,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#444',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => canRedo && (e.currentTarget.style.background = '#f5f5f5')}
-            onMouseOut={(e) => (e.currentTarget.style.background = 'none')}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 7v6h-6" />

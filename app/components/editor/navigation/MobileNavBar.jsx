@@ -1,5 +1,7 @@
 'use client'
 
+import './MobileNavBar.css'
+
 export default function MobileNavBar({ 
   currentPageIdx, 
   totalPages, 

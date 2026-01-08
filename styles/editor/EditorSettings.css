@@ -15,3 +15,62 @@
     padding-right: 0.5rem; /* Add some space for the scrollbar */
   }
 }
+
+.editor-card h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.editor-card .card-content {
+  margin-top: 0.75rem;
+  display: block;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.editor-card:not(.expanded) .card-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.auto-save {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 18px;
+}
+
+.switch input { display: none; }
+
+.switch-track {
+  position: absolute;
+  inset: 0;
+  background: #ccc;
+  border-radius: 18px;
+  transition: all 0.2s ease;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.switch.checked .switch-track { background: var(--accent-solid); }
+.switch.checked .switch-thumb { transform: translateX(18px); }

@@ -1,0 +1,90 @@
+.editor-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  background-color: #fff;
+}
+
+.editor-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.editor-page-number {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.editor-divider-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #bbb;
+}
+
+.editor-layout-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #f4f4f4;
+  border-radius: 999px;
+  line-height: 1;
+}
+
+.editor-photo-count {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: #f4f4f4;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.editor-photo-count.full {
+  font-weight: 600;
+  color: #e54848;
+  background: rgba(229, 72, 72, 0.08);
+}
+
+.editor-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.editor-history-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.history-button {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  transition: all 0.2s;
+}
+
+.history-button:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.history-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
