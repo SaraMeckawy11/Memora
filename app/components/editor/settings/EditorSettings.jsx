@@ -25,6 +25,51 @@ function LayoutIcon({ template, isSelected }) {
 }
 
 /* =========================================
+   Modern SVG Icons for Mobile Tabs
+   ========================================= */
+const TabIcons = {
+  layout: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+    </svg>
+  ),
+  page: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+      <line x1="9" y1="13" x2="15" y2="13"/>
+    </svg>
+  ),
+  caption: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+    </svg>
+  ),
+  photos: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+      <circle cx="8.5" cy="8.5" r="1.5"/>
+      <polyline points="21 15 16 10 5 21"/>
+    </svg>
+  ),
+  actions: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  ),
+  image: (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+  ),
+}
+
+/* =========================================
    Main Component
    ========================================= */
 export default function EditorSettings(props) {
@@ -405,16 +450,16 @@ export default function EditorSettings(props) {
      Definitions for Mobile Tabs
      ========================================= */
   const mobileTabs = [
-    { id: 'layout', label: 'Layout', icon: '⊞', content: renderLayoutSection },
-    { id: 'page', label: 'Page', icon: '⚙️', content: renderPageSettingsSection },
-    { id: 'caption', label: 'Text', icon: 'Aa', content: renderCaptionSection },
-    { id: 'photos', label: 'Photos', icon: '🖼️', content: () => <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} /> },
-    { id: 'actions', label: 'Actions', icon: '💾', content: renderGlobalActions },
-  ]
+    { id: 'layout', label: 'Layout', icon: TabIcons.layout, content: renderLayoutSection },
+    { id: 'page', label: 'Page', icon: TabIcons.page, content: renderPageSettingsSection },
+    { id: 'caption', label: 'Text', icon: TabIcons.caption, content: renderCaptionSection },
+    { id: 'photos', label: 'Photos', icon: TabIcons.photos, content: () => <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} /> },
+    { id: 'actions', label: 'Actions', icon: TabIcons.actions, content: renderGlobalActions },
+  ];
   
   // If an image is selected, add Image tab
   if (selectedImageId) {
-    mobileTabs.splice(1, 0, { id: 'image', label: 'Edit Img', icon: '🎨', content: renderImageActions })
+    mobileTabs.splice(1, 0, { id: 'image', label: 'Edit', icon: TabIcons.image, content: renderImageActions });
   }
 
   return (
