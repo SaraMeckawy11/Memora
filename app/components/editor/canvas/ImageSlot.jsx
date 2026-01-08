@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import '@/styles/editor/ImageSlot.css'
 
 export default function ImageSlot({
   img,

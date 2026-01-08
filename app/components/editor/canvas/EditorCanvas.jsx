@@ -1,5 +1,6 @@
 'use client'
 
+import '@/styles/editor/canvas.css'
 import ImageGrid from './ImageGrid'
 
 export default function EditorCanvas({

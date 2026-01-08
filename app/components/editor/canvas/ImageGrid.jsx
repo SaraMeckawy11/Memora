@@ -1,5 +1,6 @@
 'use client'
 
+import '@/styles/editor/ImageGrid.css'
 import ImageSlot from './ImageSlot'
 
 export default function ImageGrid({

@@ -4,7 +4,9 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1.25rem;
-  background-color: #fff;
+  /* background-color: #fff; */
+  padding: 0rem 0.8rem; 
+  border-radius: 16px;
 }
 
 .editor-topbar-left {

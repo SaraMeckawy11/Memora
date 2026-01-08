@@ -1,0 +1,78 @@
+/* ===============================
+   Image slots
+================================ */
+.editor-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background-color: #fafafa;
+  border-radius: 0;
+  border: 1.5px dashed #ddd;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s ease;
+}
+
+.editor-slot.has-image {
+  background-color: #f8f8f8;
+  border: 1px solid var(--border);
+}
+
+.editor-slot.selected {
+  border: 2px solid var(--accent-solid);
+}
+
+.editor-slot-placeholder {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #999;
+  pointer-events: none;
+}
+
+.editor-slot.selected .editor-slot-placeholder {
+  color: var(--accent-solid);
+}
+
+.editor-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+}
+
+.editor-slot-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ===============================
+   Drag & drop swap affordances
+================================ */
+.editor-slot[draggable='true'] {
+  cursor: grab;
+}
+
+.editor-slot[draggable='true']:active {
+  cursor: grabbing;
+}
+
+.editor-slot.drag-over {
+  outline: 2px solid var(--accent-solid);
+  outline-offset: -2px;
+}
