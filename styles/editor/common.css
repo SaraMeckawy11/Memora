@@ -1,0 +1,104 @@
+/* =========================================
+   COMMON STYLES (Shared across components)
+   ========================================= */
+
+/* ================= Cards ================= */
+.editor-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.editor-card h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ================= Modern Buttons ================= */
+.btn-modern {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  background: #fff;
+  color: #111;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.03s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  white-space: nowrap;
+}
+
+.btn-modern:hover {
+  background: #fafafa;
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.07);
+}
+
+.btn-modern:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+.btn-modern:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(0,0,0,0.10),
+    0 10px 24px rgba(0,0,0,0.07);
+}
+
+.btn-modern-primary {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.btn-modern-primary:hover {
+  background: #000;
+}
+
+.btn-modern-danger {
+  background: #fff;
+  border-color: rgba(231, 76, 60, 0.35);
+  color: #b42318;
+}
+
+.btn-modern-danger:hover {
+  background: rgba(231, 76, 60, 0.06);
+  border-color: rgba(231, 76, 60, 0.45);
+}
+
+.btn-modern .btn-icon-glyph {
+  margin-right: 0.45rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  vertical-align: -1px;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+/* ================= Clear Button ================= */
+.clear-btn {
+  background: transparent;
+  border-color: transparent;
+  color: #555;
+  box-shadow: none;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.clear-btn:hover {
+  background: #f5f5f5;
+  color: #111;
+  border-color: transparent;
+  box-shadow: none;
+}

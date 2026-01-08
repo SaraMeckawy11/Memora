@@ -1,0 +1,124 @@
+/* ================= Actions (modern rows + buttons) ================= */
+.action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.action-row-left {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.action-title {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: #111;
+  line-height: 1.2;
+}
+
+.action-subtitle {
+  font-size: 0.72rem;
+  color: #666;
+  line-height: 1.25;
+}
+
+.action-danger {
+  border: 1px solid rgba(231, 76, 60, 0.20);
+  background: rgba(231, 76, 60, 0.06);
+}
+
+/* ================= Actions card polish ================= */
+.action-card .apply-btn {
+  width: 100%;
+  border-radius: 10px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #111;
+  transition: transform 0.03s, box-shadow 0.15s, background 0.15s;
+}
+
+.action-card .apply-btn:hover {
+  background: #000;
+}
+
+.action-card .apply-btn:active {
+  transform: translateY(1px);
+}
+
+.action-card .clear-btn {
+  width: 100%;
+  border-radius: 10px;
+}
+
+/* ================= Auto Save ================= */
+.auto-save {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+}
+
+.auto-save-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-track {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background-color: #d1d1d1;
+  border-radius: 24px;
+  transition: 0.3s;
+}
+
+.switch.checked .switch-track {
+  background-color: var(--accent-solid);
+}
+
+.switch-thumb {
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+.switch.checked .switch-thumb {
+  left: 23px;
+}
+
+.switch.unchecked .switch-thumb {
+  left: 3px;
+}

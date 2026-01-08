@@ -1,0 +1,133 @@
+/* ================= PAGE SETTINGS ================= */
+
+.page-settings h4 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+  color: #222;
+}
+
+/* ================= CONTROL GROUP ================= */
+
+.control-group {
+  background: #fff;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  padding: 0.65rem;
+  margin-bottom: 0.6rem;
+}
+
+/* ================= SUB GROUP ================= */
+
+.control-subgroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+/* ================= SINGLE CONTROL ================= */
+
+.control-sub {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ================= LABEL ================= */
+
+.control-label,
+.control-subgroup label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #555;
+}
+
+/* ================= RANGE ================= */
+
+.control-range {
+  width: 100%;
+  appearance: none;
+  height: 3px;
+  background: #e3e3e3;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.control-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #000;
+  cursor: pointer;
+}
+
+.control-range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #000;
+  border: none;
+  cursor: pointer;
+}
+
+/* ================= VALUE ================= */
+
+.control-value {
+  font-size: 0.65rem;
+  color: #777;
+  align-self: flex-end;
+}
+
+/* ================= INLINE ROW ================= */
+
+.inline-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+/* ================= INLINE COLUMN ================= */
+
+.inline-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* ================= COLOR INPUT ================= */
+
+.control-color {
+  width: 100%;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* ================= NUMBER INPUT ================= */
+
+.control-input {
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 640px) {
+  .inline-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hide the page settings card on desktop, as it's in the mobile drawer */
+@media (min-width: 1025px) {
+  .page-settings-desktop-card {
+    display: none;
+  }
+}

@@ -518,17 +518,6 @@
   color: #333;
 }
 
-/* ================= Apply ================= */
-.apply-btn {
-  padding: 0.75rem;
-  background-color: #f0f0f0;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
 /* ================= Auto Save ================= */
 .auto-save {
   display: flex;
@@ -587,18 +576,6 @@
 .switch.unchecked .switch-thumb {
   left: 3px;
 }
-
-/* ================= Clear ================= */
-.clear-btn {
-  padding: 0.5rem;
-  background-color: transparent;
-  border: 1px solid #e74c3c;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  color: #e74c3c;
-}
-
 
 /* =================================================================
    MOBILE RESPONSIVENESS SYSTEM
@@ -679,7 +656,7 @@
   .mobile-tab-btn::before {
     content: '';
     position: absolute;
-    top: -5px;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
     width: 0;

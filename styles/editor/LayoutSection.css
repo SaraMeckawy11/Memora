@@ -1,0 +1,98 @@
+/* ================= Layout ================= */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+
+.layout-btn {
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.layout-btn.active {
+  background-color: var(--accent-solid);
+  color: #fff;
+  border: 2px solid var(--accent-solid);
+}
+
+.layout-btn.inactive {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 2px solid transparent;
+}
+
+.layout-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ================= Layout Icons (EXACT MATCH) ================= */
+.layout-btn > .layout-icon {
+  flex-shrink: 0;
+}
+
+/* Base icon container */
+.layout-icon {
+  display: grid;
+  width: 24px;
+  height: 20px;
+  gap: 2px;
+}
+
+/* Layout variations */
+.layout-icon.single {
+  grid-template-columns: 1fr;
+}
+
+.layout-icon.cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.layout-icon.rows-2 {
+  grid-template-rows: 1fr 1fr;
+}
+
+.layout-icon.grid-4 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.layout-icon.grid-6 {
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+/* Nested layout icons must fill parent (CRITICAL) */
+.layout-icon .layout-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* Icon boxes */
+.layout-icon-box {
+  width: 100%;
+  height: 100%;
+  border-radius: 1px;
+}
+
+.layout-icon-box.active {
+  background-color: #fff;
+}
+
+.layout-icon-box.inactive {
+  background-color: #666;
+}
