@@ -56,3 +56,13 @@
   color: var(--text-muted);
   line-height: 1.4;
 }
+
+@media (max-width: 1024px) {
+  .editor-upload-wrapper {
+    padding: 0.8rem;
+  }
+
+  .editor-upload-label {
+    padding: 0.8rem;
+  }
+}
