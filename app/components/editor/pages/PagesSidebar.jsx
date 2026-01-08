@@ -54,56 +54,6 @@ export default function PagesSidebar({
     return layout ? layout.name : 'Single'
   }
 
-  const getMiniLayoutStyles = (layoutId, imagesCount) => {
-    // Default styles
-    let styles = {
-      display: 'grid',
-      gap: '2px',
-      height: '100%',
-      width: '100%',
-      backgroundColor: '#fff'
-    }
-
-    // Map layout IDs to grid templates
-    switch (layoutId) {
-      case 'single':
-        styles.gridTemplateColumns = '1fr'
-        styles.gridTemplateRows = '1fr'
-        break
-      case '2-horizontal':
-        styles.gridTemplateColumns = '1fr 1fr'
-        styles.gridTemplateRows = '1fr'
-        break
-      case '2-vertical':
-        styles.gridTemplateColumns = '1fr'
-        styles.gridTemplateRows = '1fr 1fr'
-        break
-      case '1-top-2-bottom':
-        styles.gridTemplateColumns = '1fr 1fr'
-        styles.gridTemplateRows = '1fr 1fr'
-        // We need custom placement for the first item to span 2 cols
-        styles.custom = '1-top-2-bottom'
-        break
-      case '2-top-1-bottom':
-        styles.gridTemplateColumns = '1fr 1fr'
-        styles.gridTemplateRows = '1fr 1fr'
-        styles.custom = '2-top-1-bottom'
-        break
-      case '4-grid':
-        styles.gridTemplateColumns = '1fr 1fr'
-        styles.gridTemplateRows = '1fr 1fr'
-        break
-      case '6-grid':
-        styles.gridTemplateColumns = '1fr 1fr 1fr'
-        styles.gridTemplateRows = '1fr 1fr'
-        break
-      default:
-        // Fallback based on image count if layout unknown
-        styles.gridTemplateColumns = imagesCount <= 1 ? '1fr' : '1fr 1fr'
-        styles.gridTemplateRows = imagesCount > 2 ? '1fr 1fr' : '1fr'
-    }
-    return styles
-  }
   const handlePageSelect = (idx) => {
     setCurrentPageIdx(idx);
     // Auto-close drawer only on mobile devices
@@ -317,50 +267,23 @@ export default function PagesSidebar({
       </div>
       <div className="preview-card-body">
         <div 
-          className="preview-page-container"
-          style={{
-            aspectRatio: `${aspectRatio}`,
-            width: aspectRatio >= 1 ? '100%' : 'auto',
-            height: aspectRatio < 1 ? '100%' : 'auto',
-            maxHeight: '100%',
-            maxWidth: '100%',
-            boxShadow: '0 0 5px rgba(0,0,0,0.1)',
-            backgroundColor: '#fff'
-          }}
+          className={`preview-page-container ${aspectRatio >= 1 ? 'portrait' : 'landscape'}`}
+          style={{ aspectRatio }}
         >
-          <div className="mini-page-content" style={getMiniLayoutStyles(page.layout, slotCount)}>
+          <div className="mini-page-content" data-layout={page.layout}>
             {Array.from({ length: slotCount }).map((_, imgIdx) => {
               const imgId = images[imgIdx] || null
               const src = getImageSrc(imgId)
-              const layoutStyles = getMiniLayoutStyles(page.layout, slotCount)
-              
-              let itemStyle = {
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                overflow: 'hidden',
-                backgroundColor: '#f0f0f0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid #e0e0e0'
-              }
-
-              // Apply custom spans
-              if (layoutStyles.custom === '1-top-2-bottom' && imgIdx === 0) {
-                itemStyle.gridColumn = 'span 2'
-              }
-              if (layoutStyles.custom === '2-top-1-bottom' && imgIdx === 2) {
-                itemStyle.gridColumn = 'span 2'
-              }
-
               const isSelectedForSwap = swapSelection.some(s => s.pageIdx === idx && s.imgIdx === imgIdx)
+              
+              const shouldSpan = 
+                (page.layout === '1-top-2-bottom' && imgIdx === 0) ||
+                (page.layout === '2-top-1-bottom' && imgIdx === 2)
 
               return (
                 <div 
                   key={imgIdx} 
-                  className={`mini-img-wrapper ${isSelectedForSwap ? 'swap-selected' : ''}`} 
-                  style={itemStyle}
+                  className={`mini-img-wrapper ${isSelectedForSwap ? 'swap-selected' : ''} ${shouldSpan ? 'span-2-cols' : ''}`}
                   onClick={(e) => {
                     if (isPreviewOpen) {
                       e.stopPropagation()
@@ -369,18 +292,9 @@ export default function PagesSidebar({
                   }}
                 >
                   {src ? (
-                    <img 
-                      src={src} 
-                      alt="" 
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        display: 'block'
-                      }}
-                    />
+                    <img src={src} alt="" />
                   ) : (
-                    <span style={{ fontSize: '10px', color: '#ccc' }}>+</span>
+                    <span className="empty-slot">+</span>
                   )}
                   {isSelectedForSwap && (
                     <div className="swap-overlay">
@@ -416,16 +330,9 @@ export default function PagesSidebar({
           <div className="pages-actions">
             <button className="add-page-btn" onClick={addPage}>+ Add</button>
             <button 
-              className="add-page-btn" 
+              className="add-page-btn preview-btn" 
               onClick={() => setIsPreviewOpen(true)} 
               title="Preview & Organize"
-              style={{ 
-                marginLeft: '8px', 
-                background: '#000', 
-                color: '#fff', 
-                border: 'none',
-                padding: '0.35rem 0.8rem'
-              }}
             >
               Preview
             </button>
@@ -515,7 +422,6 @@ export default function PagesSidebar({
                     <button 
                       className="preview-btn" 
                       onClick={() => setSwapSelection([])}
-                      style={{ marginLeft: '4px' }}
                     >
                       Cancel
                     </button>
@@ -557,21 +463,12 @@ export default function PagesSidebar({
             {/* Floating Drag Card (Mobile) */}
             {isTouchDragging && draggedIndex !== null && pages[draggedIndex] && (
               <div 
-                className={`preview-card ${viewMode === 'list' ? 'list-view' : ''}`}
+                className={`floating-drag-card ${viewMode === 'list' ? 'list-mode' : 'grid-mode'}`}
                 style={{
-                  position: 'fixed',
                   left: dragPosition.x,
                   top: dragPosition.y,
                   width: draggedCardDims.width,
                   height: draggedCardDims.height,
-                  zIndex: 9999,
-                  pointerEvents: 'none',
-                  transform: 'scale(1.05)',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                  opacity: 0.9,
-                  margin: 0,
-                  display: 'flex',
-                  flexDirection: viewMode === 'list' ? 'row' : 'column'
                 }}
               >
                 {renderCardContent(pages[draggedIndex], draggedIndex)}
