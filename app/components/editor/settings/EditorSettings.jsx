@@ -16,14 +16,14 @@ import '@/styles/editor/EditorSettings.css'
 export default function EditorSettings(props) {
   // Destructure all props for easy access
   const {
-    layouts, selectedLayout, updatePageLayout,
+    selectedLayout, updatePageLayout,
     pageMargin, setPageMargin, pageGutter, setPageGutter, pageBgColor, setPageBgColor,
     pageMarginEffective, pageGutterEffective,
     setPageMarginForCurrentPage, setPageGutterForCurrentPage,
     clearPageMarginOverride, clearPageGutterOverride,
     imageBorderRadius, setImageBorderRadius, imageFitMode, setImageFitMode,
     showPageNumbers, setShowPageNumbers,
-    selectedCaption, updateCaption, fontFamilies, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle,
+    selectedCaption, updateCaption, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle,
     applyToAllPages, uploadedImages, pages, currentPage, addImageToPage,
     selectedSlotIdx, openImageEditor,
     autoSave, setAutoSave, clearProgress,
@@ -53,7 +53,6 @@ export default function EditorSettings(props) {
 
   const renderLayoutSection = () => (
     <LayoutSection 
-      layouts={layouts}
       selectedLayout={selectedLayout}
       updatePageLayout={updatePageLayout}
     />
@@ -104,7 +103,6 @@ export default function EditorSettings(props) {
     <CaptionSection
       selectedCaption={selectedCaption}
       updateCaption={updateCaption}
-      fontFamilies={fontFamilies}
       selectedFontFamily={selectedFontFamily}
       selectedFontSize={selectedFontSize}
       selectedFontColor={selectedFontColor}

@@ -10,6 +10,12 @@
   text-align: center;
 }
 
+@media (min-width: 1025px) {
+  .editor-upload-wrapper {
+    margin-bottom: 5rem;
+  }
+}
+
 .editor-upload-label {
   display: flex;
   flex-direction: column;

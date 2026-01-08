@@ -62,8 +62,16 @@
   grid-template-columns: 1fr 1fr;
 }
 
+.layout-icon.cols-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .layout-icon.rows-2 {
   grid-template-rows: 1fr 1fr;
+}
+
+.layout-icon.rows-3 {
+  grid-template-rows: 1fr 1fr 1fr;
 }
 
 .layout-icon.grid-4 {
@@ -74,6 +82,11 @@
 .layout-icon.grid-6 {
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr;
+}
+
+.layout-icon.grid-2-3 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
 }
 
 /* Nested layout icons must fill parent (CRITICAL) */

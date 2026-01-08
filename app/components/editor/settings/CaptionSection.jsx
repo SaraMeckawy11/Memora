@@ -3,8 +3,25 @@ import React from 'react';
 import '@/styles/editor/common.css';
 import '@/styles/editor/CaptionSection.css';
 
+export const FONT_FAMILIES = [
+  { name: 'Inter', label: 'Inter (Sans-serif)' },
+  { name: 'Arial', label: 'Arial (Sans-serif)' },
+  { name: 'Helvetica', label: 'Helvetica (Sans-serif)' },
+  { name: 'Georgia', label: 'Georgia (Serif)' },
+  { name: 'Times New Roman', label: 'Times New Roman (Serif)' },
+  { name: 'Playfair Display', label: 'Playfair Display (Serif)' },
+  { name: 'Pacifico', label: 'Pacifico (Handwritten)' },
+  { name: 'Dancing Script', label: 'Dancing Script (Script)' },
+  { name: 'Caveat', label: 'Caveat (Handwritten)' },
+  { name: 'Satisfy', label: 'Satisfy (Script)' },
+  { name: 'Great Vibes', label: 'Great Vibes (Calligraphy)' },
+  { name: 'Shadows Into Light', label: 'Shadows Into Light (Handwritten)' },
+  { name: 'Lobster', label: 'Lobster (Display)' },
+  { name: 'Permanent Marker', label: 'Permanent Marker (Marker)' },
+]
+
 export default function CaptionSection({
-  selectedCaption, updateCaption, fontFamilies, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle
+  selectedCaption, updateCaption, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle
 }) {
   return (
     <div className="editor-card">
@@ -25,7 +42,7 @@ export default function CaptionSection({
             onChange={e => updateCaptionStyle('fontFamily', e.target.value)}
             className="caption-select"
           >
-            {fontFamilies.map(font => (
+            {FONT_FAMILIES.map(font => (
               <option key={font.name} value={font.name}>
                 {font.label}
               </option>

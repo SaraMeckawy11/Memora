@@ -8,39 +8,12 @@ import StepEditor from '@/app/components/editor/StepEditor'
 import StepReview from '@/app/components/StepReview'
 import { PRODUCTS } from '@/app/components/setup/ProductSelection'
 import { SIZES } from '@/app/components/setup/SizeSelection'
+import { LAYOUTS } from '@/app/components/editor/settings/LayoutSection'
+import { FONT_FAMILIES } from '@/app/components/editor/settings/CaptionSection'
 import { useSaveManager } from '@/app/components/editor/save/SaveManager'
 import PDFExportButton from '@/app/components/editor/pdf/PDFExportButton'
 
 import '@/styles/CreatePage.css'
-
-/* ================= CONSTANTS ================= */
-
-const LAYOUTS = [
-  { id: 'single', name: 'Full Page', cols: 1, rows: 1, template: 'single' },
-  { id: '2-horizontal', name: 'Side by Side', cols: 2, rows: 1, template: '2-horizontal' },
-  { id: '2-vertical', name: 'Stacked', cols: 1, rows: 2, template: '2-vertical' },
-  { id: '1-top-2-bottom', name: '1 Top + 2 Bottom', cols: 2, rows: 2, template: '1-top-2-bottom' },
-  { id: '2-top-1-bottom', name: '2 Top + 1 Bottom', cols: 2, rows: 2, template: '2-top-1-bottom' },
-  { id: '4-grid', name: '2×2 Grid', cols: 2, rows: 2, template: '4-grid' },
-  { id: '6-grid', name: '3×2 Grid', cols: 3, rows: 2, template: '6-grid' },
-]
-
-const FONT_FAMILIES = [
-  { name: 'Inter', label: 'Inter (Sans-serif)' },
-  { name: 'Arial', label: 'Arial (Sans-serif)' },
-  { name: 'Helvetica', label: 'Helvetica (Sans-serif)' },
-  { name: 'Georgia', label: 'Georgia (Serif)' },
-  { name: 'Times New Roman', label: 'Times New Roman (Serif)' },
-  { name: 'Playfair Display', label: 'Playfair Display (Serif)' },
-  { name: 'Pacifico', label: 'Pacifico (Handwritten)' },
-  { name: 'Dancing Script', label: 'Dancing Script (Script)' },
-  { name: 'Caveat', label: 'Caveat (Handwritten)' },
-  { name: 'Satisfy', label: 'Satisfy (Script)' },
-  { name: 'Great Vibes', label: 'Great Vibes (Calligraphy)' },
-  { name: 'Shadows Into Light', label: 'Shadows Into Light (Handwritten)' },
-  { name: 'Lobster', label: 'Lobster (Display)' },
-  { name: 'Permanent Marker', label: 'Permanent Marker (Marker)' },
-]
 
 /* ================= PAGE ================= */
 
@@ -319,7 +292,6 @@ export default function CreatePage() {
             setUploadedImages={setUploadedImages}
             sizes={SIZES}
             selectedSize={selectedSize}
-            layouts={LAYOUTS}
             selectedLayout={selectedLayout}
             setSelectedLayout={setSelectedLayout}
             selectedCaption={selectedCaption}
@@ -349,7 +321,6 @@ export default function CreatePage() {
             saveProgress={saveProgress}
             autoSave={autoSave}
             setAutoSave={setAutoSave}
-            fontFamilies={FONT_FAMILIES}
             applyCaptionStyleToAllPages={applyCaptionStyleToAllPages}
             applyPageSettingsToAllPages={applyPageSettingsToAllPages}
             clearProgress={clearProgress}

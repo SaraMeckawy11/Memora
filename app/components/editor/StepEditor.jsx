@@ -13,6 +13,7 @@ import { getSlotRects } from '@/app/utils/layoutCalculations'
 import { useImageHandling } from './hooks/useImageHandling'
 import { usePageOperations } from './hooks/usePageOperations'
 import { useCaptionHandling } from './hooks/useCaptionHandling'
+import { LAYOUTS } from './settings/LayoutSection'
 
 export default function StepEditor({
   pages,
@@ -23,7 +24,6 @@ export default function StepEditor({
   setUploadedImages,
   selectedSize,
   sizes,
-  layouts,
   selectedLayout,
   setSelectedLayout,
   selectedCaption,
@@ -53,7 +53,6 @@ export default function StepEditor({
   autoSave,
   setAutoSave,
   clearProgress,
-  fontFamilies,
   isSidebarOpen,
   setIsSidebarOpen,
   undo,
@@ -73,7 +72,7 @@ export default function StepEditor({
   ------------------------------ */
   const currentPageLayout = currentPage?.layout || selectedLayout
   const currentLayoutObj =
-    layouts.find(l => l.id === currentPageLayout) || layouts[0]
+    LAYOUTS.find(l => l.id === currentPageLayout) || LAYOUTS[0]
 
   const selectedSizeObj = sizes.find(s => s.id === selectedSize) || sizes[0]
 
@@ -120,7 +119,7 @@ export default function StepEditor({
     selectedFontFamily,
     captionPosition,
     captionAlignment,
-    layouts,
+    LAYOUTS,
     getMaxImages
   )
 
@@ -289,7 +288,6 @@ export default function StepEditor({
           removePage={pageOperations.removePage}
           duplicatePage={pageOperations.duplicatePage}
           movePage={pageOperations.movePage}
-          layouts={layouts}
           getMaxImages={getMaxImages}
           isOpen={isSidebarOpen}
           setIsOpen={setIsSidebarOpen}
@@ -358,7 +356,6 @@ export default function StepEditor({
         </div>
 
         <EditorSettings
-          layouts={layouts}
           selectedLayout={currentPageLayout}
           updatePageLayout={(layoutId) => pageOperations.updatePageLayout(layoutId, setSelectedLayout)}
           pageMargin={pageMargin}
@@ -403,7 +400,6 @@ export default function StepEditor({
           setShowPageNumbers={setShowPageNumbers}
           selectedCaption={selectedCaption}
           updateCaption={captionHandling.updateCaption}
-          fontFamilies={fontFamilies}
           selectedFontFamily={selectedFontFamily}
           selectedFontSize={selectedFontSize}
           selectedFontColor={selectedFontColor}

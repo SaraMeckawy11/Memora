@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef } from 'react'
 import '@/styles/editor/PagesSidebar.css'
+import { LAYOUTS } from '../settings/LayoutSection'
 
 export default function PagesSidebar({
   pages,
@@ -10,7 +11,6 @@ export default function PagesSidebar({
   removePage,
   duplicatePage,
   movePage,
-  layouts = [],
   isOpen,
   setIsOpen,
   undo,
@@ -50,7 +50,7 @@ export default function PagesSidebar({
   }
 
   const getLayoutName = (layoutId) => {
-    const layout = layouts.find(l => l.id === layoutId)
+    const layout = LAYOUTS.find(l => l.id === layoutId)
     return layout ? layout.name : 'Single'
   }
 
