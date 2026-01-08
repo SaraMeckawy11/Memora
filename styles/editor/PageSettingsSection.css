@@ -125,9 +125,8 @@
   }
 }
 
-/* Hide the page settings card on desktop, as it's in the mobile drawer */
 @media (min-width: 1025px) {
   .page-settings-desktop-card {
-    display: none;
+    display: block; /* Ensure it is visible on desktop */
   }
 }
