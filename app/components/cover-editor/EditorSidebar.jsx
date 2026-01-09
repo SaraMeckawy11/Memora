@@ -296,33 +296,33 @@ export default function EditorSidebar({
           )}
 
           {activeTab === 'draw-pen' && (
-            <div className="asset-grid" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Color</label>
-                <div className="color-picker-wrapper" style={{ width: '100%', height: '40px' }}>
+            <div className="draw-settings-group">
+              <div className="setting-item">
+                <label>Color</label>
+                <div className="color-picker-wrapper">
                   <input 
                     type="color" 
                     value={drawingTool.color} 
                     onChange={(e) => onUpdateDrawingTool({ ...drawingTool, color: e.target.value })} 
                   />
-                  <div style={{ width: '100%', height: '100%', backgroundColor: drawingTool.color, borderRadius: '4px' }} />
+                  <div className="color-preview-inner" style={{ backgroundColor: drawingTool.color }} />
                 </div>
               </div>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Size: {drawingTool.width}px</label>
+              <div className="setting-item">
+                <label>Size: {drawingTool.width}px</label>
                 <input 
                   type="range" 
                   min="1" 
                   max="50" 
                   value={drawingTool.width} 
                   onChange={(e) => onUpdateDrawingTool({ ...drawingTool, width: parseInt(e.target.value) })}
-                  style={{ width: '100%' }}
+                  className="custom-range"
                 />
               </div>
               
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem' }}>Opacity: {Math.round(drawingTool.opacity * 100)}%</label>
+              <div className="setting-item">
+                <label>Opacity: {Math.round(drawingTool.opacity * 100)}%</label>
                 <input 
                   type="range" 
                   min="0.1" 
@@ -330,16 +330,17 @@ export default function EditorSidebar({
                   step="0.1"
                   value={drawingTool.opacity} 
                   onChange={(e) => onUpdateDrawingTool({ ...drawingTool, opacity: parseFloat(e.target.value) })}
-                  style={{ width: '100%' }}
+                  className="custom-range"
                 />
               </div>
             </div>
           )}
 
           {activeTab === 'draw-eraser' && (
-            <div className="asset-grid" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-              <div style={{ padding: '10px', background: '#f1f5f9', borderRadius: '8px', fontSize: '0.9rem', color: '#64748b' }}>
-                Tap on elements to erase them.
+            <div className="draw-settings-group">
+              <div className="eraser-info-box">
+                
+                <p>Tap on elements to erase them from the canvas.</p>
               </div>
             </div>
           )}
