@@ -19,7 +19,7 @@ export default function StepSetup({
 }) {
   return (
     <div className="setup-container">
-      <SetupHeader />
+      {/* <SetupHeader /> */}
       
       <ProductSelection 
         selectedProduct={selectedProduct}
@@ -30,13 +30,13 @@ export default function StepSetup({
         selectedSize={selectedSize}
         setSelectedSize={setSelectedSize}
       />
-      
+{/*       
       <CoverThemeSelection 
         coverTheme={coverTheme}
         setCoverTheme={setCoverTheme}
         coverImage={coverImage}
         setCoverImage={setCoverImage}
-      />
+      /> */}
     </div>
   )
 }
