@@ -1,20 +1,20 @@
 'use client'
 import React from 'react';
 import TravelJournalBook from '@/app/components/custom-covers/TravelJournalBook';
+import WeddingCover from '@/app/components/custom-covers/WeddingCover';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 
 // A simple mapping from preset ID to component
 const PRESET_COMPONENTS = {
   travel: TravelJournalBook,
-  // wedding: WeddingCover, // Future components would be added here
-  // birthday: BirthdayCover,
+  wedding: WeddingCover,
 };
 
 // A mapping for fonts required by each theme
 const FONT_LINKS = {
     travel: "https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Sacramento&display=swap",
-    // wedding: "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap",
+    wedding: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Pinyon+Script&family=Great+Vibes&display=swap",
 }
 
 export default function CustomCoverPage({ params }) {

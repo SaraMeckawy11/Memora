@@ -48,7 +48,7 @@ export default function SelectCoverPage() {
 
   const handleSelectPreset = (presetId) => {
     setSelectedPreset(presetId)
-    // When a preset is selected, navigate to the main cover editor with the preset ID
+    // When a preset is selected, navigate to the cover editor with the preset
     router.push(`/create/cover?preset=${presetId}`)
   }
 
