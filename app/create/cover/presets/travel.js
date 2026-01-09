@@ -54,7 +54,7 @@ export const travel = {
       options: { filter: 'drop-shadow(2px 4px 4px rgba(0,0,0,0.3))' }
     },
     {
-      id: 'title', type: 'text', x: 70, y: 200, width: 753, height: 150,
+      id: 'title', type: 'text', x: 242, y: 186, width: 410, height: 150,
       content: 'The Ultimate Travel Journal',
       rotation: -2, zIndex: 15,
       color: '#2a2a72', fontSize: 68, fontFamily: 'Permanent Marker', fontWeight: '400', textAlign: 'center', lineHeight: 0.9,
@@ -89,10 +89,10 @@ export const travel = {
       options: { isPolaroid: true, polaroidPadding: 12, hasTape: true }
     },
     {
-      id: 'author', type: 'text', x: 100, y: 1050, width: 693, height: 100,
+      id: 'author', type: 'text', x: 115, y: 1014, width: 693, height: 100,
       content: 'Reese Miller',
       rotation: -5, zIndex: 20,
-      color: '#2a2a72', fontSize: 80, fontFamily: 'Sacramento', fontWeight: '400', textAlign: 'center',
+      color: '#2a2a72', fontSize: 96, fontFamily: 'Just Me Again Down Here', fontWeight: '400', textAlign: 'center',
     },
     {
       id: 'decor-building', type: 'image', x: 14, y: 970, width: 260, height: 260,
