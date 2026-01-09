@@ -237,17 +237,19 @@
 }
 
 .options-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  display: flex;
   gap: 10px;
+  width: 100%;
 }
 
 .option-card {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12px 8px;
+  padding: 12px 4px;
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
@@ -408,14 +410,15 @@
     right: 0;
     width: 100%;
     height: auto;
-    max-height: 250px; /* Reduced height */
-    border-radius: 20px 20px 0 0;
+    max-height: 65vh; /* Much better height for mobile usability */
+    border-radius: 24px 24px 0 0;
     border-right: none;
     border-top: 1px solid var(--border-color);
-    box-shadow: 0 -8px 30px rgba(0,0,0,0.15);
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
     z-index: 95;
+    background: #fff;
     transform: translateY(0);
-    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: transform 0.35s cubic-bezier(0.19, 1, 0.22, 1);
   }
 
   .asset-panel.collapsed {
@@ -479,67 +482,47 @@
     font-size: 0.8rem;
   }
 
-  /* Minimal Horizontal Scroll Layouts (Swimlanes) */
-  .asset-grid, 
-  .options-grid,
-  .text-presets-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto; /* Each row handles its own scroll */
-    gap: 12px;
-    padding-bottom: 8px; /* Space for scrollbar */
-    width: 100%;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Hide scrollbar Firefox */
-  }
-  
-  /* Hide scrollbar Chrome/Safari */
-  .asset-grid::-webkit-scrollbar,
-  .options-grid::-webkit-scrollbar,
-  .text-presets-list::-webkit-scrollbar {
-    display: none;
+  /* Improved Grid Layouts for Mobile Stability */
+  .asset-grid {
+    display: grid!important;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr))!important;
+    gap: 12px!important;
+    overflow-x: visible!important;
+    padding-bottom: 0!important;
+    width: 100%!important;
   }
 
   .asset-item {
-    width: 64px;
-    height: 64px;
-    padding: 8px;
-    border-radius: 12px;
-    flex-shrink: 0;
-    background: #f8fafc;
-    border: none;
-  }
-  
-  .asset-item:active {
-    background: #e2e8f0;
-    transform: scale(0.95);
+    width: 100%!important;
+    aspect-ratio: 1!important;
+    padding: 12px!important;
+    border-radius: 14px!important;
+    background: #fff!important;
+    border: 1px solid #e2e8f0!important;
+    display: flex!important;
+    flex-direction: column!important;
+    align-items: center!important;
+    justify-content: center!important;
   }
 
-  .asset-item .asset-label {
-    display: none; /* Hide labels for minimal look */
-  }
-  
-  .shape-preview {
-    width: 28px;
-    height: 28px;
-  }
-
-  /* Text Presets Horizontal */
   .text-presets-list {
-    display: flex;
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 4px;
-    gap: 12px;
+    display: flex!important;
+    flex-direction: column!important;
+    gap: 10px!important;
+    overflow-x: visible!important;
+    padding-bottom: 0!important;
+    width: 100%!important;
   }
 
   .text-preset-card {
-    min-width: 140px;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 12px;
-    gap: 8px;
+    min-width: unset!important;
+    width: 100%!important;
+    flex-direction: row!important; /* Back to row for readability */
+    align-items: center!important;
+    padding: 12px 16px!important;
+    background: #fff!important;
+    border: 1px solid #e2e8f0!important;
+    border-radius: 14px!important;
   }
   
   .preset-preview {
@@ -560,26 +543,38 @@
     display: none; /* Hide description on mobile */
   }
 
-  /* Canvas Options Horizontal (Mobile) */
+  /* Improved Mobile Panel Sections */
   .panel-section {
-    gap: 1rem;
-    padding-bottom: 1rem;
+    gap: 1.25rem;
+    padding: 0.5rem 0 1.5rem;
   }
 
+  /* Flexible Row for Canvas Options on Mobile */
   .options-grid {
-    display: flex; /* Horizontal scroll */
-    overflow-x: auto;
-    gap: 12px;
-    padding-bottom: 4px;
-    width: 100%;
+    display: flex!important;
+    flex-direction: row!important;
+    gap: 8px!important;
+    width: 100%!important;
   }
 
   .option-card {
-    min-width: 86px;
-    height: 86px;
-    flex-shrink: 0;
-    padding: 8px;
-    border-radius: 12px;
+    flex: 1;
+    min-width: 0;
+    height: 80px!important;
+    padding: 10px 4px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0!important;
+    background: #fff!important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .option-card.selected {
+    background: #eff6ff!important;
+    border-color: #3b82f6!important;
+    box-shadow: 0 0 0 1px #3b82f6!important;
   }
 
   .option-label {

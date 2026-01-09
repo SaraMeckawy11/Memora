@@ -4,6 +4,7 @@ import DraggableElement from './DraggableElement'
 import '@/styles/cover-editor/canvas.css'
 
 export default function EditorCanvas({ 
+  id,
   elements, 
   selectedId, 
   onSelect, 
@@ -388,7 +389,7 @@ export default function EditorCanvas({
   }
 
   return (
-    <div className="canvas-container" style={containerStyle}>
+    <div className="canvas-container" id={id} style={containerStyle}>
       <div 
         ref={canvasRef}
         className={`editor-canvas ${isDrawMode ? 'draw-cursor' : ''}`}

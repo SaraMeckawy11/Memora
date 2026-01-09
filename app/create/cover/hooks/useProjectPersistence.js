@@ -1,6 +1,11 @@
-export function useProjectPersistence(elements, backgroundColor, canvasSettings, updateState, setCanvasSettings) {
+export function useProjectPersistence(currentState, canvasSettings, updateState, setCanvasSettings) {
   const handleSaveProject = () => {
-    const projectData = { elements, backgroundColor, canvasSettings, version: '1.0' };
+    const projectData = { 
+      front: currentState.front, 
+      back: currentState.back, 
+      canvasSettings, 
+      version: '1.1' 
+    };
     try {
       localStorage.setItem('memoraCoverProject', JSON.stringify(projectData));
       alert('Project saved successfully!');
@@ -15,12 +20,31 @@ export function useProjectPersistence(elements, backgroundColor, canvasSettings,
       const savedData = localStorage.getItem('memoraCoverProject');
       if (savedData) {
         const projectData = JSON.parse(savedData);
-        const loadedState = {
-          elements: projectData.elements || [],
-          backgroundColor: projectData.backgroundColor || '#ffffff'
-        };
+        
+        // Handle migration from old format
+        let loadedState;
+        if (projectData.version === '1.1') {
+          loadedState = {
+            front: projectData.front,
+            back: projectData.back
+          };
+        } else {
+          loadedState = {
+            front: {
+              elements: projectData.elements || [],
+              backgroundColor: projectData.backgroundColor || '#ffffff'
+            },
+            back: {
+              elements: [],
+              backgroundColor: '#ffffff'
+            }
+          };
+        }
+        
         updateState(loadedState, true);
-        setCanvasSettings(projectData.canvasSettings || { width: 800, height: 1000 });
+        if (projectData.canvasSettings) {
+          setCanvasSettings(projectData.canvasSettings);
+        }
         alert('Project loaded successfully!');
       } else {
         alert('No saved project found.');

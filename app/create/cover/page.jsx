@@ -32,6 +32,7 @@ export default function CoverEditorPage() {
 
   // -- CANVAS ENGINE HOOKS --
   const { 
+    front, back, activeSide, setActiveSide,
     elements, backgroundColor, setElements, setBackgroundColor,
     handleUndo, handleRedo, historyIndex, historyLength, updateState, currentState 
   } = useCanvasState(searchParams, canvasSettings, setCanvasSettings);
@@ -43,7 +44,7 @@ export default function CoverEditorPage() {
 
   const {
     isExporting, isDownloadMenuOpen, setIsDownloadMenuOpen, handleDownload
-  } = useExport(selectedId, setSelectedId, backgroundColor);
+  } = useExport(selectedId, setSelectedId, backgroundColor, activeSide);
 
   const {
     addElement, updateElement, reorder
@@ -51,7 +52,7 @@ export default function CoverEditorPage() {
 
   const { 
     handleSaveProject, handleLoadProject 
-  } = useProjectPersistence(elements, backgroundColor, canvasSettings, updateState, setCanvasSettings);
+  } = useProjectPersistence(currentState, canvasSettings, updateState, setCanvasSettings);
 
   // -- HANDLERS --
   const handleBack = () => router.back();
@@ -73,6 +74,23 @@ export default function CoverEditorPage() {
   }, [isDownloadMenuOpen])
 
   const selectedElement = elements.find(el => el.id === selectedId)
+
+  const CoverSwitcher = () => (
+    <div className="cover-side-switcher">
+      <button 
+        className={`switcher-btn ${activeSide === 'back' ? 'active' : ''}`}
+        onClick={() => setActiveSide('back')}
+      >
+        <span>Back<span className="hide-mobile"> Cover</span></span>
+      </button>
+      <button 
+        className={`switcher-btn ${activeSide === 'front' ? 'active' : ''}`}
+        onClick={() => setActiveSide('front')}
+      >
+        <span>Front<span className="hide-mobile"> Cover</span></span>
+      </button>
+    </div>
+  )
 
   return (
     <div className="cover-editor-root">
@@ -96,8 +114,15 @@ export default function CoverEditorPage() {
       
       <div className="editor-main">
         <div className="editor-header">
-          <h3>Cover Editor</h3>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="header-left">
+            <h3>Cover Editor</h3>
+          </div>
+
+          <div className="header-center">
+            <CoverSwitcher />
+          </div>
+          
+          <div className="header-right">
             <button className="toolbar-btn" onClick={handleUndo} disabled={historyIndex <= 0} title="Undo">↩</button>
             <button className="toolbar-btn" onClick={handleRedo} disabled={historyIndex >= historyLength - 1} title="Redo">↪</button>
             
@@ -106,14 +131,15 @@ export default function CoverEditorPage() {
                 className="save-btn secondary"
                 onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
                 disabled={isExporting}
-                style={{ padding: '6px 12px', fontSize: '13px', background: '#f1f5f9', color: '#334155', display: 'flex', gap: '6px', alignItems: 'center' }}
+                style={{ cursor: 'pointer', padding: '10px 14px', borderRadius: '8px', fontSize: '13px', background: '#f1f5f9', color: '#334155', display: 'flex', gap: '6px', alignItems: 'center', border: 'none' }}
               >
-                {isExporting ? 'Saving...' : 'Download'}
+                <span className="hide-mobile">{isExporting ? 'Saving...' : 'Download'}</span>
+                <span className="show-mobile">↓</span>
                 <span style={{ fontSize: '10px' }}>▼</span>
               </button>
 
               {isDownloadMenuOpen && (
-                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '4px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '6px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', zIndex: 200, minWidth: '140px', display: 'flex', flexDirection: 'column', padding: '4px' }}>
+                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', zIndex: 200, minWidth: '160px', display: 'flex', flexDirection: 'column', padding: '6px' }}>
                   <button onClick={() => handleDownload('png')} className="dropdown-item">Download PNG</button>
                   <button onClick={() => handleDownload('jpeg')} className="dropdown-item">Download JPG</button>
                   <button onClick={() => handleDownload('pdf')} className="dropdown-item">Download PDF</button>
@@ -121,8 +147,11 @@ export default function CoverEditorPage() {
               )}
             </div>
 
-            <button className="save-btn" style={{ background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0', marginRight: '8px' }} onClick={handleBack}>Back</button>
-            <button className="save-btn" onClick={handleSave}>Done</button>
+            <button className="save-btn" style={{ cursor: 'pointer', borderRadius: '8px', background: '#f1f5f9', color: '#475569', border: 'none', padding: '10px 16px' }} onClick={handleBack}>
+              <span className="hide-mobile">Back</span>
+              <span className="show-mobile">✕</span>
+            </button>
+            <button className="save-btn" style={{ cursor: 'pointer', borderRadius: '8px', padding: '10px 18px', fontWeight: '600' }} onClick={handleSave}>Done</button>
           </div>
         </div>
         
@@ -134,20 +163,49 @@ export default function CoverEditorPage() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          <EditorCanvas 
-            elements={elements} 
-            selectedId={selectedId} 
-            onSelect={setSelectedId}
-            onUpdate={updateElement}
-            isDrawMode={isDrawMode}
-            onAddDrawing={(drawing) => addElement('drawing', drawing)}
-            canvasSettings={canvasSettings}
-            drawingTool={drawingTool}
-            zoomLevel={zoomLevel}
-            onZoomChange={handleManualZoomChange}
-            onDrawingStart={() => setIsInteractingWithCanvas(true)}
-            onDrawingEnd={() => setIsInteractingWithCanvas(false)}
-          />
+          <div className="single-canvas-container">
+            {activeSide === 'back' ? (
+              <div className="cover-container active">
+                <EditorCanvas 
+                  id="canvas-back"
+                  elements={back.elements} 
+                  selectedId={selectedId} 
+                  onSelect={setSelectedId}
+                  onUpdate={updateElement}
+                  isDrawMode={isDrawMode}
+                  onAddDrawing={(drawing) => addElement('drawing', drawing)}
+                  canvasSettings={{ ...canvasSettings, backgroundColor: back.backgroundColor }}
+                  drawingTool={drawingTool}
+                  zoomLevel={zoomLevel}
+                  onZoomChange={handleManualZoomChange}
+                  onDrawingStart={() => setIsInteractingWithCanvas(true)}
+                  onDrawingEnd={() => setIsInteractingWithCanvas(false)}
+                />
+              </div>
+            ) : (
+              <div className="cover-container active">
+                <EditorCanvas 
+                  id="canvas-front"
+                  elements={front.elements} 
+                  selectedId={selectedId} 
+                  onSelect={setSelectedId}
+                  onUpdate={updateElement}
+                  isDrawMode={isDrawMode}
+                  onAddDrawing={(drawing) => addElement('drawing', drawing)}
+                  canvasSettings={{ ...canvasSettings, backgroundColor: front.backgroundColor }}
+                  drawingTool={drawingTool}
+                  zoomLevel={zoomLevel}
+                  onZoomChange={handleManualZoomChange}
+                  onDrawingStart={() => setIsInteractingWithCanvas(true)}
+                  onDrawingEnd={() => setIsInteractingWithCanvas(false)}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="mobile-switcher-dock">
+          <CoverSwitcher />
         </div>
 
         <div className="zoom-controls">

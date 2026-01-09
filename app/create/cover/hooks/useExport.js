@@ -2,27 +2,30 @@ import { useState } from 'react';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
-export function useExport(selectedId, setSelectedId, backgroundColor) {
+export function useExport(selectedId, setSelectedId, backgroundColor, activeSide) {
   const [isExporting, setIsExporting] = useState(false);
   const [isDownloadMenuOpen, setIsDownloadMenuOpen] = useState(false);
 
   const handleDownload = async (format) => {
     setIsExporting(true);
     try {
-      const element = document.querySelector('.editor-canvas');
+      const containerSelector = activeSide ? `#canvas-${activeSide}` : '.canvas-container';
+      const element = document.querySelector(`${containerSelector} .editor-canvas`);
       if (!element) throw new Error('Canvas element not found');
 
       // Deselect any selected element before capturing
       setSelectedId(null);
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const canvasElement = document.querySelector('.editor-canvas canvas');
-      if (!canvasElement) throw new Error('Failed to find canvas element for export.');
+      // We use the element itself, html2canvas will find the content
+      const canvasElement = element;
 
       if (format === 'png') {
         const dataUrl = await html2canvas(canvasElement, {
           backgroundColor: backgroundColor,
           scale: 2,
+          useCORS: true,
+          logging: false
         }).then(canvas => canvas.toDataURL('image/png'));
         const link = document.createElement('a');
         link.href = dataUrl;

@@ -3,14 +3,21 @@ import { convertToBaseCoordinates, scaleElementsToCanvas } from '../utils';
 import { COVER_PRESETS } from '../presets';
 
 export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) {
-  const [baseElements, setBaseElements] = useState([]);
-  const [history, setHistory] = useState([{ elements: [], backgroundColor: '#ffffff' }]);
+  const [activeSide, setActiveSide] = useState('front');
+  const [baseElements, setBaseElements] = useState({
+    front: [],
+    back: []
+  });
+
+  const [history, setHistory] = useState([{ 
+    front: { elements: [], backgroundColor: '#ffffff' },
+    back: { elements: [], backgroundColor: '#ffffff' }
+  }]);
   const [historyIndex, setHistoryIndex] = useState(0);
 
   const currentState = history[historyIndex];
-  const { elements, backgroundColor } = currentState;
 
-  // Load preset data on initial render or preset change
+  // Load preset data on initial render or preset change - always apply to front cover
   useEffect(() => {
     const presetId = searchParams.get('preset');
     if (presetId && COVER_PRESETS[presetId]) {
@@ -20,14 +27,24 @@ export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) 
         ...el,
         id: el.id || (Date.now() + Math.random()),
       }));
-      setBaseElements(baseEls);
       
       const scaledElements = scaleElementsToCanvas(baseEls, canvasSettings.width, canvasSettings.height);
       
       const initialState = {
-        elements: scaledElements,
-        backgroundColor: preset.backgroundColor,
+        front: {
+          elements: scaledElements,
+          backgroundColor: preset.backgroundColor || '#ffffff',
+        },
+        back: {
+          elements: [],
+          backgroundColor: '#ffffff'
+        }
       };
+
+      setBaseElements({
+        front: baseEls,
+        back: []
+      });
       
       setHistory([initialState]);
       setHistoryIndex(0);
@@ -46,9 +63,14 @@ export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) 
 
   // Effect to rescale elements when canvas size changes
   useEffect(() => {
-    if (baseElements.length > 0) {
-      const scaledElements = scaleElementsToCanvas(baseElements, canvasSettings.width, canvasSettings.height);
-      const newState = { ...currentState, elements: scaledElements };
+    if (baseElements.front.length > 0 || baseElements.back.length > 0) {
+      const scaledFront = scaleElementsToCanvas(baseElements.front, canvasSettings.width, canvasSettings.height);
+      const scaledBack = scaleElementsToCanvas(baseElements.back, canvasSettings.width, canvasSettings.height);
+      
+      const newState = { 
+        front: { ...currentState.front, elements: scaledFront },
+        back: { ...currentState.back, elements: scaledBack }
+      };
       const newHistory = history.slice(0, historyIndex + 1);
       setHistory([...newHistory, newState]);
       setHistoryIndex(newHistory.length);
@@ -63,17 +85,31 @@ export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) 
   };
 
   const setElements = (updater) => {
-    const newElements = typeof updater === 'function' ? updater(elements) : updater;
-    updateState({ ...currentState, elements: newElements });
+    const currentSideElements = currentState[activeSide].elements;
+    const newElements = typeof updater === 'function' ? updater(currentSideElements) : updater;
     
-    const newBaseElements = newElements.map(el => 
+    const newState = {
+      ...currentState,
+      [activeSide]: { ...currentState[activeSide], elements: newElements }
+    };
+    updateState(newState);
+    
+    const newBaseElementsForSide = newElements.map(el => 
       convertToBaseCoordinates(el, canvasSettings.width, canvasSettings.height)
     );
-    setBaseElements(newBaseElements);
+    
+    setBaseElements(prev => ({
+      ...prev,
+      [activeSide]: newBaseElementsForSide
+    }));
   };
 
   const setBackgroundColor = (newColor) => {
-    updateState({ ...currentState, backgroundColor: newColor });
+    const newState = {
+      ...currentState,
+      [activeSide]: { ...currentState[activeSide], backgroundColor: newColor }
+    };
+    updateState(newState);
   };
 
   const handleUndo = () => {
@@ -85,15 +121,20 @@ export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) 
   };
 
   return {
-    elements,
-    backgroundColor,
-    baseElements,
+    front: currentState.front,
+    back: currentState.back,
+    activeSide,
+    setActiveSide,
+    elements: currentState[activeSide].elements,
+    backgroundColor: currentState[activeSide].backgroundColor,
     setElements,
     setBackgroundColor,
     handleUndo,
     handleRedo,
     historyIndex,
     historyLength: history.length,
+    updateState,
     currentState
   };
 }
+
