@@ -396,6 +396,14 @@ export default function EditorCanvas({
           width: width,
           height: height,
           backgroundColor: canvasSettings?.backgroundColor || '#ffffff',
+          // Support for grid/graph paper pattern
+          ...(canvasSettings?.backgroundPattern === 'grid' && {
+            backgroundImage: `
+              linear-gradient(${canvasSettings?.gridColor || '#e0e0e0'} 1px, transparent 1px),
+              linear-gradient(90deg, ${canvasSettings?.gridColor || '#e0e0e0'} 1px, transparent 1px)
+            `,
+            backgroundSize: `${canvasSettings?.gridSize || 30}px ${canvasSettings?.gridSize || 30}px`,
+          }),
           transform: `scale(${zoomLevel})`,
           transformOrigin: '0 0', // Top Left origin prevents clipping issues
         }}

@@ -201,7 +201,11 @@ export default function DraggableElement({
           width: '100%',
           height: '100%',
           whiteSpace: 'pre-wrap',
-          lineHeight: element.lineHeight || 1.2
+          lineHeight: element.lineHeight || 1.2,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: element.textAlign === 'center' ? 'center' : (element.textAlign === 'right' ? 'flex-end' : 'flex-start'),
+          justifyContent: 'center', // Always center vertically within the box
         }}>
           {element.content}
         </div>
@@ -209,29 +213,35 @@ export default function DraggableElement({
     }
 
     if (element.type === 'image') {
+      // Basic filters
       const filterString = `
         brightness(${element.brightness || 100}%) 
         contrast(${element.contrast || 100}%) 
         saturate(${element.saturate || 100}%) 
         hue-rotate(${element.hueRotate || 0}deg) 
         blur(${element.blur || 0}px) 
-        opacity(${element.opacity !== undefined ? element.opacity : 100}%) 
         sepia(${element.sepia || 0}%) 
         grayscale(${element.grayscale || 0}%)
         invert(${element.invert || 0}%)
-      `
+      `.trim()
       
-      // SVG Filter for Sharpness (ConvolveMatrix)
-      // We need a unique ID for each element's filter
       const sharpnessId = `sharpness-${element.id}`
-      
-      return (
-        <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-          {/* SVG Definitions for Advanced Filters */}
+      const isPolaroid = element.options?.isPolaroid;
+      const polaroidPadding = element.options?.polaroidPadding || 12;
+      const hasTape = element.options?.hasTape;
+
+      // Handle opacity normalization (0-1 or 0-100)
+      let opacityValue = element.opacity !== undefined ? element.opacity : 100;
+      if (opacityValue <= 1 && opacityValue > 0 && element.type === 'drawing') {
+        // Drawing often uses 0-1
+        opacityValue = opacityValue * 100;
+      }
+
+      const imageContent = (
+        <>
           <svg style={{ position: 'absolute', width: 0, height: 0 }}>
             <defs>
               <filter id={sharpnessId}>
-                {/* Simple sharpen kernel */}
                 {element.sharpness > 0 ? (
                   <feConvolveMatrix 
                     order="3" 
@@ -246,7 +256,7 @@ export default function DraggableElement({
 
           <img 
             src={element.src} 
-            alt="Upload" 
+            alt="Image" 
             style={{ 
               width: '100%', 
               height: '100%', 
@@ -256,53 +266,68 @@ export default function DraggableElement({
             }} 
           />
           
-          {/* Temperature Overlay (Blue/Orange mix) */}
           {element.temperature !== 0 && element.temperature != null && (
-            <div 
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none',
-                backgroundColor: element.temperature > 0 ? '#ff9a00' : '#009aff',
-                opacity: Math.abs(element.temperature) / 200, // Max 50% opacity
-                mixBlendMode: element.temperature > 0 ? 'soft-light' : 'overlay'
-              }}
-            />
+            <div style={{
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              pointerEvents: 'none',
+              backgroundColor: element.temperature > 0 ? '#ff9a00' : '#009aff',
+              opacity: Math.abs(element.temperature) / 200,
+              mixBlendMode: element.temperature > 0 ? 'soft-light' : 'overlay'
+            }} />
           )}
 
-          {/* Vignette Overlay */}
           {element.vignette > 0 && (
-            <div 
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none',
-                background: `radial-gradient(circle, transparent ${100 - element.vignette}%, rgba(0,0,0,${element.vignette / 100}) 100%)`
-              }}
-            />
+            <div style={{
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              pointerEvents: 'none',
+              background: `radial-gradient(circle, transparent ${100 - element.vignette}%, rgba(0,0,0,${element.vignette / 100}) 100%)`
+            }} />
           )}
-          {/* Noise Overlay (Simulated) */}
+
           {element.noise > 0 && (
-            <div 
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                pointerEvents: 'none',
-                opacity: element.noise / 100,
-                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-                mixBlendMode: 'overlay'
-              }}
-            />
+            <div style={{
+              position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+              pointerEvents: 'none',
+              opacity: element.noise / 100,
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+              mixBlendMode: 'overlay'
+            }} />
           )}
+        </>
+      );
+
+      if (isPolaroid) {
+        return (
+          <div style={{ 
+            width: '100%', height: '100%', position: 'relative',
+            backgroundColor: '#ffffff',
+            padding: `${polaroidPadding}px ${polaroidPadding}px ${polaroidPadding * 3}px ${polaroidPadding}px`,
+            boxSizing: 'border-box',
+            boxShadow: '2px 4px 10px rgba(0,0,0,0.2)',
+            opacity: opacityValue / 100,
+          }}>
+            {hasTape && (
+              <div style={{
+                position: 'absolute', top: '-10px', left: '50%', width: '30%', height: '25px',
+                backgroundColor: 'rgba(255, 255, 255, 0.6)',
+                transform: 'translateX(-50%) rotate(2deg)',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                zIndex: 25,
+              }} />
+            )}
+            {imageContent}
+          </div>
+        )
+      }
+
+      return (
+        <div style={{ 
+          width: '100%', height: '100%', position: 'relative',
+          clipPath: element.options?.clipPath || 'none',
+          mixBlendMode: element.options?.mixBlendMode || 'normal',
+          opacity: opacityValue / 100,
+        }}>
+          {imageContent}
         </div>
       )
     }
@@ -310,26 +335,44 @@ export default function DraggableElement({
     if (element.type === 'drawing') {
       const viewBoxW = element.originalWidth || element.width
       const viewBoxH = element.originalHeight || element.height
+      
+      let opacityValue = element.opacity !== undefined ? element.opacity : 100;
+      // Handle 0-1 range for drawings
+      if (opacityValue <= 1 && opacityValue > 0) {
+        opacityValue = opacityValue * 100;
+      }
+
       return (
-        <svg width="100%" height="100%" viewBox={`0 0 ${viewBoxW} ${viewBoxH}`} style={{ overflow: 'visible' }}>
-          <path
-            d={element.path}
-            stroke={element.stroke}
-            strokeWidth={element.strokeWidth}
-            opacity={element.opacity}
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+        <div style={{ width: '100%', height: '100%', opacity: opacityValue / 100 }}>
+          <svg width="100%" height="100%" viewBox={`0 0 ${viewBoxW} ${viewBoxH}`} style={{ overflow: 'visible' }}>
+            <path
+              d={element.path}
+              stroke={element.stroke}
+              strokeWidth={element.strokeWidth}
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+        </div>
       )
     }
 
     if (element.type === 'shape') {
+      let opacityValue = element.opacity !== undefined ? element.opacity : 100;
+      if (opacityValue <= 1 && opacityValue > 0) opacityValue = opacityValue * 100;
+
+      const commonStyle = {
+        width: '100%',
+        height: '100%',
+        opacity: opacityValue / 100,
+        mixBlendMode: element.options?.mixBlendMode || 'normal',
+      }
+
       if (element.shapeType === 'line') {
         return (
-          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center' }}>
+          <div style={{ ...commonStyle, display: 'flex', alignItems: 'center' }}>
             <div style={{ width: '100%', height: `${element.strokeWidth}px`, backgroundColor: element.stroke }} />
           </div>
         )
@@ -337,36 +380,42 @@ export default function DraggableElement({
       
       if (element.shapeType === 'arrow') {
         return (
-          <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
-            <defs>
-              <marker
-                id={`arrowhead-${element.id}`}
-                markerWidth="10"
-                markerHeight="7"
-                refX="9"
-                refY="3.5"
-                orient="auto"
-              >
-                <polygon points="0 0, 10 3.5, 0 7" fill={element.stroke} />
-              </marker>
-            </defs>
-            <line
-              x1="0"
-              y1="50%"
-              x2="100%"
-              y2="50%"
-              stroke={element.stroke}
-              strokeWidth={element.strokeWidth}
-              markerEnd={`url(#arrowhead-${element.id})`}
-            />
-          </svg>
+          <div style={commonStyle}>
+            <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+              <defs>
+                <marker
+                  id={`arrowhead-${element.id}`}
+                  markerWidth="10"
+                  markerHeight="7"
+                  refX="9"
+                  refY="3.5"
+                  orient="auto"
+                >
+                  <polygon points="0 0, 10 3.5, 0 7" fill={element.stroke} />
+                </marker>
+              </defs>
+              <line
+                x1="0"
+                y1="50%"
+                x2="100%"
+                y2="50%"
+                stroke={element.stroke}
+                strokeWidth={element.strokeWidth}
+                markerEnd={`url(#arrowhead-${element.id})`}
+              />
+            </svg>
+          </div>
         )
       }
 
       const shapeStyle = {
-        width: '100%',
-        height: '100%',
-        backgroundColor: element.fill,
+        ...commonStyle,
+        backgroundColor: element.fill || 'transparent',
+        border: element.options?.stroke ? `${element.options.strokeWidth || 1}px solid ${element.options.stroke}` : 'none',
+        boxSizing: 'border-box',
+        clipPath: element.options?.clipPath || 'none',
+        filter: element.options?.filter || 'none',
+        borderRadius: element.options?.borderRadius || 0,
       }
 
       if (element.shapeType === 'circle') {

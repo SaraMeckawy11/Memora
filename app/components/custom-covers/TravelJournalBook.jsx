@@ -27,9 +27,9 @@ const TravelJournalBook = ({
   
   // Default placeholder images if none provided
   const defaultImages = [
-    { src: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=300&q=80", rotate: -5, top: "5%", left: "10%", width: "35%", zIndex: 1 },
-    { src: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=300&q=80", rotate: 8, top: "15%", left: "55%", width: "38%", zIndex: 2 },
-    { src: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300&q=80", rotate: -3, top: "45%", left: "30%", width: "40%", zIndex: 3 },
+    { src: "https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?auto=format&fit=crop&w=300&q=80", rotate: -5, top: "20px", left: "10%", width: "140px", zIndex: 1 },
+    { src: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=300&q=80", rotate: 8, top: "60px", left: "55%", width: "150px", zIndex: 2 },
+    { src: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=300&q=80", rotate: -3, top: "180px", left: "30%", width: "160px", zIndex: 3 },
   ];
 
   const polaroids = images.length > 0 ? images : defaultImages;

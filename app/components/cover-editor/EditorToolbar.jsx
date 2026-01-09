@@ -116,6 +116,26 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
           
           <div style={{ width: '1px', height: '40px', background: '#e2e8f0', margin: '0 0.5rem' }}></div>
           
+          <label className="mobile-tool-btn" style={{ cursor: 'pointer' }}>
+            <input 
+              type="file" 
+              accept="image/*" 
+              style={{ display: 'none' }} 
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = (event) => {
+                    onUpdate({ src: event.target.result });
+                  };
+                  reader.readAsDataURL(file);
+                }
+              }}
+            />
+            <span className="tool-icon">📷</span>
+            <span className="tool-label">Replace</span>
+          </label>
+          
           <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ color: '#ef4444' }}>
             <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fef2f2' }}>🗑️</span>
             <span className="tool-label">Delete</span>
@@ -580,6 +600,27 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
         {/* Image Properties */}
         {selectedElement.type === 'image' && (
           <>
+            <ToolbarSection title="Replace Image" defaultOpen={true}>
+              <label className="replace-image-btn" style={{ display: 'block', padding: '12px 16px', background: '#4f46e5', color: 'white', borderRadius: '8px', cursor: 'pointer', textAlign: 'center', marginBottom: '8px', fontWeight: '500' }}>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  style={{ display: 'none' }} 
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        onUpdate({ src: event.target.result });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                📷 Choose New Image
+              </label>
+            </ToolbarSection>
+
             <ToolbarSection title="Filters" defaultOpen={true}>
               <div className="filter-grid">
                 {FILTERS.map(filter => (
