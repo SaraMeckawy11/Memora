@@ -4,7 +4,7 @@ export const ibiza = {
     {
       id: 'ibiza-title',
       type: 'text',
-      x:762,
+      x:62,
       y: 46,
       width: 638,
       height: 400,
