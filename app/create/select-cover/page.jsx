@@ -29,6 +29,12 @@ const PRESETS = [
     category: 'Seasonal'
   },
   { 
+    id: 'ibiza', 
+    name: 'Ibiza Night', 
+    preview: 'https://images.unsplash.com/photo-1573155993874-d5d48af862ba?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Travel'
+  },
+  { 
     id: 'birthday', 
     name: 'Birthday Memories', 
     preview: 'https://images.unsplash.com/photo-1576866209830-58f4c00a5814?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',

@@ -349,7 +349,7 @@ export default function DraggableElement({
               d={element.path}
               stroke={element.stroke}
               strokeWidth={element.strokeWidth}
-              fill="none"
+              fill={element.fill || "none"}
               strokeLinecap="round"
               strokeLinejoin="round"
               vectorEffect="non-scaling-stroke"
