@@ -33,7 +33,7 @@ export const summer = {
     {
       id: 'title-journal', type: 'text', x: 171, y: 350, width: 509, height: 179,
       content: 'Journal',
-      color: '#00b0fb', fontSize: 172, fontFamily: 'Dancing Script', fontWeight: '400', textAlign: 'center', rotation: -3.1,
+      color: '#00b0fb', fontSize: 172, fontFamily: 'Dancing Script', fontWeight: '990', textAlign: 'center', rotation: -3.1,
       zIndex: 11
     },
 
