@@ -342,10 +342,7 @@ export default function StepEditor({
             totalPages={pages.length}
             onPrevPage={goToPrevPage}
             onNextPage={goToNextPage}
-            undo={undo}
-            redo={redo}
-            canUndo={canUndo}
-            canRedo={canRedo}
+            setIsSidebarOpen={setIsSidebarOpen}
           />
 
           <UploadArea onUpload={imageHandling.handleImageUpload} />
