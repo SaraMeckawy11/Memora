@@ -44,9 +44,9 @@ const TabIcons = {
     ),
   }
 
-export default function MobileView({ step, activeMobileTab, setActiveMobileTab, mobileTabs }) {
+export default function MobileView({ activeMobileTab, setActiveMobileTab, mobileTabs }) {
   return (
-    <div className={`mobile-interface ${step === 2 ? 'step-2' : ''}`}>
+    <div className="mobile-interface">
       <div className={`mobile-drawer ${activeMobileTab ? 'open' : ''}`}>
         <div className="mobile-drawer-header">
           <div className="drawer-handle" />

@@ -240,7 +240,44 @@ export default function CreatePage() {
         </div>
       </div> */}
 
-      
+       {/* ================= BOTTOM NAV ================= */}
+      <footer className={`create-bottom-nav ${step === 1 ? 'is-step-1' : ''} ${step === 2 ? 'is-step-2' : ''}`}>
+        <div
+          className="create-bottom-inner container"
+        >
+          {/* Back / Home */}
+          <button
+            type="button"
+            onClick={handleBack}
+            className="bottom-nav-btn bottom-nav-btn--ghost"
+          >
+            {step === 1 ? 'Home' : 'Back'}
+          </button>
+
+          {/* Pages Button - only show in step 2 */}
+         {step === 2 && (
+            <button
+              type="button"
+              onClick={() => setIsSidebarOpen(true)}
+              className="bottom-nav-btn bottom-nav-btn--ghost select-page-btn"
+            >
+              Select Page
+            </button>
+          )}
+
+          {/* Next / Complete */}
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={step === 1 && !isStep1Valid}
+            className="bottom-nav-btn bottom-nav-btn--primary"
+          >
+            {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
+          </button>
+        </div>
+      </footer>
+
+
       {/* ===== CONTENT ===== */}
       <div className={`create-content step-${step}`}>
         {step === 1 && (
@@ -260,7 +297,6 @@ export default function CreatePage() {
 
         {step === 2 && (
           <StepEditor
-            step={step}
             pages={pages}
             setPages={setPagesWithHistory}
             undo={undo}
@@ -321,42 +357,7 @@ export default function CreatePage() {
           />
         )}
       </div>
-       {/* ================= BOTTOM NAV ================= */}
-      <footer className={`create-bottom-nav ${step === 1 ? 'is-step-1' : ''} ${step === 2 ? 'is-step-2' : ''}`}>
-        <div
-          className="create-bottom-inner container"
-        >
-          {/* Back / Home */}
-          <button
-            type="button"
-            onClick={handleBack}
-            className="bottom-nav-btn bottom-nav-btn--ghost"
-          >
-            {step === 1 ? 'Home' : 'Back'}
-          </button>
 
-          {/* Pages Button - only show in step 2 */}
-         {step === 2 && (
-            <button
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              className="bottom-nav-btn bottom-nav-btn--ghost select-page-btn"
-            >
-              Select Page
-            </button>
-          )}
-
-          {/* Next / Complete */}
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={step === 1 && !isStep1Valid}
-            className="bottom-nav-btn bottom-nav-btn--primary"
-          >
-            {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
-          </button>
-        </div>
-      </footer>
      
     </main>
   )
