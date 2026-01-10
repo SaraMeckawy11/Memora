@@ -240,7 +240,63 @@ export default function CreatePage() {
         </div>
       </div> */}
 
-      
+       {/* ================= BOTTOM NAV ================= */}
+      <footer className={`create-bottom-nav ${step === 1 ? 'is-step-1' : ''} ${step === 2 ? 'is-step-2' : ''}`}>
+        <div
+          className="create-bottom-inner container"
+        >
+          {/* Back / Home */}
+          <button
+            type="button"
+            onClick={handleBack}
+            className="bottom-nav-btn bottom-nav-btn--ghost"
+          >
+            {step === 1 ? 'Home' : 'Back'}
+          </button>
+
+          {/* Undo/Redo Buttons - only show in step 2 */}
+          {step === 2 && (
+            <>
+              <button
+                type="button"
+                onClick={undo}
+                disabled={!canUndo}
+                className="history-button"
+                title="Undo"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 7v6h6" />
+                  <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={redo}
+                disabled={!canRedo}
+                className="history-button"
+                title="Redo"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 7v6h-6" />
+                  <path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 3.7" />
+                </svg>
+              </button>
+            </>
+          )}
+
+          {/* Next / Complete */}
+          <button
+            type="button"
+            onClick={handleNext}
+            disabled={step === 1 && !isStep1Valid}
+            className="bottom-nav-btn bottom-nav-btn--primary"
+          >
+            {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
+          </button>
+        </div>
+      </footer>
+
+
       {/* ===== CONTENT ===== */}
       <div className={`create-content step-${step}`}>
         {step === 1 && (
@@ -260,7 +316,6 @@ export default function CreatePage() {
 
         {step === 2 && (
           <StepEditor
-            step={step}
             pages={pages}
             setPages={setPagesWithHistory}
             undo={undo}
@@ -321,42 +376,7 @@ export default function CreatePage() {
           />
         )}
       </div>
-       {/* ================= BOTTOM NAV ================= */}
-      <footer className={`create-bottom-nav ${step === 1 ? 'is-step-1' : ''} ${step === 2 ? 'is-step-2' : ''}`}>
-        <div
-          className="create-bottom-inner container"
-        >
-          {/* Back / Home */}
-          <button
-            type="button"
-            onClick={handleBack}
-            className="bottom-nav-btn bottom-nav-btn--ghost"
-          >
-            {step === 1 ? 'Home' : 'Back'}
-          </button>
 
-          {/* Pages Button - only show in step 2 */}
-         {step === 2 && (
-            <button
-              type="button"
-              onClick={() => setIsSidebarOpen(true)}
-              className="bottom-nav-btn bottom-nav-btn--ghost select-page-btn"
-            >
-              Select Page
-            </button>
-          )}
-
-          {/* Next / Complete */}
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={step === 1 && !isStep1Valid}
-            className="bottom-nav-btn bottom-nav-btn--primary"
-          >
-            {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
-          </button>
-        </div>
-      </footer>
      
     </main>
   )

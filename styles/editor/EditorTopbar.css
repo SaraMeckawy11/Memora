@@ -1,37 +1,46 @@
 .editor-topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* Space arrows to the sides */
   gap: 1rem;
   margin-top: -0.2rem;
   margin-bottom: 0.8rem;
-  padding: 0.5rem 1rem; /* Increased padding for breathing room */
-  border-radius: 12px; /* Softer corners for modern look */
-  background: rgba(255, 255, 255, 0.8); /* Subtle transparency for depth */
-  backdrop-filter: blur(8px); /* Modern glassmorphism effect */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Light shadow for elevation */
-  border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border */
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.editor-topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Tighter gap for compact navigation */
 }
 
 .editor-topbar-left {
   display: flex;
   align-items: center;
-  gap: 0.8rem; /* Slightly more space for balance */
-  flex-wrap: wrap;
+}
+
+.editor-topbar-right {
+  display: flex;
+  align-items: center;
 }
 
 .nav-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px; /* Slightly larger for better touch targets */
-  height: 32px;
-  border-radius: 8px; /* Softer corners */
+  width: 36px; /* Slightly larger for better touch targets */
+  height: 36px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   color: #555;
   cursor: pointer;
-  transition: all 0.2s ease; /* Smoother transitions */
+  transition: all 0.2s ease;
 }
 
 .nav-button:hover:not(:disabled) {
@@ -45,22 +54,65 @@
   cursor: not-allowed;
 }
 
+.nav-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* Accessible focus ring */
+}
+
+.select-page-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: auto;
+  height: auto;
+  padding: 0.375rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px; /* More rounded for modern pill-like button */
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle elevation for depth */
+}
+
+.select-page-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Enhanced shadow on hover */
+  transform: translateY(-1px); /* Slight lift for interactivity */
+}
+
 .editor-page-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #333; /* Darker for readability */
-  background: rgba(0, 0, 0, 0.05); /* Subtle pill background */
+  color: #333;
+  background: rgba(0, 0, 0, 0.05);
   padding: 0.4rem 0.8rem;
-  border-radius: 16px; /* Pill shape */
+  border-radius: 16px;
   white-space: nowrap;
   line-height: 1;
   text-align: center;
+  transition: background 0.2s ease; /* Subtle hover for interactivity feel */
+}
+
+.editor-page-indicator:hover {
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .editor-page-number {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-dark);
+}
+
+.editor-total-pages {
+  font-weight: 500;
+  color: var(--text-muted);
 }
 
 .editor-divider-dot {
@@ -98,11 +150,7 @@
   background: #f0fdf4;
 }
 
-.editor-topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+
 
 .history-button {
   display: flex;
@@ -192,24 +240,33 @@
     gap: 0.8rem;
   }
 
+  .editor-topbar-center {
+    gap: 0.4rem;
+  }
+
   .editor-page-indicator {
     font-size: 0.8rem; /* Smaller text on smaller screens */
     padding: 0.3rem 0.6rem;
   }
 
-  .nav-button, .history-button {
-    width: 28px;
-    height: 28px;
+  .nav-button {
+    width: 32px;
+    height: 32px;
   }
 }
 
 @media (max-width: 480px) {
-  .editor-topbar-left {
-    gap: 0.5rem;
+  .editor-topbar-center {
+    gap: 0.3rem;
   }
 
   .editor-page-indicator {
     font-size: 0.75rem;
+  }
+
+  .nav-button {
+    width: 28px;
+    height: 28px;
   }
 }
 

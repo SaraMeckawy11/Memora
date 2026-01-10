@@ -303,16 +303,7 @@ export default function StepEditor({
         />
 
         <div>
-          <EditorTopbar
-            currentPageIdx={currentPageIdx}
-            totalPages={pages.length}
-            onPrevPage={goToPrevPage}
-            onNextPage={goToNextPage}
-            undo={undo}
-            redo={redo}
-            canUndo={canUndo}
-            canRedo={canRedo}
-          />
+
 
           <EditorCanvas
             canvasRef={canvasRef}
@@ -344,6 +335,14 @@ export default function StepEditor({
               onRemoveImage: imageHandling.removeImageFromPage,
               onSwapSlots: imageHandling.swapSlots,
             }}
+          />
+          
+          <EditorTopbar
+            currentPageIdx={currentPageIdx}
+            totalPages={pages.length}
+            onPrevPage={goToPrevPage}
+            onNextPage={goToNextPage}
+            setIsSidebarOpen={setIsSidebarOpen}
           />
 
           <UploadArea onUpload={imageHandling.handleImageUpload} />

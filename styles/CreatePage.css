@@ -342,8 +342,9 @@
   }
 
   /* Step 2+: editor bar exists → lift nav above it */
-  /* Removed: .create-bottom-nav.is-step-2 { bottom: var(--editor-mobile-bar-h); } */
-  /* Now stays at bottom: 0, below the mobile nav */
+  .create-bottom-nav.is-step-2 {
+    bottom: var(--editor-mobile-bar-h);
+  }
 
 }
 @media (max-width: 768px) {
@@ -428,5 +429,4 @@
     width: 120px;
   }
 }
-
 
