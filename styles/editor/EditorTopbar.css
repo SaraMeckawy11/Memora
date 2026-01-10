@@ -104,24 +104,6 @@
   gap: 1rem;
 }
 
-.editor-history-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.6); /* Subtle glassmorphism background */
-  backdrop-filter: blur(6px); /* Matching glass effect */
-  padding: 0.4rem;
-  border-radius: 12px; /* Softer, modern radius */
-  border: 1px solid rgba(0, 0, 0, 0.08); /* Slightly more visible border */
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Gentle shadow for depth */
-  transition: all 0.2s ease; /* Smooth transitions for the container */
-}
-
-.editor-history-controls:hover {
-  background: rgba(255, 255, 255, 0.8); /* Brighten on hover */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
-}
-
 .history-button {
   display: flex;
   align-items: center;
@@ -219,10 +201,6 @@
     width: 28px;
     height: 28px;
   }
-
-  .editor-history-controls {
-    padding: 0.3rem; /* Adjust padding for smaller screens */
-  }
 }
 
 @media (max-width: 480px) {
@@ -232,10 +210,6 @@
 
   .editor-page-indicator {
     font-size: 0.75rem;
-  }
-
-  .editor-history-controls {
-    padding: 0.25rem; /* Even tighter on mobile */
   }
 }
 
