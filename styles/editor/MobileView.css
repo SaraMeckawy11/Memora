@@ -26,7 +26,7 @@
 
   /* Add for step 2: Lift mobile nav above create-bottom-nav */
   .mobile-interface.step-2 {
-    bottom: var(--editor-mobile-bar-h);
+    bottom: calc(var(--editor-mobile-bar-h) - 2px);
   }
 
   /* 3. Bottom Navigation Bar */
