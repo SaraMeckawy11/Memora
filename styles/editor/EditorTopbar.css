@@ -3,9 +3,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.25rem;
+  margin-top: -0.2rem;
+  margin-bottom: 0.8rem;
   /* background-color: #fff; */
-  padding: 0rem 0.8rem; 
+  padding: 0rem 0.4rem; 
   border-radius: 16px;
 }
 
