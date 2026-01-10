@@ -15,6 +15,7 @@ import { useCaptionHandling } from './hooks/useCaptionHandling'
 import { LAYOUTS } from './settings/LayoutSection'
 
 export default function StepEditor({
+  step,
   pages,
   setPages,
   currentPageIdx,
@@ -349,6 +350,7 @@ export default function StepEditor({
         </div>
 
         <EditorSettings
+          step={step}
           selectedLayout={currentPageLayout}
           updatePageLayout={(layoutId) => pageOperations.updatePageLayout(layoutId, setSelectedLayout)}
           pageMargin={pageMargin}

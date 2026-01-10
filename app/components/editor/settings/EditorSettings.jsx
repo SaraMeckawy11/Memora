@@ -16,6 +16,7 @@ import '@/styles/editor/EditorSettings.css'
 export default function EditorSettings(props) {
   // Destructure all props for easy access
   const {
+    step,
     selectedLayout, updatePageLayout,
     pageMargin, setPageMargin, pageGutter, setPageGutter, pageBgColor, setPageBgColor,
     pageMarginEffective, pageGutterEffective,
@@ -153,6 +154,7 @@ export default function EditorSettings(props) {
 
       {/* ================= MOBILE VIEW (Bottom Bar + Drawer) ================= */}
       <MobileView 
+        step={step}
         activeMobileTab={activeMobileTab}
         setActiveMobileTab={setActiveMobileTab}
         mobileTabs={mobileTabs}
