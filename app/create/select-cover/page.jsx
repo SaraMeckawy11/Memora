@@ -11,6 +11,12 @@ const PRESETS = [
     category: 'Travel'
   },
   { 
+    id: 'travel2', 
+    name: 'Vintage Wanderlust', 
+    preview: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Travel'
+  },
+  { 
     id: 'wedding', 
     name: 'Our Wedding Day', 
     preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
@@ -48,7 +54,7 @@ export default function SelectCoverPage() {
 
   const handleSelectPreset = (presetId) => {
     setSelectedPreset(presetId)
-    // When a preset is selected, navigate to the cover editor with the preset
+    // When a preset is selected, navigate to the main cover editor
     router.push(`/create/cover?preset=${presetId}`)
   }
 

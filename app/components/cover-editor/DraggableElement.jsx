@@ -441,7 +441,16 @@ export default function DraggableElement({
       onTouchStart={handleTouchStart}
       onDoubleClick={handleDoubleClick}
     >
-      {renderContent()}
+      <div style={{ 
+        width: '100%', 
+        height: '100%', 
+        transform: `scaleX(${element.scaleX || 1}) scaleY(${element.scaleY || 1})`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        {renderContent()}
+      </div>
       
       {isSelected && !isEditing && (
         <>
