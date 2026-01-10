@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   /* Color system */
   --bg-1: #0f1724;
   --bg: #f7fafc;
@@ -6,7 +6,7 @@
   --muted: #6b7280;
   --text: #0f1724;
 
-  /* Selection (prevents “white selection” regressions) */
+  /* Selection (prevents â€œwhite selectionâ€ regressions) */
   --selection-bg: rgba(27, 31, 59, 0.28);
   --selection-text: #0f1724;
 
@@ -492,4 +492,9 @@ textarea::selection {
   
   /* Mobile Menu specific tweaks */
   .mobile-menu-panel { width: 85%; }
+}
+
+/* Abril Fatface Faux-Bold Protection */
+[style*='Abril Fatface'] {
+  font-synthesis: none !important;
 }

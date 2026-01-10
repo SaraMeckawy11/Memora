@@ -28,11 +28,12 @@ export const FONT_LIST = [
   'Montez', 'Mr De Haviland', 'Mrs Saint Delafield', 'Norican', 'Over the Rainbow', 
   'Petit Formal Script', 'Allura', 'Just Another Hand', 'Crafty Girls',
   'Nanum Pen Script', 'Gochi Hand', 'Just Me Again Down Here', 'Loved by the King',
-  'The Girl Next Door', 'Give You Glory', 'Zeyada', 'Delius', 'Swanky and Moo Moo',
-  'La Belle Aurore', 'Sue Ellen Francisco', 'Waiting for the Sunrise', 'Annie Use Your Telescope',
+  'The Girl Next Door', 'Give You Glory', 'Delius', 'Swanky and Moo Moo',
+  'Sue Ellen Francisco', 'Annie Use Your Telescope',
   'Short Stack', 'Pangolin', 'Hi Melody', 'Gaegu', 'Gamja Flower', 'Single Day',
   'Dokdo', 'East Sea Dokdo', 'Yeon Sung', 'Jua', 'Do Hyeon', 'Sunflower',
   'Gothic A1', 'Nanum Gothic', 'Nanum Myeongjo', 'Song Myung', 'Stylish',
+  'Gistesy', 'Signature', 'Signature Font', 'California Signature',
 
   // --- Sans Serif (Clean & Modern) ---
   'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald', 'Raleway', 'Poppins', 
@@ -45,6 +46,7 @@ export const FONT_LIST = [
   'Bree Serif', 'Fjalla One', 'Patua One', 'Cuprum', 'Istok Web', 'Ruda', 
   'Archivo', 'Chivo', 'Manrope', 'Inter', 'DM Sans', 'Space Grotesk', 'Syne',
   'Outfit', 'Urbanist', 'Jost', 'Lexend', 'Epilogue', 'Sora', 'Hanken Grotesk',
+  'Montserrat Light', 'Bebas Neue',
 
   // --- Serif (Elegant & Classic) ---
   'Merriweather', 'Playfair Display', 'Lora', 'PT Serif', 'Roboto Slab', 
@@ -54,7 +56,7 @@ export const FONT_LIST = [
   'Gentium Basic', 'Cardo', 'Neuton', 'Domine', 'Sorts Mill Goudy', 'Prata', 
   'Podkova', 'Coda', 'Ledger', 'Lustria', 'Judson', 'Kotta One', 'Rosarivo', 
   'Ultra', 'Yeseva One', 'Abril Fatface', 'Alfa Slab One', 'Cinzel', 'Cormorant Garamond',
-  'DM Serif Display', 'Bodoni Moda', 'Prata', 'Castoro', 'Fraunces', 'Newsreader',
+  'DM Serif Display', 'Bodoni Moda', 'Castoro', 'Fraunces', 'Newsreader',
 
   // --- Display & Decorative ---
   'Lobster Two', 'Bangers', 'Fredoka One', 'Righteous', 'Russo One', 
@@ -62,7 +64,8 @@ export const FONT_LIST = [
   'Press Start 2P', 'Creepster', 'Fontdiner Swanky', 'Black Ops One', 
   'Orbitron', 'Audiowide', 'Carter One', 'Gruppo', 'Syncopate', 'Unica One',
   'Bungee', 'Bungee Shade', 'Bungee Inline', 'Faster One', 'Eater', 'Nosifer',
-  'Butcherman', 'Frijole', 'Metal Mania', 'New Rocker', 'Rye', 'Sancreek'
+  'Butcherman', 'Frijole', 'Metal Mania', 'New Rocker', 'Rye', 'Sancreek',
+  'Rogue', 'Rogue Hero'
 ]
 
 const chunkArray = (arr, size) => {
@@ -90,12 +93,17 @@ export default function FontLoader() {
       document.head.appendChild(preconnect2)
     }
 
-    // Filter out system fonts so we don't try to load them from Google
-    const googleFonts = FONT_LIST.filter(font => !SYSTEM_FONTS.includes(font))
+    // Google Fonts Loading Logic
+    const CUSTOM_FONT_NAMES = [
+      'Gistesy', 'Rogue', 'Rogue Hero', 'Signature', 'Signature Font', 'Signature Script', 'Brittany Signature Script', 'California Signature'
+    ]
+    
+    const googleFontsList = FONT_LIST.filter(font => 
+      !SYSTEM_FONTS.includes(font) && 
+      !CUSTOM_FONT_NAMES.includes(font)
+    )
 
-    // Split fonts into chunks to avoid URL length limits and isolate errors
-    // If one chunk contains an invalid font, only that chunk will fail
-    const chunks = chunkArray(googleFonts, 10)
+    const chunks = chunkArray(googleFontsList, 10)
 
     chunks.forEach((chunk, index) => {
       const linkId = `google-fonts-link-${index}`
@@ -104,12 +112,36 @@ export default function FontLoader() {
         link.id = linkId
         link.rel = 'stylesheet'
         
-        const families = chunk.map(font => font.replace(/ /g, '+')).join('|')
+        const families = chunk.map(font => {
+          if (font === 'Montserrat Light') return 'Montserrat:wght@300'
+          return font.replace(/ /g, '+')
+        }).join('|')
+        
         link.href = `https://fonts.googleapis.com/css?family=${families}&display=swap`
-        
-        // Optional: Add error handling to identify which chunks fail
         link.onerror = () => console.warn(`Failed to load font chunk ${index}:`, chunk)
-        
+        document.head.appendChild(link)
+      }
+    })
+
+    // Load Custom Fonts from CDN
+    const customFonts = [
+      { name: 'Rogue', url: 'https://fonts.cdnfonts.com/css/rogue' },
+      { name: 'Rogue Hero', url: 'https://fonts.cdnfonts.com/css/rogue-hero' },
+      { name: 'Gistesy', url: 'https://fonts.cdnfonts.com/css/gistesy' },
+      { name: 'Signature', url: 'https://fonts.cdnfonts.com/css/signature' },
+      { name: 'Signature Font', url: 'https://fonts.cdnfonts.com/css/signature-font' },
+      { name: 'Signature Script', url: 'https://fonts.cdnfonts.com/css/signature-script' },
+      { name: 'Brittany Signature Script', url: 'https://fonts.cdnfonts.com/css/brittany-signature-script' },
+      { name: 'California Signature', url: 'https://fonts.cdnfonts.com/css/california-signature' }
+    ]
+
+    customFonts.forEach(font => {
+      const id = `custom-font-${font.name.replace(/\s+/g, '-').toLowerCase()}`
+      if (!document.getElementById(id)) {
+        const link = document.createElement('link')
+        link.id = id
+        link.rel = 'stylesheet'
+        link.href = font.url
         document.head.appendChild(link)
       }
     })

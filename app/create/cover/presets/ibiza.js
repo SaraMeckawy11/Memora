@@ -1,5 +1,5 @@
 export const ibiza = {
-  backgroundColor: '#ffe6f5',
+  backgroundColor: '#ffdff4',
   elements: [
     {
       id: 'ibiza-title',

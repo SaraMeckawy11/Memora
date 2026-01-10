@@ -45,7 +45,7 @@ export const wedding = {
     {
       id: 'connector', type: 'text', x: 0, y: 430, width: 893, height: 100,
       content: 'and', rotation: 0, zIndex: 10,
-      color: '#000000', fontSize: 68, fontFamily: 'Herr Von Muellerhoff', fontWeight: '400', textAlign: 'center', lineHeight: 1.0,
+      color: '#000000', fontSize: 92, fontFamily: 'California Signature', fontWeight: '400', textAlign: 'center', lineHeight: 1.0,
     },
     {
       id: 'name2', type: 'text', x: 0, y: 550, width: 893, height: 120,
