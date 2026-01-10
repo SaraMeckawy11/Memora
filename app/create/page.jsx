@@ -11,7 +11,6 @@ import { SIZES } from '@/app/components/setup/SizeSelection'
 import { LAYOUTS } from '@/app/components/editor/settings/LayoutSection'
 import { FONT_FAMILIES } from '@/app/components/editor/settings/CaptionSection'
 import { useSaveManager } from '@/app/components/editor/save/SaveManager'
-import PDFExportButton from '@/app/components/editor/pdf/PDFExportButton'
 
 import '@/styles/CreatePage.css'
 import '@/styles/Loading.css'
@@ -227,29 +226,6 @@ export default function CreatePage() {
                   : `Saved ${new Date(lastSaved).toLocaleTimeString()}`}
               </span>
             )}
-
-            {/* Buttons */}
-            <div className="header-actions">
-              <button
-                type="button"
-                onClick={saveProgress}
-                className="btn-header-save"
-              >
-                Save
-              </button>
-
-              <PDFExportButton
-                pages={pages}
-                uploadedImages={uploadedImages}
-                selectedSize={selectedSize}
-                sizes={SIZES}
-                layouts={LAYOUTS}
-                pageMargin={pageMargin}
-                pageGutter={pageGutter}
-                pageBgColor={pageBgColor}
-                imageFitMode={imageFitMode}
-              />
-            </div>
           </div>
         )}
         </div>
@@ -348,36 +324,12 @@ export default function CreatePage() {
       <footer className={`create-bottom-nav ${step === 1 ? 'is-step-1' : ''} ${step === 2 ? 'is-step-2' : ''}`}>
         <div
           className="create-bottom-inner container"
-          style={{
-            display: 'flex',
-            alignItems: 'center',          // 🔥 same baseline
-            justifyContent: 'space-between',
-            gap: '1rem',
-          }}
         >
           {/* Back / Home */}
           <button
             type="button"
             onClick={handleBack}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-
-              height: '44px',
-              padding: '0 1.5rem',
-              lineHeight: 1,
-              boxSizing: 'border-box',
-
-              borderRadius: '8px',
-              fontSize: '0.95rem',
-              fontWeight: 500,
-
-              background: '#f5f5f5',
-              color: '#222',
-              border: '1px solid #ddd',
-              cursor: 'pointer',
-            }}
+            className="bottom-nav-btn bottom-nav-btn--ghost"
           >
             {step === 1 ? 'Home' : 'Back'}
           </button>
@@ -387,7 +339,7 @@ export default function CreatePage() {
             <button
               type="button"
               onClick={() => setIsSidebarOpen(true)}
-              className="select-page-btn"
+              className="bottom-nav-btn bottom-nav-btn--ghost select-page-btn"
             >
               Select Page
             </button>
@@ -398,27 +350,7 @@ export default function CreatePage() {
             type="button"
             onClick={handleNext}
             disabled={step === 1 && !isStep1Valid}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-
-              height: '44px',
-              padding: '0 1.5rem',
-              lineHeight: 1,
-              boxSizing: 'border-box',
-
-              borderRadius: '8px',
-              fontSize: '0.95rem',
-              fontWeight: 500,
-
-              background: 'linear-gradient(135deg, #1e293b, #0ea5e9)',
-              color: '#fff',
-              border: 'none',
-              cursor:
-                step === 1 && !isStep1Valid ? 'not-allowed' : 'pointer',
-              opacity: step === 1 && !isStep1Valid ? 0.6 : 1,
-            }}
+            className="bottom-nav-btn bottom-nav-btn--primary"
           >
             {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
           </button>

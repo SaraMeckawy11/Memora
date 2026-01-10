@@ -53,6 +53,7 @@ export default function StepEditor({
   autoSave,
   setAutoSave,
   clearProgress,
+  saveProgress,
   isSidebarOpen,
   setIsSidebarOpen,
   undo,
@@ -414,6 +415,8 @@ export default function StepEditor({
           autoSave={autoSave}
           setAutoSave={setAutoSave}
           clearProgress={clearProgress}
+          saveProgress={saveProgress}
+          selectedSize={selectedSize}
           getMaxImages={getMaxImages}
           layoutSplitX={currentPage?.layoutSplitX ?? 50}
           layoutSplitY={currentPage?.layoutSplitY ?? 50}

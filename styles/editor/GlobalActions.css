@@ -1,124 +1,169 @@
-/* ================= Actions (modern rows + buttons) ================= */
-.action-card {
+/* ================= Global Actions Container ================= */
+.global-actions-card {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  /* editor-card provides basic structure */
 }
 
+/* ================= Action Rows (Minimal List Style) ================= */
 .action-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.85rem;
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(0, 0, 0, 0.02);
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.action-row-left {
-  min-width: 0;
+.action-row:first-child {
+  padding-top: 0;
+}
+
+.action-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* danger row handling */
+.action-row-danger {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  /* border-top: 1px solid rgba(0, 0, 0, 0.05);  */
+}
+
+/* ================= Info Group ================= */
+.action-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  color: #4b5563;
+  transition: all 0.2s ease;
+}
+
+.action-row:hover .action-icon {
+  background: #e5e7eb;
+  color: #111;
+}
+
+.icon-danger {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+.action-row:hover .icon-danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.action-text {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.1rem;
 }
 
 .action-title {
   font-size: 0.82rem;
-  font-weight: 650;
-  color: #111;
+  font-weight: 600;
+  color: var(--text);
   line-height: 1.2;
 }
 
+.title-danger {
+  color: #ef4444;
+}
+
 .action-subtitle {
-  font-size: 0.72rem;
-  color: #666;
+  font-size: 0.7rem;
+  color: #9ca3af; /* lighter gray */
   line-height: 1.25;
 }
 
-.action-danger {
-  border: 1px solid rgba(231, 76, 60, 0.20);
-  background: rgba(231, 76, 60, 0.06);
+/* ================= Buttons ================= */
+.btn-action-primary, .btn-action-danger {
+  font-size: 0.78rem; /* slightly larger to match standard */
+  font-weight: 600;
+  padding: 0.55rem 0.75rem; /* match other buttons */
+  border-radius: 10px; /* match other buttons */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 64px; /* Slightly wider */
+  text-align: center; /* Ensure centered text */
 }
 
-/* ================= Actions card polish ================= */
-.action-card .apply-btn {
-  width: 100%;
-  border-radius: 10px;
-  background: #111;
+.btn-action-primary {
+  background: #111; /* Consistent black */
   color: #fff;
   border: 1px solid #111;
-  transition: transform 0.03s, box-shadow 0.15s, background 0.15s;
 }
 
-.action-card .apply-btn:hover {
+.btn-action-primary:hover {
   background: #000;
+  transform: translateY(-1px);
 }
 
-.action-card .apply-btn:active {
-  transform: translateY(1px);
+.btn-action-danger {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-.action-card .clear-btn {
-  width: 100%;
-  border-radius: 10px;
+.btn-action-danger:hover {
+  background: #ef4444;
+  color: #fff;
 }
 
-/* ================= Auto Save ================= */
-.auto-save {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem;
-  background-color: #f8f8f8;
-  border-radius: 8px;
-}
-
-.auto-save-label {
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.switch {
+/* ================= Modern Switch ================= */
+.switch-modern {
   position: relative;
   display: inline-block;
-  width: 46px;
-  height: 26px;
+  width: 44px; /* Slightly wider track */
+  height: 24px; /* Standard height */
 }
 
-.switch input {
+.switch-modern input {
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-.switch-track {
+.switch-slider {
   position: absolute;
-  inset: 0;
   cursor: pointer;
-  background-color: #d1d1d1;
-  border-radius: 24px;
-  transition: 0.3s;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #e5e7eb;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 99px; /* Pill shape */
+  border: 1px solid rgba(0,0,0,0.05); /* Subtle border definition */
 }
 
-.switch.checked .switch-track {
-  background-color: var(--accent-solid);
-}
-
-.switch-thumb {
+.switch-slider:before {
   position: absolute;
-  height: 20px;
-  width: 20px;
-  bottom: 3px;
+  content: "";
+  height: 18px; /* Perfectly sized thumb */
+  width: 18px;
+  left: 2px;
+  bottom: 2px;
   background-color: white;
+  transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
-  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.switch.checked .switch-thumb {
-  left: 23px;
+.switch-modern.checked .switch-slider {
+  background-color: #111; /* Match primary buttons */
+  border-color: #111;
 }
 
-.switch.unchecked .switch-thumb {
-  left: 3px;
+.switch-modern.checked .switch-slider:before {
+  transform: translateX(20px); /* Clean slide */
 }

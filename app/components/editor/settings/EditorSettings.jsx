@@ -27,6 +27,7 @@ export default function EditorSettings(props) {
     applyToAllPages, uploadedImages, pages, currentPage, addImageToPage,
     selectedSlotIdx, openImageEditor,
     autoSave, setAutoSave, clearProgress,
+    saveProgress, selectedSize,
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
   } = props
 
@@ -72,6 +73,14 @@ export default function EditorSettings(props) {
       autoSave={autoSave}
       setAutoSave={setAutoSave}
       clearProgress={clearProgress}
+      saveProgress={saveProgress}
+      pages={pages}
+      uploadedImages={uploadedImages}
+      selectedSize={selectedSize}
+      pageMargin={pageMargin}
+      pageGutter={pageGutter}
+      pageBgColor={pageBgColor}
+      imageFitMode={imageFitMode}
     />
   )
 

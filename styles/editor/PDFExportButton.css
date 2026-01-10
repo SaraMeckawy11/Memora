@@ -10,21 +10,21 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  height: 36px;
-  padding: 0 1.25rem;
-  line-height: 1;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, #1e293b, #0ea5e9);
+  padding: 0.55rem 0.75rem; /* match other buttons */
+  border-radius: 10px; /* match other buttons */
+  font-size: 0.78rem; /* match other buttons */
+  font-weight: 600;
+  background: #111; /* Consistent black */
   color: #fff;
-  border: none;
+  border: 1px solid #111;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s ease;
+  min-width: 64px;
 }
 
 .btn-pdf-trigger:hover {
-  opacity: 0.92;
+  filter: brightness(1.2);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .btn-pdf-trigger:disabled {

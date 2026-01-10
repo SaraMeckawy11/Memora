@@ -29,6 +29,7 @@
     display: flex;
     background: #fff;
     border-top: 1px solid #eee;
+    height: var(--editor-mobile-bar-h, 56px);
     padding: 0.25rem;
     padding-bottom: calc(0.25rem + env(safe-area-inset-bottom)); /* iPhone Home bar */
     box-shadow: 0 -4px 20px rgba(0,0,0,0.05);

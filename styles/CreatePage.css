@@ -5,6 +5,8 @@
   --border-light: #e0e0e0;
   --text-muted: #999;
   --text-default: #222;
+  /* Fixed UI heights (mobile stacking) */
+  --editor-mobile-bar-h: 56px;
 }
 
 /* ================= ROOT ================= */
@@ -34,11 +36,12 @@
 .create-header-inner {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0.75rem 1.5rem; /* Added vertical padding */
+  padding: 0.65rem 1.5rem; /* slightly tighter */
 
+  /* Title/step on top row, saved status on its own row below */
   display: flex;
   flex-direction: column;
-  gap: 0.5rem; /* Increased gap */
+  gap: 0.4rem;
 }
 
 /* ---------- TOP ROW ---------- */
@@ -46,6 +49,23 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
+  min-width: 0; /* allows text to shrink without pushing status off-screen */
+}
+
+/* ---------- SAVED STATUS (Step >= 2) ---------- */
+.header-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 18px;
+}
+
+.header-saved-status {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  color: var(--text-muted);
 }
 
 .create-header-top h1 {
@@ -59,6 +79,7 @@
   font-size: 0.85rem; /* Slightly larger */
   font-weight: 500;
   color: var(--text-muted);
+  white-space: nowrap;
 }
 
 /* ---------- BOTTOM ROW ---------- */
@@ -98,6 +119,8 @@
   max-width: 1600px;
   margin: 0 auto;
   padding: 1.5rem 0rem; /* Kept spacious for Step 2 */
+  /* Prevent the fixed bottom nav from covering content (especially Step 2 editor) */
+  padding-bottom: 5.5rem;
 }
 
 .create-content.step-1 {
@@ -108,15 +131,20 @@
 .create-bottom-nav {
   position: fixed;
   inset: auto 0 0 0;
-  background-color: var(--card-bg);
-  border-top: 1px solid var(--border-light);
-  z-index: 150; /* Higher than desktop sidebar (100) */
+  z-index: 998; /* Below mobile view modals */
+
+  padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(15, 23, 42, 0.10);
 }
 
 .create-bottom-inner {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1.25rem 1.5rem;
+  padding: 0 1.5rem;
 
   display: flex;
   align-items: center;
@@ -126,8 +154,74 @@
 
 /* Reduced padding for step 1 on desktop */
 .create-bottom-nav.is-step-1 .create-bottom-inner {
-  padding-top: 0.75rem;
-  padding-bottom: 0.75rem;
+  padding-top: 0.55rem;
+  padding-bottom: 0.55rem;
+}
+
+/* ================= BOTTOM NAV BUTTONS (modern/minimal) ================= */
+.bottom-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1;
+
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease,
+    opacity 120ms ease,
+    filter 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.bottom-nav-btn:active {
+  transform: translateY(1px);
+}
+
+.bottom-nav-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.30);
+}
+
+.bottom-nav-btn--ghost {
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  border-color: rgba(15, 23, 42, 0.14);
+}
+
+.bottom-nav-btn--ghost:hover {
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.bottom-nav-btn--primary {
+  color: #fff;
+  background: #0f172a;
+  border-color: rgba(15, 23, 42, 0);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+}
+
+.bottom-nav-btn--primary:hover {
+  background: #111c33;
+}
+
+.bottom-nav-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 /* ================= BUTTONS ================= */
@@ -186,17 +280,7 @@
   cursor: not-allowed;
 }
 
-/* ================= BACK / NEXT (EQUAL SIZE) ================= */
-.create-bottom-inner .btn-primary,
-.create-bottom-inner .btn-secondary {
-  width: 180px;
-  height: 44px;
-  padding: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+/* Keep header buttons unchanged; bottom nav uses .bottom-nav-btn */
 
 /* ================= UTILITIES ================= */
 .hidden {
@@ -214,18 +298,64 @@
   }
   
   .create-content.step-1 {
-    padding: 1rem 1rem 6rem; /* Reduced Step 1 spacing */
+    padding: 1rem 1rem 4rem; /* Reduced Step 1 spacing */
   }
 
   .create-bottom-inner {
-    padding-bottom: 5rem;
+    padding-bottom: 0;
   }
 
   .create-bottom-nav.is-step-1 .create-bottom-inner {
     padding-bottom: 1.25rem;
   }
+
+  /* Make buttons same width on smaller screens */
+  .bottom-nav-btn {
+    width: 120px;
+  }
+
+  /* Slightly decrease Select Page button width */
+  .select-page-btn {
+    width: 100px;
+  }
+
+  /* Ensure content clears both bars on mobile */
+  .create-content {
+    padding-bottom: calc(5.5rem + var(--editor-mobile-bar-h));
+  }
+
+  /* Step 1: no editor bar → nav sticks to screen bottom */
+  .create-bottom-nav.is-step-1 {
+    bottom: 0;
+  }
+
+  /* Step 2+: editor bar exists → lift nav above it */
+  .create-bottom-nav.is-step-2 {
+    bottom: var(--editor-mobile-bar-h);
+  }
+
 }
 @media (max-width: 768px) {
+  /* .create-header-inner {
+    padding: 0.6rem 1rem;
+  } */
+
+  .create-header-top h1 {
+    font-size: 1.2rem;
+  }
+
+  .create-step {
+    font-size: 0.8rem;
+  }
+
+  .header-saved-status {
+    font-size: 0.72rem;
+  }
+
+  .header-controls-row {
+    justify-content: flex-start;
+  }
+
   .create-header-bottom {
     flex-wrap: nowrap;
     justify-content: flex-end;
@@ -242,33 +372,49 @@
     margin-right: auto; /* pushes buttons to the right */
   }
 }
-/* ================= Select Page Button ================= */
 
-.select-page-btn {
-  display: none; /* Hidden by default */
-  height: 44px;
-  padding: 0 1.5rem;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  background: #f5f5f5;
-  color: #222;
-  border: 1px solid #ddd;
-  cursor: pointer;
-}
+@media (max-width: 420px) {
+  .create-bottom-inner {
+    gap: 0.75rem;
+  }
 
-/* Show the button only on smaller screens (mobile/tablet) */
-@media (max-width: 1024px) {
-  .select-page-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+  .bottom-nav-btn {
+    height: 32px;
+    padding: 0 10px;
+    font-size: 12.5px;
   }
 }
+/* Select Page is now a normal bottom-nav button; no special casing needed */
 @media (max-width: 380px) {
   .btn-header-save {
     padding: 0 0.8rem;
     font-size: 0.85rem;
+  }
+}
+
+/* Hide Select Page button on wide screens */
+@media (min-width: 1025px) {
+  .select-page-btn {
+    display: none !important;
+  }
+
+  /* Increase margin top and bottom of nav container on widescreen */
+  .create-bottom-nav {
+    padding-top: 1.6rem;
+    padding-bottom: 1.6rem;
+  }
+
+  /* Slightly increase button size and make all buttons same width */
+  .bottom-nav-btn {
+    height: 40px;
+    padding: 0 16px;
+    width: 140px;
+    font-size: 14px;
+  }
+
+  /* Slightly decrease Select Page button width */
+  .select-page-btn {
+    width: 120px;
   }
 }
 
