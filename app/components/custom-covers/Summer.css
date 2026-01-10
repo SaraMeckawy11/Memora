@@ -1,0 +1,120 @@
+/* Import fonts closest to the image */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Great+Vibes&display=swap');
+
+/* Main Container */
+.summer-journal-container {
+  position: relative;
+  width: 100%;
+  max-width: 600px; /* Typical journal cover width */
+  height: 850px;    /* Typical journal cover height */
+  background-color: #e1faff; /* Specified Sky Color */
+  margin: 0 auto;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Typography Section --- */
+.title-group {
+  position: relative;
+  margin-top: 180px; /* Push down from top */
+  text-align: center;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.text-daily {
+  font-family: 'Playfair Display', serif;
+  font-size: 6rem;
+  color: #558b6e; /* Muted Green */
+  line-height: 1;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+  background: transparent;
+  border: none;
+  text-align: center;
+  width: 100%;
+}
+
+.text-journal {
+  font-family: 'Great Vibes', cursive;
+  font-size: 8rem;
+  color: #00aeef; /* Cyan Blue */
+  margin: 0;
+  line-height: 0.6;
+  position: relative;
+  top: -20px; /* Overlap effect */
+  transform: rotate(-5deg);
+  background: transparent;
+  border: none;
+  text-align: center;
+  width: 100%;
+}
+
+.text-daily:focus,
+.text-journal:focus {
+  outline: 2px dashed #00aeef;
+  border-radius: 8px;
+}
+
+/* --- Central Elements --- */
+.hat-icon {
+  position: absolute;
+  width: 100px; /* Adjust based on actual SVG size */
+  top: -45px;
+  left: -20px;
+  transform: rotate(-15deg);
+  z-index: 12;
+}
+
+.boat-icon {
+  position: absolute;
+  width: 180px;
+  bottom: 240px; /* Positioned just above the sea water */
+  z-index: 5;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* --- Bottom Sea Section --- */
+.sea-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 4;
+}
+
+.wheel-icon {
+  position: absolute;
+  width: 120px;
+  bottom: -20px;
+  right: -20px;
+  z-index: 6; /* On top of sea, behind some leaves */
+}
+
+/* --- Decorative Leaves (The Frame) --- */
+.leaf {
+  position: absolute;
+  pointer-events: none; /* Let clicks pass through */
+}
+
+/* Top Frame */
+.leaf.top-left-1 { top: -20px; left: -30px; width: 150px; transform: rotate(10deg); }
+.leaf.top-left-2 { top: -10px; left: 80px; width: 120px; }
+.leaf.top-center { top: -30px; left: 50%; transform: translateX(-50%); width: 180px; }
+.leaf.top-right  { top: -20px; right: -20px; width: 160px; transform: scaleX(-1); }
+
+/* Side Frame */
+.leaf.side-left  { top: 40%; left: -40px; width: 140px; }
+.leaf.side-right { top: 30%; right: -40px; width: 140px; transform: scaleX(-1); }
+
+/* Bottom Frame (In front of sea/wheel) */
+.leaf.bottom-left  { bottom: -30px; left: -20px; width: 160px; z-index: 20; }
+.leaf.bottom-right { bottom: -40px; right: -10px; width: 180px; z-index: 20; }
+.leaf.bottom-center { bottom: 0; left: 30%; width: 100px; z-index: 19; }

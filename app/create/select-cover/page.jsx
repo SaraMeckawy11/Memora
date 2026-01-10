@@ -23,6 +23,12 @@ const PRESETS = [
     category: 'Wedding'
   },
   { 
+    id: 'summer', 
+    name: 'Summer Vibes', 
+    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Seasonal'
+  },
+  { 
     id: 'birthday', 
     name: 'Birthday Memories', 
     preview: 'https://images.unsplash.com/photo-1576866209830-58f4c00a5814?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
@@ -54,7 +60,7 @@ export default function SelectCoverPage() {
 
   const handleSelectPreset = (presetId) => {
     setSelectedPreset(presetId)
-    // When a preset is selected, navigate to the main cover editor
+    // When a preset is selected, navigate to the main cover editor with all features
     router.push(`/create/cover?preset=${presetId}`)
   }
 

@@ -5,6 +5,7 @@ import { birthday } from './birthday';
 import { friends } from './friends';
 import { engagement } from './engagement';
 import { family } from './family';
+import { summer } from './summer';
 
 export const COVER_PRESETS = {
   travel,
@@ -13,5 +14,6 @@ export const COVER_PRESETS = {
   birthday,
   friends,
   engagement,
-  family
+  family,
+  summer
 };
