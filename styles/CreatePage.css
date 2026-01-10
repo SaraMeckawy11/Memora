@@ -412,8 +412,8 @@
 
   /* Increase margin top and bottom of nav container on widescreen */
   .create-bottom-nav {
-    padding-top: 1.6rem;
-    padding-bottom: 1.6rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
   }
 
   /* Slightly increase button size and make all buttons same width */
