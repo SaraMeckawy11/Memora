@@ -1,14 +1,13 @@
 'use client'
 import React from 'react';
 import TravelJournalBook from '@/app/components/custom-covers/TravelJournalBook';
-import WeddingCover from '@/app/components/custom-covers/WeddingCover';
+import WeddingInvite from '@/app/components/custom-covers/WeddingInvite';
+import Travel2 from '@/app/components/custom-covers/Travel2';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 
 // A simple mapping from preset ID to component
 const PRESET_COMPONENTS = {
-  travel: TravelJournalBook,
-  wedding: WeddingCover,
 };
 
 // A mapping for fonts required by each theme
