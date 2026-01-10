@@ -5,7 +5,6 @@ import EditorSettings from './settings/EditorSettings'
 import EditorTopbar from './topbar/EditorTopbar'
 import EditorCanvas from './canvas/EditorCanvas'
 import UploadArea from './settings/UploadArea'
-import MobileNavBar from './navigation/MobileNavBar'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import '@/styles/editor/editor.css'
 import ImageEditorModal from './settings/ImageEditorModal'
@@ -305,9 +304,9 @@ export default function StepEditor({
         <div>
           <EditorTopbar
             currentPageIdx={currentPageIdx}
-            currentLayoutObj={currentLayoutObj}
-            imageCount={currentPage?.images?.length || 0}
-            maxSlots={maxSlots}
+            totalPages={pages.length}
+            onPrevPage={goToPrevPage}
+            onNextPage={goToNextPage}
             undo={undo}
             redo={redo}
             canUndo={canUndo}
@@ -344,13 +343,6 @@ export default function StepEditor({
               onRemoveImage: imageHandling.removeImageFromPage,
               onSwapSlots: imageHandling.swapSlots,
             }}
-          />
-
-          <MobileNavBar
-            currentPageIdx={currentPageIdx}
-            totalPages={pages.length}
-            onPrevPage={goToPrevPage}
-            onNextPage={goToNextPage}
           />
 
           <UploadArea onUpload={imageHandling.handleImageUpload} />

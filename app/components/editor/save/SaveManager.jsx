@@ -55,7 +55,7 @@ export function useSaveManager({
   const [history, setHistory] = useState([])
   const [historyIndex, setHistoryIndex] = useState(-1)
 
-  // Initialize history with first state
+  // Initialize history with first state if not loaded
   useEffect(() => {
     if (pages.length > 0 && history.length === 0) {
       setHistory([pages])
@@ -142,6 +142,8 @@ export function useSaveManager({
           layoutSplitX,
           layoutSplitY,
         },
+        history,
+        historyIndex,
         lastSaved: new Date().toISOString(),
       }
 
@@ -176,6 +178,8 @@ export function useSaveManager({
     captionPosition,
     captionAlignment,
     autoSave,
+    history,
+    historyIndex,
   ])
 
   const loadProgress = useCallback(async () => {
@@ -199,6 +203,10 @@ export function useSaveManager({
       setCoverText(d.coverText ?? '')
       setCoverTheme(d.coverTheme ?? 'classic')
       setLastSaved(d.lastSaved ?? null)
+
+      // Restore history
+      setHistory(d.history ?? [])
+      setHistoryIndex(d.historyIndex ?? -1)
 
       const s = d.settings || {}
       setPageMargin(s.pageMargin ?? 8)
@@ -278,6 +286,10 @@ export function useSaveManager({
     setCaptionPosition('bottom')
     setCaptionAlignment('center')
     setAutoSave(true)
+
+    // Reset history
+    setHistory([])
+    setHistoryIndex(-1)
   }
 
   const applyCaptionStyleToAllPages = useCallback(() => {
@@ -334,6 +346,8 @@ export function useSaveManager({
     autoSave,
     step,
     saveProgress,
+    history,
+    historyIndex,
   ])
 
   return {

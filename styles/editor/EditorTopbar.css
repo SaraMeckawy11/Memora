@@ -5,16 +5,56 @@
   gap: 1rem;
   margin-top: -0.2rem;
   margin-bottom: 0.8rem;
-  /* background-color: #fff; */
-  padding: 0rem 0.4rem; 
-  border-radius: 16px;
+  padding: 0.5rem 1rem; /* Increased padding for breathing room */
+  border-radius: 12px; /* Softer corners for modern look */
+  background: rgba(255, 255, 255, 0.8); /* Subtle transparency for depth */
+  backdrop-filter: blur(8px); /* Modern glassmorphism effect */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Light shadow for elevation */
+  border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border */
 }
 
 .editor-topbar-left {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.8rem; /* Slightly more space for balance */
   flex-wrap: wrap;
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; /* Slightly larger for better touch targets */
+  height: 32px;
+  border-radius: 8px; /* Softer corners */
+  border: none;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease; /* Smoother transitions */
+}
+
+.nav-button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05); /* Subtle hover background */
+  color: #000;
+  transform: scale(1.05); /* Gentle scale for interactivity */
+}
+
+.nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.editor-page-indicator {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #333; /* Darker for readability */
+  background: rgba(0, 0, 0, 0.05); /* Subtle pill background */
+  padding: 0.4rem 0.8rem;
+  border-radius: 16px; /* Pill shape */
+  white-space: nowrap;
+  line-height: 1;
+  text-align: center;
 }
 
 .editor-page-number {
@@ -68,35 +108,55 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: #f4f4f4;
-  padding: 0.25rem;
-  border-radius: 9px;
-  border: 1px solid #e5e5e5;
+  background: rgba(255, 255, 255, 0.6); /* Subtle glassmorphism background */
+  backdrop-filter: blur(6px); /* Matching glass effect */
+  padding: 0.4rem;
+  border-radius: 12px; /* Softer, modern radius */
+  border: 1px solid rgba(0, 0, 0, 0.08); /* Slightly more visible border */
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1); /* Gentle shadow for depth */
+  transition: all 0.2s ease; /* Smooth transitions for the container */
+}
+
+.editor-history-controls:hover {
+  background: rgba(255, 255, 255, 0.8); /* Brighten on hover */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
 }
 
 .history-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 32px; /* Consistent with nav buttons */
+  height: 32px;
+  border-radius: 8px; /* Softer corners */
   border: none;
   background: transparent;
   color: #555;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s ease; /* Smoother transitions */
+  position: relative; /* For potential pseudo-elements */
 }
 
 .history-button:hover:not(:disabled) {
-  background: #fff;
+  background: rgba(0, 0, 0, 0.08); /* Slightly more prominent hover */
   color: #000;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transform: scale(1.08); /* More noticeable scale */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Subtle glow effect */
+}
+
+.history-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* Accessible focus ring */
+}
+
+.history-button:active:not(:disabled) {
+  transform: scale(0.95); /* Pressed effect */
 }
 
 .history-button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  transform: none; /* No scale on disabled */
 }
 
 /* ================= Header Controls (Save & PDF) ================= */
@@ -141,6 +201,42 @@
 
 .btn-header-save:hover {
   background: #eee;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  .editor-topbar {
+    padding: 0.4rem 0.8rem; /* Tighter on tablets */
+    gap: 0.8rem;
+  }
+
+  .editor-page-indicator {
+    font-size: 0.8rem; /* Smaller text on smaller screens */
+    padding: 0.3rem 0.6rem;
+  }
+
+  .nav-button, .history-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .editor-history-controls {
+    padding: 0.3rem; /* Adjust padding for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .editor-topbar-left {
+    gap: 0.5rem;
+  }
+
+  .editor-page-indicator {
+    font-size: 0.75rem;
+  }
+
+  .editor-history-controls {
+    padding: 0.25rem; /* Even tighter on mobile */
+  }
 }
 
 @media (max-width: 640px) {

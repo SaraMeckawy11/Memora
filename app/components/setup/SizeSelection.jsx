@@ -10,14 +10,14 @@ const SIZES = [
     width: 8.27,
     height: 11.69,
   },
-  // {
-  //   id: 2,
-  //   name: 'A4 Landscape',
-  //   label: '297 × 210 mm',
-  //   aspect: (11.69 / 8.27).toFixed(2),
-  //   width: 11.69,
-  //   height: 8.27,
-  // },
+  {
+    id: 2,
+    name: 'A4 Landscape',
+    label: '297 × 210 mm',
+    aspect: (11.69 / 8.27).toFixed(2),
+    width: 11.69,
+    height: 8.27,
+  },
   {
     id: 3,
     name: 'B5 Portrait',
@@ -27,14 +27,14 @@ const SIZES = [
     height: 9.84,
     popular: true,
   },
-  // {
-  //   id: 4,
-  //   name: 'B5 Landscape',
-  //   label: '250 × 176 mm',
-  //   aspect: (9.84 / 6.93).toFixed(2),
-  //   width: 9.84,
-  //   height: 6.93,
-  // },
+  {
+    id: 4,
+    name: 'B5 Landscape',
+    label: '250 × 176 mm',
+    aspect: (9.84 / 6.93).toFixed(2),
+    width: 9.84,
+    height: 6.93,
+  },
 ]
 
 export default function SizeSelection({ selectedSize, setSelectedSize }) {
