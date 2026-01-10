@@ -94,7 +94,7 @@ export const travel = {
       id: 'author', type: 'text', x: 101, y: 969, width: 693, height: 100,
       content: 'Reese Miller',
       rotation: -7.2, zIndex: 20,
-      color: '#2a2a72', fontSize: 104, fontFamily: 'Just Me Again Down Here', fontWeight: '400', textAlign: 'center',
+      color: '#2a2a72', fontSize: 104, fontFamily: 'Gistesy', fontWeight: '400', textAlign: 'center',
     },
   ]
 };

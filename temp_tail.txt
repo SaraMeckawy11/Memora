@@ -1,0 +1,11 @@
+  .footer-right a { margin-left: 0; }
+  
+  /* Mobile Menu specific tweaks */
+  .mobile-menu-panel { width: 85%; }
+}
+
+/* Abril Fatface Faux-Bold Protection */
+[style*='font-family: Abril Fatface'] {
+  font-synthesis: none;
+}
+

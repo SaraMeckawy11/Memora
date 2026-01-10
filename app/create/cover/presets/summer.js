@@ -27,13 +27,13 @@ export const summer = {
     {
       id: 'title-daily', type: 'text', x: 0, y: 260, width: 893, height: 160,
       content: 'Daily',
-      color: '#5bab79', fontSize: 130, fontFamily: 'Playfair Display', fontWeight: '700', textAlign: 'center',
+      color: '#5bab79', fontSize: 130, fontFamily: 'Abril Fatface', fontWeight: '400', textAlign: 'center',
       zIndex: 10
     },
     {
-      id: 'title-journal', type: 'text', x: 0, y: 360, width: 893, height: 200,
+      id: 'title-journal', type: 'text', x: 171, y: 350, width: 509, height: 179,
       content: 'Journal',
-      color: '#00b0fb', fontSize: 160, fontFamily: 'Great Vibes', textAlign: 'center', rotation: -5,
+      color: '#00b0fb', fontSize: 172, fontFamily: 'Dancing Script', fontWeight: '400', textAlign: 'center', rotation: -3.1,
       zIndex: 11
     },
 
