@@ -20,7 +20,7 @@ export default function PageSettingsSection({
         <div className="control-subgroup">
           <div className='control-sub'>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
-              <label className="control-label">Margin (this page)</label>
+              <label className="control-label">Page Margin</label>
               {typeof currentPage?.pageMargin === 'number' && (
                 <button
                   type="button"
@@ -45,7 +45,7 @@ export default function PageSettingsSection({
 
           <div className='control-sub'>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
-              <label className="control-label">Gutter (this page)</label>
+              <label className="control-label">Page Gutter</label>
               {typeof currentPage?.pageGutter === 'number' && (
                 <button
                   type="button"
@@ -60,12 +60,38 @@ export default function PageSettingsSection({
             <input
               type="range"
               min="0"
-              max="40"
+              max="60"
               value={typeof pageGutterEffective === 'number' ? pageGutterEffective : pageGutter}
               onChange={e => setPageGutterForCurrentPage(+e.target.value)}
               className="control-range"
             />
             <span className="control-value">{(typeof pageGutterEffective === 'number' ? pageGutterEffective : pageGutter)}px</span>
+          </div>
+
+          <div className='control-sub'>
+            <label className="control-label">Horizontal Split</label>
+            <input
+              type="range"
+              min="20"
+              max="80"
+              value={layoutSplitX}
+              onChange={e => updateLayoutSplitX(+e.target.value)}
+              className="control-range"
+            />
+            <span className="control-value">{layoutSplitX}%</span>
+          </div>
+
+          <div className='control-sub'>
+            <label className="control-label">Vertical Split</label>
+            <input
+              type="range"
+              min="20"
+              max="80"
+              value={layoutSplitY}
+              onChange={e => updateLayoutSplitY(+e.target.value)}
+              className="control-range"
+            />
+            <span className="control-value">{layoutSplitY}%</span>
           </div>
         </div>
       </div>
@@ -73,7 +99,7 @@ export default function PageSettingsSection({
       <div className="control-group">
         <div className="control-subgroup">
           <div className='control-sub'>
-            <label className="control-label">Margin (global)</label>
+            <label className="control-label">Global Margin</label>
             <input
               type="range"
               min="0"
@@ -86,11 +112,11 @@ export default function PageSettingsSection({
           </div>
 
           <div className='control-sub'>
-            <label className="control-label">Gutter (global)</label>
+            <label className="control-label">Global Gutter</label>
             <input
               type="range"
               min="0"
-              max="40"
+              max="60"
               value={pageGutter}
               onChange={e => setPageGutter(+e.target.value)}
               className="control-range"
@@ -98,37 +124,9 @@ export default function PageSettingsSection({
             <span className="control-value">{pageGutter}px</span>
           </div>
         </div>
+      </div>
 
-        <div className="control-group">
-          <div className="control-subgroup">
-            <div>
-              <label>Horizontal Split</label>
-              <input
-                type="range"
-                min="20"
-                max="80"
-                value={layoutSplitX}
-                onChange={e => updateLayoutSplitX(+e.target.value)}
-                className="control-range"
-              />
-              <span className="control-value">{layoutSplitX}%</span>
-            </div>
-
-            <div>
-              <label>Vertical Split</label>
-              <input
-                type="range"
-                min="20"
-                max="80"
-                value={layoutSplitY}
-                onChange={e => updateLayoutSplitY(+e.target.value)}
-                className="control-range"
-              />
-              <span className="control-value">{layoutSplitY}%</span>
-            </div>
-          </div>
-        </div>
-
+      <div className="control-group">
         <div className="inline-row">
           <div className="inline-col">
             <label className="control-label">Background</label>

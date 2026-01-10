@@ -62,8 +62,8 @@ export default function CreatePage() {
 
   const [selectedLayout, setSelectedLayout] = useState('single')
 
-  const [pageMargin, setPageMargin] = useState(8)
-  const [pageGutter, setPageGutter] = useState(8)
+  const [pageMargin, setPageMargin] = useState(32)
+  const [pageGutter, setPageGutter] = useState(32)
   const [pageBgColor, setPageBgColor] = useState('#ffffff')
   const [imageFitMode, setImageFitMode] = useState('cover')
   const [imageBorderRadius, setImageBorderRadius] = useState(0)
