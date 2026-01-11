@@ -213,13 +213,13 @@ export default function CreatePage() {
           
           {/* TOP ROW */}
           <div className="create-header-top">
-            <h1>Create Your Photo Book</h1>
+            <h1>Memora</h1>
             <span className="create-step">Step {step} of 3</span>
           </div>
 
           {/* BOTTOM ROW */}
-         {step >= 2 && (
           <div className="header-controls-row">
+            <h2>Create Your Photo Book</h2>
             {/* Saved status */}
             {lastSaved && (
               <span className="header-saved-status">
@@ -229,7 +229,6 @@ export default function CreatePage() {
               </span>
             )}
           </div>
-        )}
         </div>
       </header>
 
