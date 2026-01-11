@@ -21,16 +21,6 @@ export default function PageSettingsSection({
           <div className='control-sub'>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
               <label className="control-label">Page Margin</label>
-              {typeof currentPage?.pageMargin === 'number' && (
-                <button
-                  type="button"
-                  className="btn-modern"
-                  onClick={clearPageMarginOverride}
-                  title="Reset per-page margin"
-                >
-                  Reset
-                </button>
-              )}
             </div>
             <input
               type="range"
@@ -46,16 +36,6 @@ export default function PageSettingsSection({
           <div className='control-sub'>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
               <label className="control-label">Page Gutter</label>
-              {typeof currentPage?.pageGutter === 'number' && (
-                <button
-                  type="button"
-                  className="btn-modern"
-                  onClick={clearPageGutterOverride}
-                  title="Reset per-page gutter"
-                >
-                  Reset
-                </button>
-              )}
             </div>
             <input
               type="range"
