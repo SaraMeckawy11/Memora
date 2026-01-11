@@ -30,6 +30,7 @@ export default function EditorSettings(props) {
     autoSave, setAutoSave, clearProgress,
     saveProgress, selectedSize,
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
+    onUpload,
   } = props
 
   const selectedImageId =
@@ -129,7 +130,7 @@ export default function EditorSettings(props) {
     { id: 'layout', label: 'Layout', icon: TabIcons.layout, content: renderLayoutSection },
     { id: 'page', label: 'Page', icon: TabIcons.page, content: renderPageSettingsSection },
     { id: 'caption', label: 'Text', icon: TabIcons.caption, content: renderCaptionSection },
-    { id: 'photos', label: 'Photos', icon: TabIcons.photos, content: () => <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} /> },
+    { id: 'photos', label: 'Photos', icon: TabIcons.photos, content: () => <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} onUpload={onUpload} /> },
     { id: 'actions', label: 'Actions', icon: TabIcons.actions, content: renderGlobalActions },
   ];
   
@@ -142,6 +143,7 @@ export default function EditorSettings(props) {
     <>
       {/* ================= DESKTOP VIEW (Stacked Sidebar) ================= */}
       <div className="editor-settings desktop-view">
+        <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} onUpload={onUpload} />
         {renderLayoutSection()}
         <div className="page-settings-desktop-card">
           {renderPageSettingsSection()}
@@ -149,7 +151,6 @@ export default function EditorSettings(props) {
         {renderImageActions()}
         {renderCaptionSection()}
         {renderGlobalActions()}
-        <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} />
       </div>
 
       {/* ================= MOBILE VIEW (Bottom Bar + Drawer) ================= */}

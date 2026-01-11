@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
+import UploadArea from './UploadArea'
 import '@/styles/editor/PhotoLibrary.css'
 
 /* ======================================================
@@ -34,6 +35,7 @@ export default function PhotoLibrary({
   uploadedImages = [],
   addImageToPage,
   pages = [],
+  onUpload,
 }) {
   const [images, setImages] = useState(uploadedImages)
   const [selectedImageId, setSelectedImageId] = useState(null)
@@ -180,7 +182,7 @@ export default function PhotoLibrary({
      ====================================================== */
 
   return (
-    <div className="photo-library">
+    <div className={`photo-library ${images.length === 0 ? 'empty' : 'has-images'}`}>
       <div className="photo-library-header">
         <h4 className="photo-library-title">
           Photos ({images.length})
@@ -194,6 +196,11 @@ export default function PhotoLibrary({
       </div>
 
       {infoMessage && <div className="photo-library-info">{infoMessage}</div>}
+
+      {/* Upload Area - Always show full version */}
+      <div className="photo-library-upload expanded">
+        <UploadArea onUpload={onUpload} compact={false} />
+      </div>
 
       {showModal && (
         <div className="photo-library-modal-backdrop">
