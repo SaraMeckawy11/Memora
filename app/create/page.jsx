@@ -62,8 +62,8 @@ export default function CreatePage() {
 
   const [selectedLayout, setSelectedLayout] = useState('single')
 
-  const [pageMargin, setPageMargin] = useState(32)
-  const [pageGutter, setPageGutter] = useState(32)
+  const [pageMargin, setPageMargin] = useState(16)
+  const [pageGutter, setPageGutter] = useState(16)
   const [pageBgColor, setPageBgColor] = useState('#ffffff')
   const [imageFitMode, setImageFitMode] = useState('cover')
   const [imageBorderRadius, setImageBorderRadius] = useState(0)
@@ -163,6 +163,8 @@ export default function CreatePage() {
             alignment: captionAlignment,
           },
           layout: 'single',
+          pageMargin: 16,
+          pageGutter: 16,
         }))
       )
     }
