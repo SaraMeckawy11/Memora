@@ -90,10 +90,11 @@
   font-size: 1.5rem; /* Enhanced size */
   font-weight: 800; /* Bolder */
   font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent;
 }
 
 .create-step {

@@ -129,8 +129,8 @@ body {
 
 .hero-title {
   font-size: 2.4rem;
-  margin: 0 0 12px;
-  line-height: 1.05;
+  margin: 0 0 36px; /* Further increased bottom margin */
+  line-height: 1.28; /* Further increased line-height to prevent any clipping */
   background: linear-gradient(90deg, var(--accent-start), var(--accent-end));
   -webkit-background-clip: text;
   color: transparent;
