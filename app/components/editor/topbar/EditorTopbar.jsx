@@ -1,6 +1,7 @@
 'use client'
 
-import '@/styles/editor/EditorTopbar.css';
+
+import UploadArea from '../settings/UploadArea';
 
 export default function EditorTopbar({
   currentPageIdx,
@@ -8,6 +9,7 @@ export default function EditorTopbar({
   onPrevPage,
   onNextPage,
   setIsSidebarOpen,
+  onUpload,
 }) {
   return (
     <div className="editor-topbar">
@@ -26,16 +28,16 @@ export default function EditorTopbar({
       </div>
       <div className="editor-topbar-center">
         <button
-          className="nav-button select-page-btn"
+          className="select-page-btn"
           onClick={() => setIsSidebarOpen(true)}
           title="Select Page"
           aria-label="Open page selector"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '0.25rem'}}>
+            <rect x="4" y="2" width="12" height="16" rx="2"/>
+            <line x1="8" y1="6" x2="16" y2="6" />
+            <line x1="8" y1="10" x2="16" y2="10" />
+            <line x1="8" y1="14" x2="12" y2="14" />
           </svg>
           <span>Pages</span>
         </button>
@@ -44,6 +46,10 @@ export default function EditorTopbar({
           <span className="editor-divider-dot"></span>
           <span className="editor-total-pages">{totalPages}</span>
         </span>
+        {/* Upload Button next to page indicator */}
+        <div>
+          <UploadArea onUpload={onUpload} compact={true} label="Photos" />
+        </div>
       </div>
       <div className="editor-topbar-right">
         <button

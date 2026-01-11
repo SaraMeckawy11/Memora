@@ -343,6 +343,7 @@ export default function StepEditor({
             onPrevPage={goToPrevPage}
             onNextPage={goToNextPage}
             setIsSidebarOpen={setIsSidebarOpen}
+            onUpload={imageHandling.handleImageUpload}
           />
 
         </div>
