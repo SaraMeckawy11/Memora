@@ -68,6 +68,17 @@
   color: var(--text-muted);
 }
 
+/* Ensure saved status is visible on small screens */
+@media (max-width: 768px) {
+  .header-controls-row {
+    display: flex !important;
+  }
+  .header-saved-status {
+    display: inline-flex !important;
+    font-size: 0.7rem;
+  }
+}
+
 .create-header-top h1 {
   margin: 0;
   font-size: 1.3rem; /* Increased font size */
