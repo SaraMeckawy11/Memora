@@ -1,3 +1,75 @@
+.editor-upload-btn-topbar {
+  display: flex;
+  align-items: center;
+}
+.editor-upload-btn-minimal {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+}
+
+.editor-upload-btn-minimal .editor-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(0,0,0,0.08);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.editor-upload-btn-minimal .editor-upload-label:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(0,0,0,0.18);
+}
+
+.editor-upload-btn-minimal .editor-upload-icon {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.editor-upload-btn-minimal .editor-upload-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+}
+.upload-photos-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  width: auto;
+  height: auto;
+  padding: 0.375rem 0.75rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.upload-photos-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+.editor-upload-btn {
+  margin-left: 1rem;
+  display: flex;
+  align-items: center;
+}
 .editor-topbar {
   display: flex;
   align-items: center;
@@ -64,6 +136,7 @@
   align-items: center;
   gap: 0.25rem;
   width: auto;
+  min-width: 90px;
   height: auto;
   padding: 0.375rem 0.75rem;
   background: rgba(255, 255, 255, 0.1);
@@ -93,6 +166,7 @@
   color: #333;
   background: rgba(0, 0, 0, 0.05);
   padding: 0.4rem 0.8rem;
+  margin: 0 0.5rem;
   border-radius: 16px;
   white-space: nowrap;
   line-height: 1;

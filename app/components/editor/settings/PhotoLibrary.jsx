@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
-import UploadArea from './UploadArea'
+// import UploadArea from './UploadArea'
 import '@/styles/editor/PhotoLibrary.css'
 
 /* ======================================================
@@ -197,10 +197,7 @@ export default function PhotoLibrary({
 
       {infoMessage && <div className="photo-library-info">{infoMessage}</div>}
 
-      {/* Upload Area - Always show full version */}
-      <div className="photo-library-upload expanded">
-        <UploadArea onUpload={onUpload} compact={false} />
-      </div>
+
 
       {showModal && (
         <div className="photo-library-modal-backdrop">
