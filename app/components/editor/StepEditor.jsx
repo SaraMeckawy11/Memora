@@ -345,7 +345,6 @@ export default function StepEditor({
             setIsSidebarOpen={setIsSidebarOpen}
           />
 
-          <UploadArea onUpload={imageHandling.handleImageUpload} />
         </div>
 
         <EditorSettings
@@ -405,6 +404,7 @@ export default function StepEditor({
           pages={pages}
           currentPage={currentPage}
           addImageToPage={(imageId) => imageHandling.addImageToPage(imageId, selectedSlotIdx)}
+          onUpload={imageHandling.handleImageUpload}
           autoSave={autoSave}
           setAutoSave={setAutoSave}
           clearProgress={clearProgress}

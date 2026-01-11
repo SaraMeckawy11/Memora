@@ -194,7 +194,7 @@ export function useSaveManager({
         return img
       })
 
-      setPages(Array.isArray(d.pages) ? d.pages : [])
+      setPages(Array.isArray(d.pages) ? d.pages.map(p => ({ ...p, pageMargin: 32, pageGutter: 32 })) : [])
       setUploadedImages(restoredImages)
       
       setSelectedProduct(d.selectedProduct ?? null)
@@ -209,8 +209,8 @@ export function useSaveManager({
       setHistoryIndex(d.historyIndex ?? -1)
 
       const s = d.settings || {}
-      setPageMargin(s.pageMargin ?? 8)
-      setPageGutter(s.pageGutter ?? 8)
+      setPageMargin(32)
+      setPageGutter(32)
       setPageBgColor(s.pageBgColor ?? '#ffffff')
       setImageFitMode(s.imageFitMode ?? 'cover')
       setImageBorderRadius(s.imageBorderRadius ?? 0)

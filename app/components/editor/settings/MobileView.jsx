@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import '@/styles/editor/MobileView.css';
 
 const TabIcons = {
@@ -45,9 +45,27 @@ const TabIcons = {
   }
 
 export default function MobileView({ activeMobileTab, setActiveMobileTab, mobileTabs }) {
+  const drawerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (drawerRef.current && !drawerRef.current.contains(event.target)) {
+        setActiveMobileTab(null);
+      }
+    };
+
+    if (activeMobileTab) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeMobileTab, setActiveMobileTab]);
+
   return (
     <div className="mobile-interface">
-      <div className={`mobile-drawer ${activeMobileTab ? 'open' : ''}`}>
+      <div ref={drawerRef} className={`mobile-drawer ${activeMobileTab ? 'open' : ''}`}>
         <div className="mobile-drawer-header">
           <div className="drawer-handle" />
           <h4>{mobileTabs.find(t => t.id === activeMobileTab)?.label}</h4>
