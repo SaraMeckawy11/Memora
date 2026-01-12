@@ -29,6 +29,18 @@ const PRESETS = [
     category: 'Seasonal'
   },
   { 
+    id: 'baby', 
+    name: 'baby', 
+    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'memories'
+  },
+  { 
+    id: 'babyJournal', 
+    name: 'Baby Journal', 
+    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'memories'
+  },
+  { 
     id: 'ibiza', 
     name: 'Ibiza Night', 
     preview: 'https://images.unsplash.com/photo-1573155993874-d5d48af862ba?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',

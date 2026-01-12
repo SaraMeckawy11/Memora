@@ -7,6 +7,8 @@ import { engagement } from './engagement';
 import { family } from './family';
 import { summer } from './summer';
 import { ibiza } from './ibiza';
+import { baby } from './Baby';
+import { babyJournal } from './babyJournal';
 
 export const COVER_PRESETS = {
   travel,
@@ -17,5 +19,7 @@ export const COVER_PRESETS = {
   engagement,
   family,
   summer,
-  ibiza
+  ibiza,
+  baby,
+  babyJournal
 };

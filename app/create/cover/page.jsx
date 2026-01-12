@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import EditorSidebar from '@/app/components/cover-editor/EditorSidebar'
 import EditorCanvas from '@/app/components/cover-editor/EditorCanvas'
@@ -16,7 +16,7 @@ import { useProjectPersistence } from './hooks/useProjectPersistence'
 // Styles
 import '@/styles/cover-editor/layout.css'
 
-export default function CoverEditorPage() {
+function CoverEditorContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const wrapperRef = useRef(null)
@@ -242,5 +242,13 @@ export default function CoverEditorPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function CoverEditorPage() {
+  return (
+    <Suspense fallback={<div className="loading-screen">Loading Editor...</div>}>
+      <CoverEditorContent />
+    </Suspense>
   )
 }

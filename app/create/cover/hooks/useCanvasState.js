@@ -64,12 +64,17 @@ export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) 
   // Effect to rescale elements when canvas size changes
   useEffect(() => {
     if (baseElements.front.length > 0 || baseElements.back.length > 0) {
+      console.log('🔄 Rescaling', baseElements.front.length, 'front and', baseElements.back.length, 'back elements to', canvasSettings.width, 'x', canvasSettings.height);
+      
       const scaledFront = scaleElementsToCanvas(baseElements.front, canvasSettings.width, canvasSettings.height);
       const scaledBack = scaleElementsToCanvas(baseElements.back, canvasSettings.width, canvasSettings.height);
       
+      // Use the latest state from history 
+      const latestState = history.length > 0 ? history[history.length - 1] : currentState;
+      
       const newState = { 
-        front: { ...currentState.front, elements: scaledFront },
-        back: { ...currentState.back, elements: scaledBack }
+        front: { ...latestState.front, elements: scaledFront },
+        back: { ...latestState.back, elements: scaledBack }
       };
       const newHistory = history.slice(0, historyIndex + 1);
       setHistory([...newHistory, newState]);
