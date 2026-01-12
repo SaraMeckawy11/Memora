@@ -132,7 +132,8 @@ export default function FontLoader() {
       { name: 'Signature Font', url: 'https://fonts.cdnfonts.com/css/signature-font' },
       { name: 'Signature Script', url: 'https://fonts.cdnfonts.com/css/signature-script' },
       { name: 'Brittany Signature Script', url: 'https://fonts.cdnfonts.com/css/brittany-signature-script' },
-      { name: 'California Signature', url: 'https://fonts.cdnfonts.com/css/california-signature' }
+      { name: 'California Signature', url: 'https://fonts.cdnfonts.com/css/california-signature' },
+      { name: 'Le Petit Cochon', url: 'https://fonts.cdnfonts.com/css/le-petit-cochon' }
     ]
 
     customFonts.forEach(font => {
