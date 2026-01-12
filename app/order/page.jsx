@@ -20,6 +20,7 @@ export default function OrderPage() {
   const [pages, setPages] = useState([])
   const [selectedPageSize, setSelectedPageSize] = useState('8×10 Portrait')
   const [selectedProduct, setSelectedProduct] = useState('Hardcover')
+  const [selectedTheme, setSelectedTheme] = useState('Classic')
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function OrderPage() {
         if (draft.pages) setPages(draft.pages)
         if (draft.selectedSize?.name) setSelectedPageSize(draft.selectedSize.name)
         if (draft.selectedProduct?.name) setSelectedProduct(draft.selectedProduct.name)
+        if (draft.coverTheme) setSelectedTheme(draft.coverTheme)
       } catch (e) {
         console.warn('Failed to load draft:', e)
       }

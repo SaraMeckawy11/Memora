@@ -5,6 +5,8 @@ export const PRESET_BASE_SIZE = { width: 893, height: 1263 };
  * Scales elements from base size to target canvas size
  */
 export const scaleElementsToCanvas = (baseEls, targetWidth, targetHeight) => {
+  if (!baseEls || baseEls.length === 0) return [];
+  
   const scaleX = targetWidth / PRESET_BASE_SIZE.width;
   const scaleY = targetHeight / PRESET_BASE_SIZE.height;
   const scale = Math.min(scaleX, scaleY);

@@ -52,13 +52,16 @@ export default function EditorSidebar({
       [width, height] = [height, width]
     }
 
-    onUpdateCanvas({
+    const newSettings = {
       ...canvasSettings,
       width: Math.round(width),
       height: Math.round(height),
       sizeName,
       orientation
-    })
+    }
+    
+    console.log('📐 Button clicked: Resizing to', sizeName, orientation, '→', newSettings.width, 'x', newSettings.height);
+    onUpdateCanvas(newSettings)
   }
 
   const handleImageUpload = (e) => {

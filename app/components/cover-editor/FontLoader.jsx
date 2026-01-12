@@ -33,7 +33,7 @@ export const FONT_LIST = [
   'Short Stack', 'Pangolin', 'Hi Melody', 'Gaegu', 'Gamja Flower', 'Single Day',
   'Dokdo', 'East Sea Dokdo', 'Yeon Sung', 'Jua', 'Do Hyeon', 'Sunflower',
   'Gothic A1', 'Nanum Gothic', 'Nanum Myeongjo', 'Song Myung', 'Stylish',
-  'Gistesy', 'Signature', 'Signature Font', 'California Signature',
+  'Gistesy', 'Signature', 'Signature Font', 'California Signature', 'Brittany Signature Script',
 
   // --- Sans Serif (Clean & Modern) ---
   'Roboto', 'Open Sans', 'Lato', 'Montserrat', 'Oswald', 'Raleway', 'Poppins', 

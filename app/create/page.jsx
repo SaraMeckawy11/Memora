@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import StepSetup from '@/app/components/setup/StepSetup'
@@ -19,7 +19,7 @@ import '@/styles/editor/EditorTopbar.css'
 
 /* ================= PAGE ================= */
 
-export default function CreatePage() {
+function CreatePageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -380,5 +380,13 @@ export default function CreatePage() {
 
      
     </main>
+  )
+}
+
+export default function CreatePage() {
+  return (
+    <Suspense fallback={<div className="loading-screen">Loading...</div>}>
+      <CreatePageContent />
+    </Suspense>
   )
 }
