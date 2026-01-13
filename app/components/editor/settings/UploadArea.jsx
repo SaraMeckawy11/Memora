@@ -15,7 +15,7 @@ export default function UploadArea({ onUpload, compact = false, label = "Photos"
         hidden
         onChange={onUpload}
       />
-      <label htmlFor={inputId} className={compact ? "select-page-btn upload-photos-btn" : "editor-upload-label"} style={compact ? {display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer'} : {}}>
+      <label htmlFor={inputId} className={compact ? "upload-photos-btn" : "editor-upload-label"} style={compact ? {display: 'flex', alignItems: 'center', gap: '0.25rem', cursor: 'pointer'} : {}}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '0.25rem'}}>
           <path d="M12 5v14m7-7H5" />
         </svg>
