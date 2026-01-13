@@ -8,7 +8,7 @@ import FontLoader from '@/app/components/cover-editor/FontLoader'
 
 const PRESETS = [
   { 
-    id: 'travel', 
+    id: 'travel3', 
     name: 'Travel Adventures', 
     preview: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'Travel'
@@ -20,16 +20,28 @@ const PRESETS = [
     category: 'Travel'
   },
   { 
-    id: 'wedding', 
-    name: 'Our Wedding Day', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Wedding'
+    id: 'travel', 
+    name: 'Travel Adventures', 
+    preview: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Travel'
   },
   { 
     id: 'summer', 
     name: 'Summer Vibes', 
     preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'Seasonal'
+  },
+  { 
+    id: 'ibiza', 
+    name: 'Ibiza Night', 
+    preview: 'https://images.unsplash.com/photo-1573155993874-d5d48af862ba?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Travel'
+  },
+  { 
+    id: 'lionBirthPoster', 
+    name: 'baby', 
+    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'memories'
   },
   { 
     id: 'baby', 
@@ -44,10 +56,10 @@ const PRESETS = [
     category: 'memories'
   },
   { 
-    id: 'ibiza', 
-    name: 'Ibiza Night', 
-    preview: 'https://images.unsplash.com/photo-1573155993874-d5d48af862ba?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Travel'
+    id: 'wedding', 
+    name: 'Our Wedding Day', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Wedding'
   }
 ]
 
