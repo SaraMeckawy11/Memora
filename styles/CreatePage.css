@@ -140,9 +140,7 @@
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 1.5rem 0rem; /* Kept spacious for Step 2 */
-  /* Prevent the fixed bottom nav from covering content (especially Step 2 editor) */
-  padding-bottom: 5.5rem;
+  padding: 1.5rem 0rem 2rem;
 }
 
 .create-content.step-1 {
@@ -328,11 +326,11 @@
 /* ================= RESPONSIVE ================= */
 @media (max-width: 1024px) {
   .create-content.step-2 {
-    padding: 1.5rem 1rem 11rem; /* Original Step 2 spacing */
+    padding: 1.5rem 1rem 4rem; /* Reduced bottom padding */
   }
   
   .create-content.step-1 {
-    padding: 1rem 1rem 4rem; /* Reduced Step 1 spacing */
+    padding: 1rem 1rem 2rem; /* Reduced Step 1 spacing */
   }
 
   .create-bottom-inner {
@@ -355,7 +353,7 @@
 
   /* Ensure content clears both bars on mobile */
   .create-content {
-    padding-bottom: calc(5.5rem + var(--editor-mobile-bar-h));
+    padding-bottom: calc(2rem + var(--editor-mobile-bar-h));
   }
 
   /* Step 1: no editor bar → nav sticks to screen bottom */

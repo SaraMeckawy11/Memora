@@ -3,7 +3,7 @@
   border-radius: 12px;
   padding: 1rem;
   border: 1px solid var(--border);
-  min-height: 600px;
+  min-height: 120px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -26,7 +26,6 @@
   }
 
   .photo-library-grid {
-    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
     gap: 0.6rem; /* Increased gap for better spacing between photos */
     min-height: 120px;
     padding-bottom: 0.25rem;
@@ -36,15 +35,17 @@
 /* Desktop/wide screen adjustments */
 @media (min-width: 1025px) {
   .photo-library {
-    min-height: 500px;
+    min-height: 100px;
     max-height: 80vh;
+    max-width: 600px;
+    margin: 0 auto;
     padding: 1.125rem;
     gap: 0.875rem;
   }
 
   /* Reduce height when no images on wide screens */
   .photo-library.empty {
-    min-height: 200px;
+    min-height: 80px;
     max-height: 45vh;
   }
 
@@ -56,7 +57,7 @@
 /* Tablet and small desktop adjustments */
 @media (max-width: 768px) {
   .photo-library {
-    min-height: 350px;
+    min-height: 160px;
     max-height: 70vh;
     padding: 0.75rem;
     gap: 0.5rem;
@@ -69,7 +70,6 @@
   }
 
   .photo-library-grid {
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     gap: 0.7rem;
     min-height: 100px;
   }
@@ -80,30 +80,18 @@
   .photo-library {
 
   .photo-library-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: 0.8rem; /* Increased gap for better spacing on small phones */
     min-height: 80px;
     padding-bottom: 0.25rem;
-    overflow-y: auto;
   }
 
   .photo-library-item {
-    position: relative;
-    width: 100%;
-    height: 0;
-    padding-bottom: 100%; /* 1:1 aspect ratio */
-    margin: 0;
-    box-sizing: border-box;
-    background: #f8f8f8;
-    display: block;
-    border-radius: 8px;
-    overflow: hidden;
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
   }
 
   .photo-library-img {
-    position: absolute;
-    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -118,7 +106,6 @@
   }
 
   .photo-library-grid {
-    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
     gap: 0.8rem; /* Increased gap for better spacing on small phones */
     min-height: 80px;
     padding-bottom: 0.25rem;
@@ -201,25 +188,27 @@
 
 /* Grid */
 .photo-library-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 0.6rem; /* Increased gap for better spacing */
-  overflow-y: auto;
+  display: flex;
+  gap: 0.6rem;
+  overflow-x: auto;
+  overflow-y: hidden;
   flex: 1;
-  min-height: 120px;
+  min-height: auto;
+  padding-bottom: 0;
 }
 
 /* Item */
 .photo-library-item {
   position: relative;
-  width: 100%;
-  padding-bottom: 100%;
+  width: 72px;
+  height: 72px;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   border: 1px solid var(--border);
   opacity: 1;
   transition: border-color 0.15s ease, opacity 0.15s ease;
+  flex-shrink: 0;
 }
 
 .photo-library-item.used {
@@ -234,8 +223,6 @@
 
 /* Image */
 .photo-library-img {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -428,11 +415,11 @@
 
 /* Ensure grid is always visible and has proper height */
 .photo-library-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  display: flex;
   gap: 0.6rem; /* Consistent gap for better spacing */
-  overflow-y: auto;
-  min-height: 150px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-height: auto;
   flex: 1;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0;
 }

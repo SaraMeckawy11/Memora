@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect } from 'react'
-import PhotoLibrary from './PhotoLibrary'
 import LayoutSection from './LayoutSection'
 import ImageActions from './ImageActions'
 import GlobalActions from './GlobalActions'
@@ -130,7 +129,6 @@ export default function EditorSettings(props) {
     { id: 'layout', label: 'Layout', icon: TabIcons.layout, content: renderLayoutSection },
     { id: 'page', label: 'Page', icon: TabIcons.page, content: renderPageSettingsSection },
     { id: 'caption', label: 'Text', icon: TabIcons.caption, content: renderCaptionSection },
-    { id: 'photos', label: 'Photos', icon: TabIcons.photos, content: () => <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} onUpload={onUpload} /> },
     { id: 'actions', label: 'Actions', icon: TabIcons.actions, content: renderGlobalActions },
   ];
   
@@ -143,7 +141,6 @@ export default function EditorSettings(props) {
     <>
       {/* ================= DESKTOP VIEW (Stacked Sidebar) ================= */}
       <div className="editor-settings desktop-view">
-        <PhotoLibrary uploadedImages={uploadedImages} pages={pages} currentPage={currentPage} addImageToPage={addImageToPage} onUpload={onUpload} />
         {renderLayoutSection()}
         <div className="page-settings-desktop-card">
           {renderPageSettingsSection()}

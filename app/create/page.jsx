@@ -15,7 +15,7 @@ import { useSaveManager } from '@/app/components/editor/save/SaveManager'
 import '@/styles/CreatePage.css'
 import '@/styles/Loading.css'
 import '@/styles/ProgressBar.css'
-import '@/styles/editor/EditorTopbar.css'
+import '@/styles/editor/EditorBar.css'
 
 /* ================= PAGE ================= */
 
