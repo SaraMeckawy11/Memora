@@ -60,8 +60,26 @@ const PRESETS = [
     name: 'Our Wedding Day', 
     preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'Wedding'
+  },
+  { 
+    id: 'wedding2', 
+    name: 'Our Wedding Day', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Wedding'
+  },
+  { 
+    id: 'wedding3', 
+    name: 'Our Wedding Day', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Wedding'
+  },
+  { 
+    id: 'wedding4', 
+    name: 'Our Wedding Day', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Wedding'
   }
-]
+] 
 
 export default function SelectCoverPage() {
   const router = useRouter()

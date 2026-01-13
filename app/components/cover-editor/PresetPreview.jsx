@@ -62,6 +62,7 @@ export default function PresetPreview({ preset, width, height }) {
               textAlign: el.textAlign || 'left',
               fontWeight: el.fontWeight || 'normal',
               fontStyle: el.fontStyle || 'normal',
+              letterSpacing: el.letterSpacing,
               lineHeight: el.lineHeight || 1.2,
               whiteSpace: 'pre-wrap',
             }}>

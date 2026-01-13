@@ -57,6 +57,7 @@ export const FONT_LIST = [
   'Podkova', 'Coda', 'Ledger', 'Lustria', 'Judson', 'Kotta One', 'Rosarivo', 
   'Ultra', 'Yeseva One', 'Abril Fatface', 'Alfa Slab One', 'Cinzel', 'Cormorant Garamond',
   'DM Serif Display', 'Bodoni Moda', 'Castoro', 'Fraunces', 'Newsreader',
+  'Moon Dance', 'Allison', 'Gotham',
 
   // --- Display & Decorative ---
   'Lobster Two', 'Bangers', 'Fredoka One', 'Righteous', 'Russo One', 
@@ -94,8 +95,10 @@ export default function FontLoader() {
     }
 
     // Google Fonts Loading Logic
+    // Google Fonts Loading Logic
     const CUSTOM_FONT_NAMES = [
-      'Gistesy', 'Rogue', 'Rogue Hero', 'Signature', 'Signature Font', 'Signature Script', 'Brittany Signature Script', 'California Signature'
+      'Gistesy', 'Rogue', 'Rogue Hero', 'Signature', 'Signature Font', 'Signature Script', 
+      'Brittany Signature Script', 'California Signature', 'Gotham'
     ]
     
     const googleFontsList = FONT_LIST.filter(font => 
@@ -133,7 +136,8 @@ export default function FontLoader() {
       { name: 'Signature Script', url: 'https://fonts.cdnfonts.com/css/signature-script' },
       { name: 'Brittany Signature Script', url: 'https://fonts.cdnfonts.com/css/brittany-signature-script' },
       { name: 'California Signature', url: 'https://fonts.cdnfonts.com/css/california-signature' },
-      { name: 'Le Petit Cochon', url: 'https://fonts.cdnfonts.com/css/le-petit-cochon' }
+      { name: 'Le Petit Cochon', url: 'https://fonts.cdnfonts.com/css/le-petit-cochon' },
+      { name: 'Gotham', url: 'https://fonts.cdnfonts.com/css/gotham' }
     ]
 
     customFonts.forEach(font => {

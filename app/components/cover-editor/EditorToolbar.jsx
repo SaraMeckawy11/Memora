@@ -170,13 +170,28 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
       </div>
 
       {/* Size Slider */}
-      <div style={{ marginBottom: '1.5rem' }}>
+      <div style={{ marginBottom: '1rem' }}>
+         <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Size</div>
          <input 
           type="range" 
           min="10" 
           max="200" 
           value={selectedElement.fontSize} 
           onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+          style={{ width: '100%' }}
+        />
+      </div>
+
+      {/* Letter Spacing Slider */}
+      <div style={{ marginBottom: '1.5rem' }}>
+         <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Letter Spacing: {parseFloat(selectedElement.letterSpacing) || 0}em</div>
+         <input 
+          type="range" 
+          min="-0.1" 
+          max="1.0" 
+          step="0.01"
+          value={parseFloat(selectedElement.letterSpacing) || 0} 
+          onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
           style={{ width: '100%' }}
         />
       </div>
@@ -528,6 +543,22 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
                   style={{ flex: 1 }}
                 />
                 <span style={{ fontSize: '12px', width: '24px' }}>{selectedElement.lineHeight || 1.2}</span>
+              </div>
+            </div>
+
+            <div className="control-group">
+              <label className="control-label">Letter Spacing</label>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input 
+                  type="range" 
+                  min="-0.1" 
+                  max="1.0" 
+                  step="0.01"
+                  value={parseFloat(selectedElement.letterSpacing) || 0} 
+                  onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
+                  style={{ flex: 1 }}
+                />
+                <span style={{ fontSize: '12px', width: '24px' }}>{parseFloat(selectedElement.letterSpacing) || 0}</span>
               </div>
             </div>
 
