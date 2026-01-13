@@ -2,9 +2,10 @@
 
 import PagesSidebar from './pages/PagesSidebar'
 import EditorSettings from './settings/EditorSettings'
-import EditorTopbar from './topbar/EditorTopbar'
+import EditorBar from './bar/EditorBar'
 import EditorCanvas from './canvas/EditorCanvas'
 import UploadArea from './settings/UploadArea'
+import PhotoLibrary from './settings/PhotoLibrary'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import '@/styles/editor/editor.css'
 import ImageEditorModal from './settings/ImageEditorModal'
@@ -337,13 +338,22 @@ export default function StepEditor({
             }}
           />
           
-          <EditorTopbar
+          <EditorBar
             currentPageIdx={currentPageIdx}
             totalPages={pages.length}
             onPrevPage={goToPrevPage}
             onNextPage={goToNextPage}
             setIsSidebarOpen={setIsSidebarOpen}
             onUpload={imageHandling.handleImageUpload}
+          />
+
+          <PhotoLibrary
+            uploadedImages={uploadedImages}
+            addImageToPage={(id) => imageHandling.addImageToPage(id, selectedSlotIdx)}
+            pages={pages}
+            currentPage={currentPage}
+            onUpload={imageHandling.handleImageUpload}
+            setUploadedImages={setUploadedImages}
           />
 
         </div>

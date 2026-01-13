@@ -36,6 +36,7 @@ export default function PhotoLibrary({
   addImageToPage,
   pages = [],
   onUpload,
+  setUploadedImages,
 }) {
   const [images, setImages] = useState(uploadedImages)
   const [selectedImageId, setSelectedImageId] = useState(null)
@@ -66,6 +67,7 @@ export default function PhotoLibrary({
 
   const removeImage = (imageId) => {
     setImages((prev) => prev.filter((img) => img.id !== imageId))
+    setUploadedImages((prev) => prev.filter((img) => img.id !== imageId))
     if (selectedImageId === imageId) setSelectedImageId(null)
   }
 
