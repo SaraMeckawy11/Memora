@@ -146,6 +146,22 @@ function CreatePageContent() {
     loadProgress()
   }, [loadProgress])
 
+  /* ================= SYNC CAPTION STATE WITH CURRENT PAGE ================= */
+
+  useEffect(() => {
+    if (pages.length > 0 && currentPageIdx < pages.length) {
+      const currentPage = pages[currentPageIdx]
+      setSelectedCaption(currentPage.caption || '')
+      if (currentPage.captionStyle) {
+        setSelectedFontSize(currentPage.captionStyle.fontSize ?? 16)
+        setSelectedFontColor(currentPage.captionStyle.color ?? '#000000')
+        setSelectedFontFamily(currentPage.captionStyle.fontFamily ?? 'Inter')
+        setCaptionPosition(currentPage.captionStyle.position ?? 'bottom')
+        setCaptionAlignment(currentPage.captionStyle.alignment ?? 'center')
+      }
+    }
+  }, [currentPageIdx, pages])
+
   /* ================= INIT PAGES ================= */
 
   useEffect(() => {

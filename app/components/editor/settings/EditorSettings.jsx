@@ -127,7 +127,7 @@ export default function EditorSettings(props) {
      ========================================= */
   const mobileTabs = [
     { id: 'layout', label: 'Layout', icon: TabIcons.layout, content: renderLayoutSection },
-    { id: 'page', label: 'Page', icon: TabIcons.page, content: renderPageSettingsSection },
+    { id: 'page', label: 'Margin', icon: TabIcons.page, content: renderPageSettingsSection },
     { id: 'caption', label: 'Text', icon: TabIcons.caption, content: renderCaptionSection },
     { id: 'actions', label: 'Actions', icon: TabIcons.actions, content: renderGlobalActions },
   ];
