@@ -221,7 +221,7 @@ export function useSaveManager({
 
       if (s.captionDefaults) {
         setSelectedFontFamily(s.captionDefaults.fontFamily ?? 'Inter')
-        setSelectedFontSize(s.captionDefaults.fontSize ?? 16)
+        setSelectedFontSize(s.captionDefaults.fontSize ?? 12)
         setSelectedFontColor(s.captionDefaults.color ?? '#000000')
         setCaptionPosition(s.captionDefaults.position ?? 'bottom')
         setCaptionAlignment(s.captionDefaults.alignment ?? 'center')
