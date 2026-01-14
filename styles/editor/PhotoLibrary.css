@@ -1,7 +1,7 @@
 .photo-library {
   background: #fff;
   border-radius: 12px;
-  padding: 1rem;
+  padding: 1rem 1rem 0 1rem;
   border: 1px solid var(--border);
   min-height: 120px;
   max-height: 85vh;
@@ -35,12 +35,9 @@
 /* Desktop/wide screen adjustments */
 @media (min-width: 1025px) {
   .photo-library {
-    min-height: 100px;
-    max-height: 80vh;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 1.125rem;
-    gap: 0.875rem;
+    width: 100%;
+    max-width: none;
+    margin: 0;
   }
 
   /* Reduce height when no images on wide screens */
