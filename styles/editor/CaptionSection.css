@@ -212,7 +212,6 @@
 
 @media (max-width: 480px) {
   .caption-row {
-    grid-template-columns: 1fr;
     gap: 0.5rem;
   }
 
