@@ -320,6 +320,11 @@ export default function StepEditor({
             selectedFontColor={selectedFontColor}
             selectedFontFamily={selectedFontFamily}
             currentPageIdx={currentPageIdx}
+            onUpdateTextPosition={(position) => {
+              const newPages = [...pages]
+              newPages[currentPageIdx].textPosition = position
+              setPages(newPages)
+            }}
             imageGridProps={{
               currentPage,
               currentLayoutObj,
@@ -413,6 +418,7 @@ export default function StepEditor({
           applyToAllPages={pageOperations.applyToAllPages}
           uploadedImages={uploadedImages}
           pages={pages}
+          setPages={setPages}
           currentPage={currentPage}
           addImageToPage={(imageId) => imageHandling.addImageToPage(imageId, selectedSlotIdx)}
           onUpload={imageHandling.handleImageUpload}
@@ -437,6 +443,9 @@ export default function StepEditor({
           selectedSlotIdx={selectedSlotIdx}
           openImageEditor={openImageEditor}
           updateImageInSlot={updateImageInSlot}
+          currentPageIdx={currentPageIdx}
+          addTextPage={pageOperations.addTextPage}
+          removePage={pageOperations.removePage}
         />
         {editingSlotIdx !== null && editorSlot && (
           <ImageEditorModal

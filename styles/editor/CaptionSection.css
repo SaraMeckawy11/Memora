@@ -176,6 +176,77 @@
   color: #333;
 }
 
+/* ================= Add Text Page ================= */
+.add-text-page-wrapper {
+  margin-top: 1rem;
+}
+
+.add-text-page-btn {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-text-page-btn:hover {
+  background-color: var(--accent-solid);
+  color: #fff;
+  border-color: var(--accent-solid);
+}
+
+.text-actions-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.remove-text-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #dc3545;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-text-btn:hover:not(:disabled) {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.remove-text-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.remove-page-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-page-btn:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+}
+
 /* ================= Responsive ================= */
 @media (max-width: 768px) {
   .caption-row {

@@ -5,6 +5,7 @@ import ImageActions from './ImageActions'
 import GlobalActions from './GlobalActions'
 import PageSettingsSection from './PageSettingsSection'
 import CaptionSection from './CaptionSection'
+import TextPageSection from './TextPageSection'
 import MobileView, { TabIcons } from './MobileView'
 import '@/styles/editor/common.css'
 import '@/styles/editor/EditorSettings.css'
@@ -24,12 +25,12 @@ export default function EditorSettings(props) {
     imageBorderRadius, setImageBorderRadius, imageFitMode, setImageFitMode,
     showPageNumbers, setShowPageNumbers,
     selectedCaption, updateCaption, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle,
-    applyToAllPages, uploadedImages, pages, currentPage, addImageToPage,
+    applyToAllPages, uploadedImages, pages, setPages, currentPage, addImageToPage,
     selectedSlotIdx, openImageEditor,
     autoSave, setAutoSave, clearProgress,
     saveProgress, selectedSize,
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
-    onUpload,
+    onUpload, currentPageIdx, addTextPage, removePage,
   } = props
 
   const selectedImageId =
@@ -109,16 +110,74 @@ export default function EditorSettings(props) {
     />
   )
 
-  const renderCaptionSection = () => (
-    <CaptionSection
-      selectedCaption={selectedCaption}
-      updateCaption={updateCaption}
-      selectedFontFamily={selectedFontFamily}
-      selectedFontSize={selectedFontSize}
-      selectedFontColor={selectedFontColor}
-      captionPosition={captionPosition}
-      captionAlignment={captionAlignment}
-      updateCaptionStyle={updateCaptionStyle}
+  const renderCaptionSection = () => {
+    // If current page is a text page, show text editing options
+    if (currentPage?.type === 'text') {
+      return (
+        <TextPageSection
+          currentPage={currentPage}
+          updateTextContent={(text) => {
+            const newPages = [...pages]
+            newPages[currentPageIdx].textContent = text
+            setPages(newPages)
+          }}
+          updateTextStyle={(key, value) => {
+            const newPages = [...pages]
+            newPages[currentPageIdx].textStyle = {
+              ...newPages[currentPageIdx].textStyle,
+              [key]: value,
+            }
+            setPages(newPages)
+          }}
+          updatePageBgColor={(color) => {
+            const newPages = [...pages]
+            newPages[currentPageIdx].pageBgColor = color
+            setPages(newPages)
+          }}
+        />
+      )
+    }
+
+    // Otherwise show regular caption section
+    return (
+      <CaptionSection
+        selectedCaption={selectedCaption}
+        updateCaption={updateCaption}
+        selectedFontFamily={selectedFontFamily}
+        selectedFontSize={selectedFontSize}
+        selectedFontColor={selectedFontColor}
+        captionPosition={captionPosition}
+        captionAlignment={captionAlignment}
+        updateCaptionStyle={updateCaptionStyle}
+        currentPageIdx={currentPageIdx}
+        addTextPage={addTextPage}
+      />
+    )
+  }
+
+  const renderTextPageSection = () => (
+    <TextPageSection
+      currentPage={currentPage}
+      currentPageIdx={currentPageIdx}
+      updateTextContent={(text) => {
+        const newPages = [...pages]
+        newPages[currentPageIdx].textContent = text
+        setPages(newPages)
+      }}
+      updateTextStyle={(key, value) => {
+        const newPages = [...pages]
+        newPages[currentPageIdx].textStyle = {
+          ...newPages[currentPageIdx].textStyle,
+          [key]: value,
+        }
+        setPages(newPages)
+      }}
+      updatePageBgColor={(color) => {
+        const newPages = [...pages]
+        newPages[currentPageIdx].pageBgColor = color
+        setPages(newPages)
+      }}
+      removePage={removePage}
     />
   )
 
@@ -128,7 +187,7 @@ export default function EditorSettings(props) {
   const mobileTabs = [
     { id: 'layout', label: 'Layout', icon: TabIcons.layout, content: renderLayoutSection },
     { id: 'page', label: 'Margin', icon: TabIcons.page, content: renderPageSettingsSection },
-    { id: 'caption', label: 'Text', icon: TabIcons.caption, content: renderCaptionSection },
+    { id: 'text', label: 'Text', icon: TabIcons.caption, content: currentPage?.type === 'text' ? renderTextPageSection : renderCaptionSection },
     { id: 'actions', label: 'Actions', icon: TabIcons.actions, content: renderGlobalActions },
   ];
   
@@ -146,7 +205,7 @@ export default function EditorSettings(props) {
           {renderPageSettingsSection()}
         </div>
         {renderImageActions()}
-        {renderCaptionSection()}
+        {currentPage?.type === 'text' ? renderTextPageSection() : renderCaptionSection()}
         {renderGlobalActions()}
       </div>
 

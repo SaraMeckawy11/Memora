@@ -31,8 +31,13 @@ export const FONT_FAMILIES = [
   { name: 'Permanent Marker', label: 'Permanent Marker' },
 ]
 
-export default function CaptionSection({
-  selectedCaption, updateCaption, selectedFontFamily, selectedFontSize, selectedFontColor, captionPosition, captionAlignment, updateCaptionStyle, addTextPage, currentPageIdx
+export default function TextPageSection({
+  currentPage,
+  currentPageIdx,
+  updateTextContent,
+  updateTextStyle,
+  updatePageBgColor,
+  removePage,
 }) {
   const [fontSelectOpen, setFontSelectOpen] = useState(false);
   const fontSelectRef = useRef(null);
@@ -51,19 +56,22 @@ export default function CaptionSection({
   }, []);
 
   const handleFontSelect = (fontName) => {
-    updateCaptionStyle('fontFamily', fontName);
+    updateTextStyle('fontFamily', fontName);
     setFontSelectOpen(false);
   };
 
+  if (!currentPage || currentPage.type !== 'text') return null;
+
   return (
     <div className="editor-card">
-      <h4>Caption</h4>
+      <h4>Text Page</h4>
 
       <textarea
-        value={selectedCaption}
-        onChange={e => updateCaption(e.target.value)}
-        placeholder="Add caption..."
+        value={currentPage.textContent || ''}
+        onChange={e => updateTextContent(e.target.value)}
+        placeholder="Enter your text here..."
         className="caption-textarea"
+        style={{ minHeight: '120px' }}
       />
 
       <div className="caption-controls">
@@ -74,9 +82,9 @@ export default function CaptionSection({
               <div
                 className="caption-select-display"
                 onClick={() => setFontSelectOpen(!fontSelectOpen)}
-                style={{ fontFamily: selectedFontFamily }}
+                style={{ fontFamily: currentPage.textStyle?.fontFamily || 'Inter' }}
               >
-                {FONT_FAMILIES.find(f => f.name === selectedFontFamily)?.label || selectedFontFamily}
+                {FONT_FAMILIES.find(f => f.name === (currentPage.textStyle?.fontFamily || 'Inter'))?.label || 'Inter'}
                 <span className="caption-select-arrow">{fontSelectOpen ? '▲' : '▼'}</span>
               </div>
               {fontSelectOpen && (
@@ -99,11 +107,11 @@ export default function CaptionSection({
           <div>
             <label className="caption-label">Size</label>
             <select
-              value={selectedFontSize}
-              onChange={e => updateCaptionStyle('fontSize', +e.target.value)}
+              value={currentPage.textStyle?.fontSize || 24}
+              onChange={e => updateTextStyle('fontSize', parseInt(e.target.value))}
               className="caption-select"
             >
-              {[10, 12, 14, 16, 18, 20, 24, 28, 32].map(size => (
+              {[12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 64].map(size => (
                 <option key={size} value={size}>{size}px</option>
               ))}
             </select>
@@ -115,47 +123,41 @@ export default function CaptionSection({
             <label className="caption-label">Color</label>
             <input
               type="color"
-              value={selectedFontColor}
-              onChange={e => updateCaptionStyle('color', e.target.value)}
+              value={currentPage.textStyle?.color || '#000000'}
+              onChange={e => updateTextStyle('color', e.target.value)}
               className="caption-color"
             />
           </div>
 
           <div>
-            <label className="caption-label">Position</label>
-            <select
-              value={captionPosition}
-              onChange={e => updateCaptionStyle('position', e.target.value)}
-              className="caption-select"
-            >
-              <option value="top">Top</option>
-              <option value="bottom">Bottom</option>
-            </select>
+            <label className="caption-label">Background</label>
+            <input
+              type="color"
+              value={currentPage.pageBgColor || '#ffffff'}
+              onChange={e => updatePageBgColor(e.target.value)}
+              className="caption-color"
+            />
           </div>
         </div>
       </div>
 
-      <div className="caption-align-wrapper">
-        <label className="caption-label">Alignment</label>
-        <div className="caption-align">
-          {['left', 'center', 'right'].map(align => (
-            <button
-              key={align}
-              onClick={() => updateCaptionStyle('alignment', align)}
-              className={captionAlignment === align ? 'active' : 'inactive'}
-            >
-              {align}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="add-text-page-wrapper">
+      <div className="text-actions-wrapper">
         <button
-          onClick={() => addTextPage(currentPageIdx + 1)}
-          className="add-text-page-btn"
+          onClick={() => updateTextContent('')}
+          className="remove-text-btn"
+          disabled={!currentPage.textContent}
         >
-          Add Text Page
+          Remove Text
+        </button>
+        <button
+          onClick={() => {
+            if (confirm('Are you sure you want to delete this text page?')) {
+              removePage(currentPageIdx);
+            }
+          }}
+          className="remove-page-btn"
+        >
+          Remove Page
         </button>
       </div>
     </div>

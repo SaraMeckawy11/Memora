@@ -271,39 +271,87 @@ export default function PagesSidebar({
           style={{ aspectRatio }}
         >
           <div className="mini-page-content" data-layout={page.layout}>
-            {Array.from({ length: slotCount }).map((_, imgIdx) => {
-              const imgId = images[imgIdx] || null
-              const src = getImageSrc(imgId)
-              const isSelectedForSwap = swapSelection.some(s => s.pageIdx === idx && s.imgIdx === imgIdx)
-              
-              const shouldSpan = 
-                (page.layout === '1-top-2-bottom' && imgIdx === 0) ||
-                (page.layout === '2-top-1-bottom' && imgIdx === 2)
-
-              return (
-                <div 
-                  key={imgIdx} 
-                  className={`mini-img-wrapper ${isSelectedForSwap ? 'swap-selected' : ''} ${shouldSpan ? 'span-2-cols' : ''}`}
-                  onClick={(e) => {
-                    if (isPreviewOpen) {
-                      e.stopPropagation()
-                      handleSwapSelect(idx, imgIdx)
-                    }
-                  }}
-                >
-                  {src ? (
-                    <img src={src} alt="" />
-                  ) : (
-                    <span className="empty-slot">+</span>
-                  )}
-                  {isSelectedForSwap && (
-                    <div className="swap-overlay">
-                      <span>Selected</span>
+            {page.type === 'text' ? (
+              <div className="mini-text-content">
+                {page.textContent ? (
+                  <div
+                    style={{
+                      fontSize: Math.max(8, (page.textStyle?.fontSize || 24) * 0.15),
+                      color: page.textStyle?.color || '#000000',
+                      fontFamily: page.textStyle?.fontFamily || 'Inter',
+                      textAlign: page.textStyle?.textAlign || 'center',
+                      backgroundColor: page.pageBgColor || '#ffffff',
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '2px',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div style={{
+                      maxHeight: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      wordBreak: 'break-word',
+                      lineHeight: '1.2',
+                    }}>
+                      {page.textContent.length > 50 ? page.textContent.substring(0, 50) + '...' : page.textContent}
                     </div>
-                  )}
-                </div>
-              )
-            })}
+                  </div>
+                ) : (
+                  <div style={{
+                    backgroundColor: page.pageBgColor || '#ffffff',
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#999',
+                    fontSize: '10px',
+                  }}>
+                    Text Page
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                {Array.from({ length: slotCount }).map((_, imgIdx) => {
+                  const imgId = images[imgIdx] || null
+                  const src = getImageSrc(imgId)
+                  const isSelectedForSwap = swapSelection.some(s => s.pageIdx === idx && s.imgIdx === imgIdx)
+                  
+                  const shouldSpan = 
+                    (page.layout === '1-top-2-bottom' && imgIdx === 0) ||
+                    (page.layout === '2-top-1-bottom' && imgIdx === 2)
+
+                  return (
+                    <div 
+                      key={imgIdx} 
+                      className={`mini-img-wrapper ${isSelectedForSwap ? 'swap-selected' : ''} ${shouldSpan ? 'span-2-cols' : ''}`}
+                      onClick={(e) => {
+                        if (isPreviewOpen) {
+                          e.stopPropagation()
+                          handleSwapSelect(idx, imgIdx)
+                        }
+                      }}
+                    >
+                      {src ? (
+                        <img src={src} alt="" />
+                      ) : (
+                        <span className="empty-slot">+</span>
+                      )}
+                      {isSelectedForSwap && (
+                        <div className="swap-overlay">
+                          <span>Selected</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </>
+            )}
           </div>
         </div>
       </div>
