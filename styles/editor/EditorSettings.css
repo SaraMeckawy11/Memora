@@ -9,7 +9,7 @@
 /* Apply scrolling behavior only on larger screens */
 @media (min-width: 1025px) {
   .editor-settings {
-    max-height: calc(100vh - 180px); /* Adjust as needed */
+    max-height: calc(100vh - 200px); /* Adjust as needed */
     overflow-y: auto;
     position: sticky;
     top: 64px;
