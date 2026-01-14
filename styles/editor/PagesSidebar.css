@@ -9,7 +9,7 @@
   max-height: calc(100vh - 200px);
   overflow-y: auto;
   position: sticky;
-  top: 80px;
+  top: 64px;
   
   /* FIXED WIDTH FOR LAPTOP: 
      This prevents the sidebar from growing too big on large screens */

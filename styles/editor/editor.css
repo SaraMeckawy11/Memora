@@ -25,6 +25,19 @@
   gap: 1.5rem;
 }
 
+.editor-main-column {
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* VERY IMPORTANT */
+  width: 100%;
+}
+
+@media (min-width: 1025px) {
+  .editor-main-column {
+    margin-left: 8px;
+  }
+}
+
 /* ===============================
    Mobile / Tablet Responsive
 ================================ */
