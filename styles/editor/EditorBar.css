@@ -330,17 +330,66 @@
 }
 
 @media (max-width: 480px) {
+  .editor-topbar {
+    padding: 0.3rem 0.5rem;
+    gap: 0.5rem;
+  }
+
   .editor-topbar-center {
     gap: 0.3rem;
   }
 
   .editor-page-indicator {
     font-size: 0.75rem;
+    padding: 0.3rem 0.5rem;
+    margin: 0 0.25rem;
   }
 
   .nav-button {
     width: 28px;
     height: 28px;
+  }
+
+  .select-page-btn {
+    min-width: 70px;
+    padding: 0.3rem 0.5rem;
+    font-size: 0.7rem;
+  }
+
+  .upload-photos-btn {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .editor-topbar {
+    padding: 0.25rem 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .editor-topbar-center > div:last-child {
+    display: none;
+  }
+
+  .select-page-btn {
+    min-width: 60px;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .editor-page-indicator {
+    padding: 0.25rem 0.4rem;
+    margin: 0 0.2rem;
+    font-size: 0.7rem;
+  }
+
+  .nav-button {
+    width: 24px;
+    height: 24px;
+  }
+
+  .upload-photos-btn {
+    font-size: 0.65rem;
   }
 }
 
