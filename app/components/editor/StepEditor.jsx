@@ -303,7 +303,7 @@ export default function StepEditor({
           sizes={sizes}
         />
 
-        <div>
+        <div className="editor-main-column">
 
 
           <EditorCanvas

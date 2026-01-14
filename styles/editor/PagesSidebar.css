@@ -6,10 +6,10 @@
   border-radius: 12px;
   padding: 0.75rem;
   border: 1px solid var(--border, #eee);
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 180px);
   overflow-y: auto;
   position: sticky;
-  top: 80px;
+  top: 64px;
   
   /* FIXED WIDTH FOR LAPTOP: 
      This prevents the sidebar from growing too big on large screens */
