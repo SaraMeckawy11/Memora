@@ -10,6 +10,7 @@ import { ibiza } from './ibiza';
 import { baby } from './Baby';
 import { babyJournal } from './babyJournal';
 import { lionBirthPoster } from './lionBirthPoster.js';
+import { MothersDay } from './MothersDay.js';
 
 export const COVER_PRESETS = {
   travel,
@@ -23,5 +24,6 @@ export const COVER_PRESETS = {
   ibiza,
   baby,
   babyJournal,
-  lionBirthPoster
+  lionBirthPoster,
+  MothersDay
 };

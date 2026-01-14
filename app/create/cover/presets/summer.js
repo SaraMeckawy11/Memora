@@ -4,11 +4,11 @@ export const summer = {
     // --- Top Frame Leaves ---
     {
       id: 'leaf-tl1', type: 'image', x: 126, y: -129, width: 305,
-      src: '/leaf1.png', rotation: 90, zIndex: 2, scaleX: -1
+      src: '/leaf1.png', rotation: 90, zIndex: 5, scaleX: -1
     },
     {
       id: 'leaf-tl2', type: 'image', x: 497, y: 0, width: 365,
-      src: '/leaf2.png', rotation: 0, zIndex: 2
+      src: '/leaf2.png', rotation: 0, zIndex: 5
     },
     // --- Side Frame Leaves ---
     {
