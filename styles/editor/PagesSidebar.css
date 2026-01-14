@@ -6,7 +6,7 @@
   border-radius: 12px;
   padding: 0.75rem;
   border: 1px solid var(--border, #eee);
-  max-height: calc(100vh - 180px);
+  max-height: calc(100vh - 200px);
   overflow-y: auto;
   position: sticky;
   top: 64px;
