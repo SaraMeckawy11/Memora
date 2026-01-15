@@ -320,9 +320,28 @@ export default function StepEditor({
             selectedFontColor={selectedFontColor}
             selectedFontFamily={selectedFontFamily}
             currentPageIdx={currentPageIdx}
-            onUpdateTextPosition={(position) => {
+            onUpdateTextPosition={(positionData) => {
               const newPages = [...pages]
-              newPages[currentPageIdx].textPosition = position
+              const page = newPages[currentPageIdx]
+              
+              // Update position
+              if (positionData.x !== undefined) {
+                page.textPosition = {
+                  ...page.textPosition,
+                  x: positionData.x,
+                  y: positionData.y,
+                }
+              }
+              
+              // Update rectangle dimensions
+              if (positionData.width !== undefined) {
+                page.textRect = {
+                  ...page.textRect,
+                  width: positionData.width,
+                  height: positionData.height,
+                }
+              }
+              
               setPages(newPages)
             }}
             imageGridProps={{

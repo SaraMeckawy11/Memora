@@ -1,9 +1,8 @@
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
-import '@/styles/editor/common.css';
-import '@/styles/editor/CaptionSection.css';
+import { useState, useEffect, useRef } from 'react'
+import '@/styles/editor/CaptionSection.css'
 
-export const FONT_FAMILIES = [
+const FONT_FAMILIES = [
   { name: 'Inter', label: 'Inter' },
   { name: 'Arial', label: 'Arial' },
   { name: 'Helvetica', label: 'Helvetica' },
@@ -33,45 +32,63 @@ export const FONT_FAMILIES = [
 
 export default function TextPageSection({
   currentPage,
-  currentPageIdx,
   updateTextContent,
   updateTextStyle,
-  updatePageBgColor,
+  updateTextPosition,
+  removeText,
   removePage,
+  addTextPage,
 }) {
-  const [fontSelectOpen, setFontSelectOpen] = useState(false);
-  const fontSelectRef = useRef(null);
+  const [fontSelectOpen, setFontSelectOpen] = useState(false)
+  const fontSelectRef = useRef(null)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (fontSelectRef.current && !fontSelectRef.current.contains(event.target)) {
-        setFontSelectOpen(false);
+        setFontSelectOpen(false)
       }
-    };
+    }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   const handleFontSelect = (fontName) => {
-    updateTextStyle('fontFamily', fontName);
-    setFontSelectOpen(false);
-  };
+    updateTextStyle('fontFamily', fontName)
+    setFontSelectOpen(false)
+  }
 
-  if (!currentPage || currentPage.type !== 'text') return null;
+  const handleTextChange = (e) => {
+    updateTextContent(e.target.value)
+  }
+
+  const handleFontSizeChange = (e) => {
+    updateTextStyle('fontSize', +e.target.value)
+  }
+
+  const handleColorChange = (e) => {
+    updateTextStyle('color', e.target.value)
+  }
+
+  const handleAlignmentChange = (alignment) => {
+    updateTextStyle({ textAlign: alignment })
+  }
+
+  if (!currentPage || currentPage.type !== 'text') {
+    return null
+  }
 
   return (
     <div className="editor-card">
-      <h4>Text Page</h4>
+      <h4>Text Page Settings</h4>
 
       <textarea
         value={currentPage.textContent || ''}
-        onChange={e => updateTextContent(e.target.value)}
+        onChange={handleTextChange}
         placeholder="Enter your text here..."
         className="caption-textarea"
-        style={{ minHeight: '120px' }}
       />
 
       <div className="caption-controls">
@@ -84,7 +101,7 @@ export default function TextPageSection({
                 onClick={() => setFontSelectOpen(!fontSelectOpen)}
                 style={{ fontFamily: currentPage.textStyle?.fontFamily || 'Inter' }}
               >
-                {FONT_FAMILIES.find(f => f.name === (currentPage.textStyle?.fontFamily || 'Inter'))?.label || 'Inter'}
+                {FONT_FAMILIES.find(f => f.name === (currentPage.textStyle?.fontFamily || 'Inter'))?.label || currentPage.textStyle?.fontFamily || 'Inter'}
                 <span className="caption-select-arrow">{fontSelectOpen ? '▲' : '▼'}</span>
               </div>
               {fontSelectOpen && (
@@ -108,10 +125,10 @@ export default function TextPageSection({
             <label className="caption-label">Size</label>
             <select
               value={currentPage.textStyle?.fontSize || 24}
-              onChange={e => updateTextStyle('fontSize', parseInt(e.target.value))}
+              onChange={e => updateTextStyle('fontSize', +e.target.value)}
               className="caption-select"
             >
-              {[12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 64].map(size => (
+              {[10, 12, 14, 16, 18, 20, 24, 28, 32].map(size => (
                 <option key={size} value={size}>{size}px</option>
               ))}
             </select>
@@ -124,42 +141,43 @@ export default function TextPageSection({
             <input
               type="color"
               value={currentPage.textStyle?.color || '#000000'}
-              onChange={e => updateTextStyle('color', e.target.value)}
-              className="caption-color"
-            />
-          </div>
-
-          <div>
-            <label className="caption-label">Background</label>
-            <input
-              type="color"
-              value={currentPage.pageBgColor || '#ffffff'}
-              onChange={e => updatePageBgColor(e.target.value)}
+              onChange={handleColorChange}
               className="caption-color"
             />
           </div>
         </div>
       </div>
 
+      <div className="caption-align-wrapper">
+        <label className="caption-label">Alignment</label>
+        <div className="caption-align">
+          {['left', 'center', 'right'].map(align => (
+            <button
+              key={align}
+              onClick={() => updateTextStyle('textAlign', align)}
+              className={currentPage.textStyle?.textAlign === align ? 'active' : 'inactive'}
+            >
+              {align}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="text-actions-wrapper">
         <button
-          onClick={() => updateTextContent('')}
           className="remove-text-btn"
+          onClick={removeText}
           disabled={!currentPage.textContent}
         >
           Remove Text
         </button>
         <button
-          onClick={() => {
-            if (confirm('Are you sure you want to delete this text page?')) {
-              removePage(currentPageIdx);
-            }
-          }}
           className="remove-page-btn"
+          onClick={() => removePage(currentPageIdx)}
         >
-          Remove Page
+          Delete Page
         </button>
       </div>
     </div>
-  );
+  )
 }
