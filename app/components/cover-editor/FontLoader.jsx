@@ -66,7 +66,7 @@ export const FONT_LIST = [
   'Orbitron', 'Audiowide', 'Carter One', 'Gruppo', 'Syncopate', 'Unica One',
   'Bungee', 'Bungee Shade', 'Bungee Inline', 'Faster One', 'Eater', 'Nosifer',
   'Butcherman', 'Frijole', 'Metal Mania', 'New Rocker', 'Rye', 'Sancreek',
-  'Rogue', 'Rogue Hero'
+  'Rogue', 'Rogue Hero', 'Neoneon'
 ]
 
 const chunkArray = (arr, size) => {
@@ -98,7 +98,7 @@ export default function FontLoader() {
     // Google Fonts Loading Logic
     const CUSTOM_FONT_NAMES = [
       'Gistesy', 'Rogue', 'Rogue Hero', 'Signature', 'Signature Font', 'Signature Script', 
-      'Brittany Signature Script', 'California Signature', 'Gotham'
+      'Brittany Signature Script', 'California Signature', 'Gotham', 'Neoneon'
     ]
     
     const googleFontsList = FONT_LIST.filter(font => 
@@ -137,7 +137,8 @@ export default function FontLoader() {
       { name: 'Brittany Signature Script', url: 'https://fonts.cdnfonts.com/css/brittany-signature-script' },
       { name: 'California Signature', url: 'https://fonts.cdnfonts.com/css/california-signature' },
       { name: 'Le Petit Cochon', url: 'https://fonts.cdnfonts.com/css/le-petit-cochon' },
-      { name: 'Gotham', url: 'https://fonts.cdnfonts.com/css/gotham' }
+      { name: 'Gotham', url: 'https://fonts.cdnfonts.com/css/gotham' },
+      { name: 'Neoneon', url: 'https://fonts.cdnfonts.com/css/neoneon' }
     ]
 
     customFonts.forEach(font => {
