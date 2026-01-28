@@ -26,6 +26,160 @@
   overflow: hidden;
 }
 
+/* Visual guidelines for text positioning */
+.editor-page-guidelines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.editor-page-guidelines::before,
+.editor-page-guidelines::after,
+.editor-page-guidelines .quarter-line {
+  content: '';
+  position: absolute;
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 123, 255, 0.4) 20%, rgba(0, 123, 255, 0.4) 80%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.editor-page-guidelines::before {
+  /* Vertical center line */
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+.editor-page-guidelines::after {
+  /* Horizontal center line */
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+/* Quarter lines for better positioning */
+.editor-page-guidelines .quarter-line:nth-child(1) {
+  /* Vertical quarter line (left) */
+  top: 0;
+  left: 25%;
+  width: 2px;
+  height: 100%;
+}
+
+.editor-page-guidelines .quarter-line:nth-child(2) {
+  /* Vertical quarter line (right) */
+  top: 0;
+  left: 75%;
+  width: 2px;
+  height: 100%;
+}
+
+.editor-page-guidelines .quarter-line:nth-child(3) {
+  /* Horizontal quarter line (top) */
+  top: 25%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+
+.editor-page-guidelines .quarter-line:nth-child(4) {
+  /* Horizontal quarter line (bottom) */
+  top: 75%;
+  left: 0;
+  width: 100%;
+  height: 2px;
+}
+
+/* Show specific guidelines only when dragging AND near alignment points */
+.editor-page.dragging-text.show-vertical-center .editor-page-guidelines::before,
+.editor-page.dragging-text.show-horizontal-center .editor-page-guidelines::after,
+.editor-page.dragging-text.show-vertical-left .editor-page-guidelines .quarter-line:nth-child(1),
+.editor-page.dragging-text.show-vertical-right .editor-page-guidelines .quarter-line:nth-child(2),
+.editor-page.dragging-text.show-horizontal-top .editor-page-guidelines .quarter-line:nth-child(3),
+.editor-page.dragging-text.show-horizontal-bottom .editor-page-guidelines .quarter-line:nth-child(4) {
+  opacity: 1;
+  animation: guideline-pulse 0.3s ease-out;
+}
+
+/* Remove the old dragging-text class logic */
+.editor-page.dragging-text .editor-page-guidelines::before,
+.editor-page.dragging-text .editor-page-guidelines::after,
+.editor-page.dragging-text .editor-page-guidelines .quarter-line {
+  opacity: 0;
+}
+
+/* Remove old center highlight logic */
+.editor-page.dragging-text.text-at-center .editor-page-guidelines::before,
+.editor-page.dragging-text.text-at-center .editor-page-guidelines::after {
+  background: rgba(0, 123, 255, 0.8);
+  opacity: 1;
+}
+
+/* Pulse animation for guidelines */
+@keyframes guideline-pulse {
+  0% { opacity: 0; transform: scale(0.95); }
+  50% { opacity: 0.8; transform: scale(1.02); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Snap feedback for very close alignment - only when dragging */
+.editor-page.dragging-text.snap-vertical-center .editor-page-guidelines::before,
+.editor-page.dragging-text.snap-horizontal-center .editor-page-guidelines::after {
+  background: linear-gradient(90deg, transparent 0%, rgba(40, 167, 69, 0.5) 20%, rgba(40, 167, 69, 0.5) 80%, transparent 100%);
+  box-shadow: 0 0 4px rgba(40, 167, 69, 0.3);
+  animation: snap-feedback 0.2s ease-out;
+}
+
+@keyframes snap-feedback {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Grid lines for better positioning */
+.editor-page-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(0, 123, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 123, 255, 0.08) 1px, transparent 1px);
+  background-size: 25% 25%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* Show subtle grid only when dragging and near alignment points */
+.editor-page.dragging-text.show-vertical-center .editor-page-grid,
+.editor-page.dragging-text.show-horizontal-center .editor-page-grid,
+.editor-page.dragging-text.show-vertical-left .editor-page-grid,
+.editor-page.dragging-text.show-vertical-right .editor-page-grid,
+.editor-page.dragging-text.show-horizontal-top .editor-page-grid,
+.editor-page.dragging-text.show-horizontal-bottom .editor-page-grid {
+  opacity: 0.2;
+}
+
+.text-page-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+}
+
 .editor-page-content {
   flex: 1;
   min-height: 0;

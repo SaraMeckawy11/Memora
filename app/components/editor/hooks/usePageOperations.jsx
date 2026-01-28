@@ -38,6 +38,44 @@ export function usePageOperations(
     }
   }
 
+  const addTextPage = (insertAtIndex = null) => {
+    const newPage = {
+      id: Date.now(),
+      type: 'text', // New page type
+      images: [],
+      caption: '',
+      captionStyle: {
+        fontSize: selectedFontSize,
+        color: selectedFontColor,
+        fontFamily: selectedFontFamily,
+        position: captionPosition,
+        alignment: captionAlignment,
+      },
+      layout: 'text', // Special layout for text pages
+      pageBgColor: '#ffffff', // Default white background
+      textContent: '', // The main text content
+      textPosition: { x: 50, y: 50 }, // Center position (percentage)
+      textStyle: {
+        fontSize: 24,
+        color: '#000000',
+        fontFamily: 'Inter',
+        textAlign: 'center',
+      },
+      layoutSplitX: 50,
+      layoutSplitY: 50,
+    }
+
+    if (typeof insertAtIndex === 'number') {
+      const newPages = [...pages]
+      newPages.splice(insertAtIndex, 0, newPage)
+      setPages(newPages)
+      setCurrentPageIdx(insertAtIndex)
+    } else {
+      setPages([...pages, newPage])
+      setCurrentPageIdx(pages.length)
+    }
+  }
+
   const duplicatePage = (idx) => {
     const page = pages[idx]
     const copy = {
@@ -132,6 +170,7 @@ export function usePageOperations(
 
   return {
     addPage,
+    addTextPage,
     duplicatePage,
     removePage,
     movePage,

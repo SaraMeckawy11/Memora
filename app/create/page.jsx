@@ -54,7 +54,7 @@ function CreatePageContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const [selectedCaption, setSelectedCaption] = useState('')
-  const [selectedFontSize, setSelectedFontSize] = useState(16)
+  const [selectedFontSize, setSelectedFontSize] = useState(12)
   const [selectedFontColor, setSelectedFontColor] = useState('#000000')
   const [selectedFontFamily, setSelectedFontFamily] = useState('Inter')
   const [captionPosition, setCaptionPosition] = useState('bottom')
@@ -145,6 +145,22 @@ function CreatePageContent() {
   useEffect(() => {
     loadProgress()
   }, [loadProgress])
+
+  /* ================= SYNC CAPTION STATE WITH CURRENT PAGE ================= */
+
+  useEffect(() => {
+    if (pages.length > 0 && currentPageIdx < pages.length) {
+      const currentPage = pages[currentPageIdx]
+      setSelectedCaption(currentPage.caption || '')
+      if (currentPage.captionStyle) {
+        setSelectedFontSize(currentPage.captionStyle.fontSize ?? 12)
+        setSelectedFontColor(currentPage.captionStyle.color ?? '#000000')
+        setSelectedFontFamily(currentPage.captionStyle.fontFamily ?? 'Inter')
+        setCaptionPosition(currentPage.captionStyle.position ?? 'bottom')
+        setCaptionAlignment(currentPage.captionStyle.alignment ?? 'center')
+      }
+    }
+  }, [currentPageIdx, pages])
 
   /* ================= INIT PAGES ================= */
 
