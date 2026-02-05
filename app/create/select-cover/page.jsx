@@ -163,7 +163,7 @@ export default function SelectCoverPage() {
         </div>
 
         <div id="presets-section" className="presets-section">
-          <h3>Featured Templates</h3>
+          <h3>Cover Designs</h3>
           <div className="presets-grid">
             {PRESETS.map((preset) => (
               <div 
