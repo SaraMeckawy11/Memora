@@ -90,6 +90,24 @@ const PRESETS = [
     name: 'Night Love', 
     preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'Seasonal'
+  },
+  { 
+    id: 'tiedWithLove', 
+    name: 'Tied With Love', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Seasonal'
+  },
+  { 
+    id: 'ourStory', 
+    name: 'Our Story', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Seasonal'
+  },
+  { 
+    id: 'withLove', 
+    name: 'With Love', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Seasonal'
   }
 ] 
 

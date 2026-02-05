@@ -12,6 +12,9 @@ import { babyJournal } from './babyJournal';
 import { lionBirthPoster } from './lionBirthPoster.js';
 import { MothersDay } from './MothersDay.js';
 import { nightLove } from './nightLove.js';
+import { tiedWithLove } from './tiedWithLove';
+import { withLove } from './withLove';
+import { ourStory } from './ourStory';
 
 export const COVER_PRESETS = {
   travel,
@@ -27,5 +30,8 @@ export const COVER_PRESETS = {
   babyJournal,
   lionBirthPoster,
   MothersDay,
-  nightLove
+  nightLove,
+  tiedWithLove,
+  withLove,
+  ourStory,
 };

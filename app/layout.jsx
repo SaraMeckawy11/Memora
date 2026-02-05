@@ -24,8 +24,9 @@ export default function RootLayout({ children }) {
 				<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/signature-font" />
 				<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/brittany-signature-script" />
 				<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/california-signature" />
-				<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/le-petit-cochon" />
-			</head>
+				<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/le-petit-cochon" />		
+				<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/mistrully" />
+				</head>
 			<body>
 				{children}
 			</body>
