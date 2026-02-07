@@ -1,6 +1,7 @@
 import { travel } from './travel';
 import { travel2 } from './travel2';
 import { travel3 } from './travel3';
+import { travel4 } from './travel4';
 import { wedding } from './wedding';
 import { wedding2 } from './wedding2';
 import { wedding3 } from './wedding3';
@@ -25,6 +26,7 @@ export const COVER_PRESETS = {
   travel,
   travel2,
   travel3,
+  travel4,
   wedding,
   wedding2,
   wedding3,

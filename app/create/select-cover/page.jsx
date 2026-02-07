@@ -32,6 +32,12 @@ const PRESETS = [
     category: 'Seasonal'
   },
   { 
+    id: 'travel4', 
+    name: 'Travel Adventures', 
+    preview: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Travel'
+  }, 
+  { 
     id: 'ibiza', 
     name: 'Ibiza Night', 
     preview: 'https://images.unsplash.com/photo-1573155993874-d5d48af862ba?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
