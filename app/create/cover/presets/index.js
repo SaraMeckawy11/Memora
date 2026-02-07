@@ -16,6 +16,8 @@ import { nightLove } from './nightLove.js';
 import { tiedWithLove } from './tiedWithLove';
 import { withLove } from './withLove';
 import { ourStory } from './ourStory';
+import { loveYou } from './loveYou';
+import {babyLove} from './babyLove';
 
 export const COVER_PRESETS = {
   travel,
@@ -30,10 +32,12 @@ export const COVER_PRESETS = {
   baby,
   babyJournal,
   lionBirthPoster,
+  babyLove,
   MothersDay,
   mothersDay2,
   nightLove,
   tiedWithLove,
   withLove,
   ourStory,
+  loveYou
 };

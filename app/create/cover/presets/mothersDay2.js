@@ -37,9 +37,9 @@ export const mothersDay2 = {
     {
       id: 'title3',
       type: 'text',
-      x: 147,
-      y: 646,
-      width: 600,
+      x: 118,
+      y: 650,
+      width: 658,
       height: 60,
       content: 'day',
       color: '#000000',
@@ -54,7 +54,7 @@ export const mothersDay2 = {
       id: 'title1',
       type: 'text',
       x: 297,
-      y: 511,
+      y: 496,
       width: 300,
       height: 40,
       content: 'Happy',
@@ -74,10 +74,10 @@ export const mothersDay2 = {
       height: 60,
       content: 'Mother\'s',
       color: '#000000',
-      fontSize: 80,
-      fontFamily: 'Times New Roman',
+      fontSize: 112,
+      fontFamily: 'Bodoni Moda',
       textAlign: 'center',
-      letterSpacing: '0.2em', // Wide spacing for the elegant look
+      letterSpacing: '0.1em', // Wide spacing for the elegant look
       fontWeight: 'normal',
       zIndex: 3
     }

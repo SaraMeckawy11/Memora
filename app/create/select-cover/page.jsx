@@ -56,6 +56,12 @@ const PRESETS = [
     category: 'memories'
   },
   { 
+    id: 'babyLove', 
+    name: 'Baby Love', 
+    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'memories'
+  },
+  { 
     id: 'wedding', 
     name: 'Our Wedding Day', 
     preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
@@ -112,6 +118,12 @@ const PRESETS = [
   { 
     id: 'withLove', 
     name: 'With Love', 
+    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'Seasonal'
+  },
+  { 
+    id: 'loveYou', 
+    name: 'Love You', 
     preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'Seasonal'
   }
