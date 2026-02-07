@@ -9,6 +9,7 @@ import { wedding4 } from './wedding4';
 import { summer } from './summer';
 import { ibiza } from './ibiza';
 import { baby } from './Baby';
+import { baby5 } from './baby5';
 import { babyJournal } from './babyJournal';
 import { lionBirthPoster } from './lionBirthPoster.js';
 import { MothersDay } from './MothersDay.js';
@@ -37,6 +38,7 @@ export const COVER_PRESETS = {
   babyJournal,
   lionBirthPoster,
   babyLove,
+  baby5,
   MothersDay,
   mothersDay2,
   mothersDay3,

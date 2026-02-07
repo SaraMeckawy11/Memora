@@ -51,7 +51,7 @@ const PRESETS = [
   },
   { 
     id: 'baby', 
-    name: 'baby', 
+    name: 'Baby Memories', 
     preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'memories'
   },
@@ -64,6 +64,12 @@ const PRESETS = [
   { 
     id: 'babyLove', 
     name: 'Baby Love', 
+    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
+    category: 'memories'
+  },
+  { 
+    id: 'baby5', 
+    name: 'Baby Book', 
     preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
     category: 'memories'
   },
