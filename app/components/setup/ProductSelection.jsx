@@ -4,10 +4,10 @@ import '@/styles/setup/step-setup.css'
 const PRODUCTS = [
   { id: 1, name: 'Hardcover', icon: '📕',
     //  description: 'Premium hardcover with dust jacket',
-      price: 900 },
+      price:0 },
   { id: 2, name: 'Softcover', icon: '📔', 
     // description: 'Flexible softcover binding', 
-    price: 800 },
+    price: 0 },
 ]
 
 export default function ProductSelection({ selectedProduct, setSelectedProduct }) {
