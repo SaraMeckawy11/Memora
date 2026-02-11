@@ -365,3 +365,23 @@
   background-color: #c82333;
   border-color: #c82333;
 }
+/* New button styles for add text and add photo */
+.add-text-btn,
+.add-photo-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--accent-solid);
+  border-radius: 6px;
+  background-color: var(--accent-solid);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-text-btn:hover,
+.add-photo-btn:hover {
+  background-color: var(--accent-solid-hover, #0056b3);
+  border-color: var(--accent-solid-hover, #0056b3);
+}
