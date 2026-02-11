@@ -55,6 +55,7 @@ export function usePageOperations(
       pageBgColor: '#ffffff', // Default white background
       textContent: '', // The main text content
       textPosition: { x: 50, y: 50 }, // Center position (percentage)
+      textRect: { width: 50, height: 30 }, // Rectangle dimensions (percentage)
       textStyle: {
         fontSize: 24,
         color: '#000000',

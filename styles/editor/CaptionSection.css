@@ -317,3 +317,71 @@
     font-size: 0.75rem;
   }
 }
+
+/* ================= Text Page Styles ================= */
+.text-actions-wrapper {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.remove-text-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #dc3545;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-text-btn:hover:not(:disabled) {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.remove-text-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.remove-page-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #dc3545;
+  border-radius: 6px;
+  background-color: #dc3545;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-page-btn:hover {
+  background-color: #c82333;
+  border-color: #c82333;
+}
+/* New button styles for add text and add photo */
+.add-text-btn,
+.add-photo-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--accent-solid);
+  border-radius: 6px;
+  background-color: var(--accent-solid);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-text-btn:hover,
+.add-photo-btn:hover {
+  background-color: var(--accent-solid-hover, #0056b3);
+  border-color: var(--accent-solid-hover, #0056b3);
+}

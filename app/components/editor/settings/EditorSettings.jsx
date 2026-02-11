@@ -172,9 +172,38 @@ export default function EditorSettings(props) {
         }
         setPages(newPages)
       }}
+      onUpdateTextPosition={(positionData) => {
+        const newPages = [...pages]
+        const page = newPages[currentPageIdx]
+        
+        // Update position
+        if (positionData.x !== undefined) {
+          page.textPosition = {
+            ...page.textPosition,
+            x: positionData.x,
+            y: positionData.y,
+          }
+        }
+        
+        // Update rectangle dimensions
+        if (positionData.width !== undefined) {
+          page.textRect = {
+            ...page.textRect,
+            width: positionData.width,
+            height: positionData.height,
+          }
+        }
+        
+        setPages(newPages)
+      }}
       updatePageBgColor={(color) => {
         const newPages = [...pages]
         newPages[currentPageIdx].pageBgColor = color
+        setPages(newPages)
+      }}
+      removeText={() => {
+        const newPages = [...pages]
+        newPages[currentPageIdx].textContent = ''
         setPages(newPages)
       }}
       removePage={removePage}
