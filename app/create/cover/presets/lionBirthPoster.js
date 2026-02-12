@@ -147,3 +147,26 @@ export const lionBirthPoster = {
     }
   ]
 };
+
+export const lionBirthPosterBack = {
+  backgroundColor: '#d0e7f9',
+  elements: [
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/blueBack.jpg',
+      rotation: 0, zIndex: -1,
+      opacity: 40,
+    },
+    {
+      id: 'lion-clouds-image',
+      type: 'image',
+      x: 0,
+      y: -41,
+      width: 962,
+      height: 849,
+      src: '/lionClouds.png',
+      zIndex: 1,
+      opacity: 100
+    },
+  ]
+};

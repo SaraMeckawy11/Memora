@@ -18,19 +18,19 @@ const FILTERS = [
 ]
 
 const IMAGE_TOOLS = [
-  { id: 'exposure', label: 'Exposure', icon: '☀', prop: 'brightness', min: 50, max: 150, default: 100 },
-  { id: 'brilliance', label: 'Brilliance', icon: '✨', prop: 'contrast', min: 50, max: 150, default: 100 }, // Simplified mapping
-  { id: 'highlights', label: 'Highlights', icon: '⚪', prop: 'brightness', min: 50, max: 150, default: 100 }, // Simplified
-  { id: 'shadows', label: 'Shadows', icon: '⚫', prop: 'brightness', min: 50, max: 150, default: 100 }, // Simplified
+  { id: 'exposure', label: 'Exposure', icon: '☀', prop: 'exposure', min: 50, max: 150, default: 100 },
+  { id: 'brilliance', label: 'Brilliance', icon: '✨', prop: 'brilliance', min: 50, max: 150, default: 100 },
+  { id: 'highlights', label: 'Highlights', icon: '⚪', prop: 'highlights', min: 50, max: 150, default: 100 },
+  { id: 'shadows', label: 'Shadows', icon: '⚫', prop: 'shadows', min: 50, max: 150, default: 100 },
   { id: 'contrast', label: 'Contrast', icon: '◑', prop: 'contrast', min: 50, max: 150, default: 100 },
   { id: 'brightness', label: 'Brightness', icon: '🔆', prop: 'brightness', min: 50, max: 150, default: 100 },
-  { id: 'blackpoint', label: 'Black Point', icon: '🌑', prop: 'contrast', min: 50, max: 150, default: 100 }, // Simplified
+  { id: 'blackpoint', label: 'Black Point', icon: '🌑', prop: 'blackpoint', min: 50, max: 150, default: 100 },
   { id: 'saturation', label: 'Saturation', icon: '🌈', prop: 'saturate', min: 0, max: 200, default: 100 },
-  { id: 'vibrance', label: 'Vibrance', icon: '🌺', prop: 'saturate', min: 0, max: 200, default: 100 }, // Simplified
-  { id: 'warmth', label: 'Warmth', icon: '🌡', prop: 'sepia', min: 0, max: 100, default: 0 },
+  { id: 'vibrance', label: 'Vibrance', icon: '🌺', prop: 'vibrance', min: 0, max: 200, default: 100 },
+  { id: 'warmth', label: 'Warmth', icon: '🌡', prop: 'warmth', min: 0, max: 100, default: 0 },
   { id: 'tint', label: 'Tint', icon: '🎨', prop: 'hueRotate', min: 0, max: 360, default: 0 },
   { id: 'sharpness', label: 'Sharpness', icon: '📐', prop: 'sharpness', min: 0, max: 100, default: 0 },
-  { id: 'definition', label: 'Definition', icon: '💎', prop: 'sharpness', min: 0, max: 100, default: 0 }, // Simplified
+  { id: 'definition', label: 'Definition', icon: '💎', prop: 'definition', min: 0, max: 100, default: 0 },
   { id: 'noise', label: 'Noise', icon: '🌫', prop: 'noise', min: 0, max: 100, default: 0 },
   { id: 'vignette', label: 'Vignette', icon: '⭕', prop: 'vignette', min: 0, max: 100, default: 0 },
   { id: 'blur', label: 'Blur', icon: '💧', prop: 'blur', min: 0, max: 20, default: 0 },

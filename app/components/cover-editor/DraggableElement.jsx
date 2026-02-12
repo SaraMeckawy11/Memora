@@ -215,17 +215,67 @@ export default function DraggableElement({
     }
 
     if (element.type === 'image') {
-      // Basic filters
-      const filterString = `
-        brightness(${element.brightness || 100}%) 
-        contrast(${element.contrast || 100}%) 
-        saturate(${element.saturate || 100}%) 
-        hue-rotate(${element.hueRotate || 0}deg) 
-        blur(${element.blur || 0}px) 
-        sepia(${element.sepia || 0}%) 
-        grayscale(${element.grayscale || 0}%)
-        invert(${element.invert || 0}%)
-      `.trim()
+      // Each property works independently with different effects
+      
+      // Exposure: Primary brightness control (like camera exposure)
+      const exposure = element.exposure !== undefined ? element.exposure : 100;
+      
+      // Highlights: Brightens bright areas (like adjustment layer)
+      const highlights = element.highlights !== undefined ? element.highlights : 100;
+      
+      // Shadows: Brightens dark areas (lifts shadows)
+      const shadows = element.shadows !== undefined ? element.shadows : 100;
+      
+      // Brightness: Base brightness level
+      const baseBrightness = element.brightness !== undefined ? element.brightness : 100;
+      
+      // Combine: Exposure primary, brightness secondary
+      const finalBrightness = (exposure + baseBrightness) / 2;
+      
+      // Contrast: Primary contrast control
+      const baseContrast = element.contrast !== undefined ? element.contrast : 100;
+      
+      // Brilliance: Adds to contrast (increases midtone contrast)
+      const brilliance = element.brilliance !== undefined ? element.brilliance : 100;
+      const finalContrast = (baseContrast + brilliance) / 2;
+      
+      // Black Point: Darkens shadows independently (adjusts black levels)
+      const blackpoint = element.blackpoint !== undefined ? element.blackpoint : 100;
+      
+      // Combine saturation properties
+      const baseSaturate = element.saturate !== undefined ? element.saturate : 100;
+      const vibrance = element.vibrance !== undefined ? element.vibrance : 100;
+      const finalSaturate = (baseSaturate + vibrance) / 2;
+      
+      // Warmth affects sepia
+      const warmth = element.warmth !== undefined ? element.warmth : 0;
+      
+      // Definition enhances sharpness
+      const baseSharpness = element.sharpness !== undefined ? element.sharpness : 0;
+      const definition = element.definition !== undefined ? element.definition : 0;
+      const finalSharpness = Math.max(baseSharpness, definition);
+      
+      // Build filter string with all independent properties
+      // Exposure affects overall brightness, Highlights/Shadows affect tone curve
+      let filterString = `brightness(${finalBrightness}%) contrast(${finalContrast}%) saturate(${finalSaturate}%) hue-rotate(${element.hueRotate || 0}deg) blur(${element.blur || 0}px)`;
+      
+      // Add highlights effect (increases brightness of bright areas via higher contrast)
+      if (highlights !== 100) {
+        filterString += ` brightness(${100 + (highlights - 100) * 0.3}%)`;
+      }
+      
+      // Add shadows effect (lifts dark areas)
+      if (shadows !== 100) {
+        filterString += ` brightness(${100 + (shadows - 100) * 0.2}%)`;
+      }
+      
+      // Add black point effect (darkens the blacks)
+      if (blackpoint !== 100) {
+        filterString += ` contrast(${100 + (blackpoint - 100) * 0.4}%)`;
+      }
+      
+      // Add other effects
+      filterString += ` sepia(${warmth}%) grayscale(${element.grayscale || 0}%) invert(${element.invert || 0}%)`;
       
       const sharpnessId = `sharpness-${element.id}`
       const isPolaroid = element.options?.isPolaroid;
@@ -244,10 +294,10 @@ export default function DraggableElement({
           <svg style={{ position: 'absolute', width: 0, height: 0 }}>
             <defs>
               <filter id={sharpnessId}>
-                {element.sharpness > 0 ? (
+                {finalSharpness > 0 ? (
                   <feConvolveMatrix 
                     order="3" 
-                    kernelMatrix={`0 -${element.sharpness/100} 0 -${element.sharpness/100} ${1 + 4*(element.sharpness/100)} -${element.sharpness/100} 0 -${element.sharpness/100} 0`} 
+                    kernelMatrix={`0 -${finalSharpness/100} 0 -${finalSharpness/100} ${1 + 4*(finalSharpness/100)} -${finalSharpness/100} 0 -${finalSharpness/100} 0`} 
                   />
                 ) : (
                   <feColorMatrix type="identity"/>
@@ -268,13 +318,13 @@ export default function DraggableElement({
             }} 
           />
           
-          {element.temperature !== 0 && element.temperature != null && (
+          {warmth !== 0 && (
             <div style={{
               position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
               pointerEvents: 'none',
-              backgroundColor: element.temperature > 0 ? '#ff9a00' : '#009aff',
-              opacity: Math.abs(element.temperature) / 200,
-              mixBlendMode: element.temperature > 0 ? 'soft-light' : 'overlay'
+              backgroundColor: warmth > 0 ? '#ff9a00' : '#009aff',
+              opacity: Math.abs(warmth) / 200,
+              mixBlendMode: warmth > 0 ? 'soft-light' : 'overlay'
             }} />
           )}
 

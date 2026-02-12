@@ -39,3 +39,14 @@ export const tiedWithLove = {
     },
   ]
 };
+
+export const tiedWithLoveBack = {
+  backgroundColor: '#FBD4D3',
+  elements: [
+    {
+      id: 'TiedLove', type: 'image', x: 187, y: 437, width: 519, height: 671,
+      src: '/tiedWithLove.webp',
+      zIndex: 1, opacity: 100
+    },
+  ]
+};

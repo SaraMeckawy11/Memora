@@ -105,3 +105,49 @@ export const wedding2 = {
     }
   ]
 };
+
+export const wedding2Back = {
+  backgroundColor: '#f8f9f5',
+  elements: [
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/backWhiteTexture.jpg',
+      rotation: 0, zIndex: -1,
+      opacity: 15,
+    },
+    {
+      id: 'flower-center-small',
+      type: 'image',
+      x: 381,
+      y: 342,
+      width: 130,
+      height: 191,
+      src: '/flowerCenter.png',
+      zIndex: 2,
+      opacity: 100
+    },
+    {
+      id: 'flower-side-left',
+      type: 'image',
+      x: 0,
+      y: 683,
+      width: 254,
+      height: 580,
+      src: '/flowerWed.webp',
+      zIndex: 1,
+      opacity: 80
+    },
+    {
+      id: 'flower-side-right',
+      type: 'image',
+      x: 639,
+      y: 683,
+      width: 254,
+      height: 580,
+      src: '/flowerWed.webp',
+      zIndex: 1,
+      scaleX: -1,
+      opacity: 80
+    }
+  ]
+};

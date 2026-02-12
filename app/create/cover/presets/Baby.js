@@ -44,3 +44,19 @@ export const baby = {
     },
   ]
 };
+
+export const babyBack = {
+  backgroundColor: '#fafafa',
+  elements: [
+    {
+      id: 'sleepWolf', type: 'image', x: 66, y: 146, width: 762, height: 577,
+      src: '/sleepyWolf.webp',
+      zIndex: 1, opacity: 100
+    },
+    {
+      id: 'TextHolder', type: 'image', x: 136, y: 869, width: 620, height: 155,
+      src: '/TextHolder2.webp',
+      zIndex: 1, opacity: 100
+    },
+  ]
+};

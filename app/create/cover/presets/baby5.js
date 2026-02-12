@@ -40,3 +40,14 @@ export const baby5 = {
     },
   ]
 };
+
+export const baby5Back = {
+  backgroundColor: '#ebe8de',
+  elements: [
+    {
+      id: 'circleFlower', type: 'image', x: 11, y: 205, width: 871, height: 853,
+      src: '/circleFlower.webp',
+      zIndex: 1, opacity: 100
+    },
+  ]
+};

@@ -134,3 +134,26 @@ export const wedding4 = {
     }
   ]
 };
+
+export const wedding4Back = {
+  backgroundColor: '#f8f6f2',
+  elements: [
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/backWhiteTexture.jpg',
+      rotation: 0, zIndex: -1,
+      opacity: 25,
+    },
+    {
+      id: 'flower-tl',
+      type: 'image',
+      x: 0,
+      y: 0,
+      width: 900,
+      height: 1270,
+      src: '/galaxy-tl.png',
+      zIndex: 1,
+      opacity: 100
+    }
+  ]
+};

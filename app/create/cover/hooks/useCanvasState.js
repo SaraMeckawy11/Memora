@@ -21,41 +21,49 @@ export function useCanvasState(searchParams, canvasSettings, setCanvasSettings) 
   useEffect(() => {
     const presetId = searchParams.get('preset');
     if (presetId && COVER_PRESETS[presetId]) {
-      const preset = COVER_PRESETS[presetId];
+      const frontPreset = COVER_PRESETS[presetId];
+      const backPresetId = presetId + 'Back';
+      const backPreset = COVER_PRESETS[backPresetId];
       
-      const baseEls = preset.elements.map(el => ({
+      const frontBaseEls = frontPreset.elements.map(el => ({
         ...el,
         id: el.id || (Date.now() + Math.random()),
       }));
       
-      const scaledElements = scaleElementsToCanvas(baseEls, canvasSettings.width, canvasSettings.height);
+      const backBaseEls = backPreset ? backPreset.elements.map(el => ({
+        ...el,
+        id: el.id || (Date.now() + Math.random()),
+      })) : [];
+      
+      const scaledFrontElements = scaleElementsToCanvas(frontBaseEls, canvasSettings.width, canvasSettings.height);
+      const scaledBackElements = scaleElementsToCanvas(backBaseEls, canvasSettings.width, canvasSettings.height);
       
       const initialState = {
         front: {
-          elements: scaledElements,
-          backgroundColor: preset.backgroundColor || '#ffffff',
+          elements: scaledFrontElements,
+          backgroundColor: frontPreset.backgroundColor || '#ffffff',
         },
         back: {
-          elements: [],
-          backgroundColor: '#ffffff'
+          elements: scaledBackElements,
+          backgroundColor: backPreset ? backPreset.backgroundColor || '#ffffff' : '#ffffff'
         }
       };
 
       setBaseElements({
-        front: baseEls,
-        back: []
+        front: frontBaseEls,
+        back: backBaseEls
       });
       
       setHistory([initialState]);
       setHistoryIndex(0);
       
-      if (preset.backgroundPattern) {
+      if (frontPreset.backgroundPattern) {
         setCanvasSettings(prev => ({
           ...prev,
-          backgroundColor: preset.backgroundColor,
-          backgroundPattern: preset.backgroundPattern,
-          gridColor: preset.gridColor,
-          gridSize: preset.gridSize,
+          backgroundColor: frontPreset.backgroundColor,
+          backgroundPattern: frontPreset.backgroundPattern,
+          gridColor: frontPreset.gridColor,
+          gridSize: frontPreset.gridSize,
         }));
       }
     }

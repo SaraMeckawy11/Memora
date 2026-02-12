@@ -59,3 +59,30 @@ export const babyLove = {
     },
   ]
 };
+
+export const babyLoveBack = {
+  backgroundColor: '#fdfdfe',
+  elements: [
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/night2.png',
+      rotation: 0, zIndex: -1,
+      opacity: 100,
+    },
+    {
+      id: 'clouds', type: 'image', x: -118, y: 142, width: 1137, height: 345,
+      src: '/clouds.png',
+      zIndex: 2, opacity: 100
+    },
+    {
+      id: 'grass', type: 'image', x: -52, y: 870, width: 997, height: 726,
+      src: '/grass.png',
+      zIndex: 1, opacity: 100
+    },
+    {
+      id: 'rabbit', type: 'image', x: 293, y: 574, width: 307, height: 368,
+      src: '/rabbit.png',
+      zIndex: 1, opacity: 100
+    },
+  ]
+};

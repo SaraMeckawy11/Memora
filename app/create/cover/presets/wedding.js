@@ -72,3 +72,53 @@ export const wedding = {
     }
   ]
 };
+
+export const weddingBack = {
+  backgroundColor: '#fbf9f5',
+  elements: [
+    {
+      id: 'wedding-floral', type: 'image', x: -51, y: 947, width: 944, height: 522,
+      src: '/flowers1.webp',
+      rotation: 0, zIndex: 1,
+      opacity: 100,
+    },
+    {
+      id: 'wedding-floral1', type: 'image', x: 801, y: 723, width: 312, height: 354,
+      src: '/flowers2.webp',
+      rotation: -2.6, zIndex: 1,
+      opacity: 100,
+    },
+    {
+      id: 'wedding-floral2', type: 'image', x: -172, y: 752, width: 286, height: 295,
+      src: '/flowers2.webp',
+      rotation: 11.1, zIndex: 1,
+      opacity: 100,
+    },
+    {
+      id: 'butterfly', type: 'image', x: 759, y: 669, width: 72, height: 72,
+      src: '/yellowButterfly.webp',
+      rotation: 0, zIndex: 1,
+      opacity: 100,
+    },
+    {
+      id: 'wedding-floral2', type: 'image', x: 45, y: 669, width: 72, height: 72,
+      src: '/mosqBlue.webp',
+      rotation: 0, zIndex: 1,
+      opacity: 100,
+    },
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/cream.png',
+      rotation: 0, zIndex: -1,
+      opacity: 100,
+    },
+    {
+      id: 'border', type: 'shape', shapeType: 'rect', x: 40, y: 40, width: 813, height: 1183,
+      fill: 'transparent', zIndex: 2,
+      options: {
+        stroke: 'rgba(139, 115, 85, 0.1)',
+        strokeWidth: 2,
+      }
+    }
+  ]
+};

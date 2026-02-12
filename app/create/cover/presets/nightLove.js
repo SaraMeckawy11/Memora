@@ -20,3 +20,21 @@ export const nightLove = {
     }
   ]
 };
+
+export const nightLoveBack = {
+  backgroundColor: '#fbf9f5',
+  elements: [
+    {
+      id: 'cat', type: 'image', x: 257, y: 804, width: 378, height: 459,
+      src: '/catsLove.webp',
+      rotation: 0, zIndex: 1,
+      opacity: 80,
+    },
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/purpleNightSky.jpg',
+      rotation: 0, zIndex: -1,
+      opacity: 100,
+    },
+  ]
+};

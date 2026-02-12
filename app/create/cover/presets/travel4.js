@@ -64,3 +64,35 @@ export const travel4 = {
     },
   ]
 };
+
+export const travel4Back = {
+  backgroundColor: '#e7f7fd',
+  elements: [
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/backBlue.png',
+      rotation: 0, zIndex: -1,
+      opacity: 10,
+    },
+    {
+      id: 'cloud', type: 'image', x: 426, y: -64, width: 708, height: 475,
+      src: '/cloud.webp',
+      zIndex: 2, opacity: 100
+    },
+    {
+      id: 'treeMountain', type: 'image', x: -73, y: 465, width: 1039, height: 923,
+      src: '/treeMountain.png',
+      zIndex: 1, opacity: 100
+    },
+    {
+      id: 'birds', type: 'image', x: -34, y: 43, width: 442, height: 115,
+      src: '/birds.png',
+      zIndex: 1, opacity: 100
+    },
+    {
+      id: 'birds4', type: 'image', x: 571, y: 285, width: 172, height: 79,
+      src: '/birds4.png',
+      zIndex: 2, opacity: 100
+    },
+  ]
+};

@@ -145,3 +145,37 @@ export const wedding3 = {
     }
   ]
 };
+
+export const wedding3Back = {
+  backgroundColor: '#ffffff',
+  elements: [
+    {
+      id: 'back', type: 'image', x: 0, y: 0, width: 900, height: 1270,
+      src: '/backRoyalGreen.jpg',
+      rotation: 0, zIndex: -1,
+      opacity: 80,
+    },
+    {
+      id: 'flower-tl',
+      type: 'image',
+      x: -82,
+      y: 0,
+      width: 466,
+      height: 542,
+      src: '/flower-tl.png',
+      zIndex: 1,
+      opacity: 80
+    },
+    {
+      id: 'flower-br',
+      type: 'image',
+      x: 496,
+      y: 744,
+      width: 397,
+      height: 608,
+      src: '/flower-br.png',
+      zIndex: 1,
+      opacity: 80
+    }
+  ]
+};

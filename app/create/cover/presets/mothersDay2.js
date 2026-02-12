@@ -83,3 +83,39 @@ export const mothersDay2 = {
     }
   ]
 };
+
+export const mothersDay2Back = {
+  backgroundColor: '#ffffff',
+  elements: [
+    {
+      id: 'backPinky', type: 'image', x: 0, y: -78, width: 900, height: 1350,
+      src: '/backPinky.jpg',
+      rotation: 0, zIndex: -1,
+      opacity: 100,
+    },
+    {
+      id: 'flower-tl',
+      type: 'image',
+      x: -98,
+      y: -157,
+      width: 698,
+      height: 518,
+      src: '/pinkFlowers.webp',
+      zIndex: 1,
+      opacity: 100,
+      rotation: 180
+    },
+    {
+      id: 'flower-br',
+      type: 'image',
+      x: 449,
+      y: 835,
+      width: 660,
+      height: 608,
+      src: '/pinkFlowers.webp',
+      zIndex: 1,
+      opacity: 100,
+      rotation: 180
+    },
+  ]
+};

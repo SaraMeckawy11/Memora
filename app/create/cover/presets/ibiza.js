@@ -39,3 +39,14 @@ export const ibiza = {
     },
   ]
 };
+
+export const ibizaBack = {
+  backgroundColor: '#ffdff4',
+  elements: [
+    {
+      id: 'purple-hand', type: 'image', x: 114, y: 522, width: 666, height: 638,
+      src: '/Ibiza.png',
+      zIndex: 1, opacity: 100
+    },
+  ]
+};
