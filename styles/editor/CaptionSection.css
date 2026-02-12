@@ -385,3 +385,518 @@
   background-color: var(--accent-solid-hover, #0056b3);
   border-color: var(--accent-solid-hover, #0056b3);
 }
+
+/* ================= Add Elements Section ================= */
+.text-add-elements-wrapper {
+  margin-top: 1rem;
+}
+
+.text-add-elements-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.text-add-element-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.03s, box-shadow 0.15s, background 0.15s, border-color 0.15s;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  white-space: nowrap;
+}
+
+.text-add-element-btn:hover {
+  background: #fafafa;
+  border-color: rgba(0, 0, 0, 0.14);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.07);
+}
+
+.text-add-element-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+}
+
+/* ================= Overlay Elements List ================= */
+.text-overlays-list {
+  margin-top: 0.75rem;
+}
+
+.text-overlay-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-top: 0.35rem;
+  background: #fafafa;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.text-overlay-item:hover {
+  background: #f3f4f6;
+  border-color: #e0e0e0;
+}
+
+.text-overlay-item.selected {
+  background: #f0f0f0;
+  border-color: #111;
+}
+
+.text-overlay-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: #e5e7eb;
+  color: #4b5563;
+  flex-shrink: 0;
+}
+
+.text-overlay-item-label {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-overlay-item-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.text-overlay-item-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* ================= Photo Picker Modal ================= */
+.photo-picker-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.photo-picker-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  max-width: 420px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  animation: photoPickerSlideUp 0.2s ease-out;
+}
+
+@keyframes photoPickerSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.photo-picker-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.photo-picker-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111;
+}
+
+.photo-picker-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: #f3f4f6;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.photo-picker-close:hover {
+  background: #e5e7eb;
+  color: #111;
+}
+
+.photo-picker-upload-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  background: #fafbfc;
+  color: #374151;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.photo-picker-upload-btn:hover {
+  border-color: #111;
+  background: #f3f4f6;
+  color: #111;
+}
+
+.photo-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.photo-picker-thumb {
+  aspect-ratio: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.photo-picker-thumb:hover {
+  border-color: #111;
+  transform: scale(1.03);
+}
+
+.photo-picker-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ================= Overlay Edit Panel ================= */
+.overlay-edit-panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.overlay-edit-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 0.6rem 0;
+}
+
+.overlay-edit-panel-badge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: #e5e7eb;
+  color: #4b5563;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+.overlay-photo-info {
+  text-align: center;
+}
+
+.overlay-photo-preview {
+  width: 100%;
+  max-height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.overlay-photo-preview img {
+  width: 100%;
+  height: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.overlay-photo-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+}
+
+.overlay-photo-hint {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ================= Text Page Card (Modern Redesign) ================= */
+.text-page-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.text-page-card > h4 {
+  display: none; /* title is replaced by section headers */
+}
+
+/* ---- Sections ---- */
+.tp-section {
+  padding: 0;
+}
+
+.tp-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 0.65rem 0;
+}
+
+/* ---- Section header (label + add buttons) ---- */
+.tp-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.tp-section-header .caption-label {
+  margin-bottom: 0;
+}
+
+.tp-add-btns {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.tp-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tp-add-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111;
+}
+
+/* ---- Element item rows (main text + overlays) ---- */
+.tp-element-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  margin-bottom: 0.3rem;
+  background: #fff;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.tp-element-item:hover {
+  background: #f9fafb;
+  border-color: #e0e0e0;
+}
+
+.tp-element-item.active {
+  background: #f5f5f5;
+  border-color: #111;
+}
+
+.tp-element-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #f3f4f6;
+  color: #4b5563;
+  flex-shrink: 0;
+}
+
+.tp-element-label {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tp-element-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: #c4c4c4;
+  cursor: pointer;
+  transition: all 0.12s;
+  flex-shrink: 0;
+}
+
+.tp-element-delete:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+/* ---- Inline row (label + small input) ---- */
+.tp-row-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.tp-row-inline .caption-label {
+  margin-bottom: 0;
+}
+
+.tp-color-sm {
+  width: 32px;
+  height: 26px;
+  border-radius: 5px;
+  padding: 1px;
+}
+
+/* ---- Edit section ---- */
+.tp-edit-section {
+  animation: tpFadeIn 0.15s ease-out;
+}
+
+@keyframes tpFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tp-edit-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.tp-edit-badge {
+  font-size: 0.65rem;
+  font-weight: 500;
+  background: #f3f4f6;
+  color: #6b7280;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+}
+
+/* ---- Controls grid / row ---- */
+.tp-controls-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.tp-controls-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  align-items: end;
+}
+
+/* ---- Delete page button ---- */
+.tp-delete-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  background: #fff;
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tp-delete-page-btn:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+/* ---- Photo picker modal (modernised) ---- */
+.photo-picker-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.photo-picker-library {
+  margin-top: 1rem;
+}
+
+.photo-picker-library .caption-label {
+  margin-bottom: 0.4rem;
+}

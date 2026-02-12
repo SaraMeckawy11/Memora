@@ -67,6 +67,8 @@ export default function StepEditor({
   const [selectedSlotIdx, setSelectedSlotIdx] = useState(null)
   const [editingSlotIdx, setEditingSlotIdx] = useState(null)
   const [editingSlotRect, setEditingSlotRect] = useState(null)
+  const [selectedOverlayIdx, setSelectedOverlayIdx] = useState(null)
+  const [editingOverlayPhoto, setEditingOverlayPhoto] = useState(null)
   
 
   /* ------------------------------
@@ -344,6 +346,47 @@ export default function StepEditor({
               
               setPages(newPages)
             }}
+            onUpdateOverlay={(overlayIdx, updatedOverlay) => {
+              const newPages = [...pages]
+              const page = newPages[currentPageIdx]
+              const overlays = [...(page.overlays || [])]
+              overlays[overlayIdx] = updatedOverlay
+              page.overlays = overlays
+              setPages(newPages)
+            }}
+            onRemoveOverlay={(overlayIdx) => {
+              const newPages = [...pages]
+              const page = newPages[currentPageIdx]
+              page.overlays = (page.overlays || []).filter((_, i) => i !== overlayIdx)
+              setPages(newPages)
+              if (selectedOverlayIdx === overlayIdx) setSelectedOverlayIdx(null)
+            }}
+            selectedOverlayIdx={selectedOverlayIdx}
+            onSelectOverlay={(idx) => setSelectedOverlayIdx(idx)}
+            onRemoveText={() => {
+              const newPages = [...pages]
+              newPages[currentPageIdx].textContent = ''
+              setPages(newPages)
+            }}
+            onEditOverlayPhoto={(overlayIdx) => {
+              const overlay = currentPage?.overlays?.[overlayIdx]
+              if (overlay?.type === 'photo') {
+                setEditingOverlayPhoto({ overlayIdx, overlay })
+              }
+            }}
+            onUpdateOverlayContent={(overlayIdx, content) => {
+              const newPages = [...pages]
+              const page = newPages[currentPageIdx]
+              const overlays = [...(page.overlays || [])]
+              overlays[overlayIdx] = { ...overlays[overlayIdx], content }
+              page.overlays = overlays
+              setPages(newPages)
+            }}
+            onUpdateTextContent={(text) => {
+              const newPages = [...pages]
+              newPages[currentPageIdx].textContent = text
+              setPages(newPages)
+            }}
             imageGridProps={{
               currentPage,
               currentLayoutObj,
@@ -465,6 +508,25 @@ export default function StepEditor({
           currentPageIdx={currentPageIdx}
           addTextPage={pageOperations.addTextPage}
           removePage={pageOperations.removePage}
+          selectedOverlayIdx={selectedOverlayIdx}
+          updateOverlayStyle={(overlayIdx, key, value) => {
+            const newPages = [...pages]
+            const page = newPages[currentPageIdx]
+            const overlays = [...(page.overlays || [])]
+            const overlay = { ...overlays[overlayIdx] }
+            overlay.style = { ...(overlay.style || {}), [key]: value }
+            overlays[overlayIdx] = overlay
+            page.overlays = overlays
+            setPages(newPages)
+          }}
+          updateOverlayContent={(overlayIdx, content) => {
+            const newPages = [...pages]
+            const page = newPages[currentPageIdx]
+            const overlays = [...(page.overlays || [])]
+            overlays[overlayIdx] = { ...overlays[overlayIdx], content }
+            page.overlays = overlays
+            setPages(newPages)
+          }}
         />
         {editingSlotIdx !== null && editorSlot && (
           <ImageEditorModal
@@ -478,6 +540,32 @@ export default function StepEditor({
               updateImageInSlot(editingSlotIdx, updatedImage)
               setEditingSlotIdx(null)
               setEditingSlotRect(null)
+            }}
+          />
+        )}
+        {editingOverlayPhoto && (
+          <ImageEditorModal
+            image={{
+              id: editingOverlayPhoto.overlay.id,
+              src: editingOverlayPhoto.overlay.src,
+              name: editingOverlayPhoto.overlay.name,
+              fit: 'cover',
+            }}
+            slot={{ width: 300, height: 300 }}
+            onClose={() => setEditingOverlayPhoto(null)}
+            onSave={(updatedImage) => {
+              const idx = editingOverlayPhoto.overlayIdx
+              const newPages = [...pages]
+              const page = newPages[currentPageIdx]
+              const overlays = [...(page.overlays || [])]
+              overlays[idx] = {
+                ...overlays[idx],
+                src: updatedImage.src,
+                originalSrc: updatedImage.originalSrc || overlays[idx].src,
+              }
+              page.overlays = overlays
+              setPages(newPages)
+              setEditingOverlayPhoto(null)
             }}
           />
         )}

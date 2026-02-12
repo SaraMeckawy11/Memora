@@ -183,14 +183,14 @@
 /* Text Rectangle Styles */
 .text-rectangle {
   position: absolute;
-  border: 2px dashed #007bff;
-  background-color: rgba(0, 123, 255, 0.1);
+  border: 2px dashed #111;
+  background-color: rgba(0, 0, 0, 0.05);
   cursor: grab;
   transition: border-color 0.2s ease;
 }
 
 .text-rectangle:hover {
-  border-color: #0056b3;
+  border-color: #333;
 }
 
 .text-rectangle.dragging {
@@ -199,8 +199,8 @@
 }
 
 .text-rectangle.selected {
-  border: 2px solid #007bff;
-  background-color: rgba(0, 123, 255, 0.05);
+  border: 2px solid #111;
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 /* Resize Handles */
@@ -208,7 +208,7 @@
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: #007bff;
+  background-color: #111;
   border: 2px solid #fff;
   border-radius: 50%;
   cursor: pointer;
@@ -217,7 +217,7 @@
 }
 
 .resize-handle:hover {
-  background-color: #0056b3;
+  background-color: #333;
 }
 
 .resize-handle.nw {
@@ -311,4 +311,123 @@
     max-width: 100%;
     max-width: 280px;
   }
+}
+
+/* ===============================
+   Overlay Elements (draggable / resizable)
+================================ */
+.canvas-overlay-element {
+  border: 2px solid transparent;
+  border-radius: 4px;
+  transition: border-color 0.12s;
+}
+
+.canvas-overlay-element:hover {
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.canvas-overlay-element.selected {
+  border-color: #111;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.canvas-overlay-element.dragging {
+  opacity: 0.85;
+  border-color: #111;
+}
+
+/* ---- Corner resize handles ---- */
+.overlay-resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid #111;
+  border-radius: 2px;
+  z-index: 30;
+}
+
+.overlay-resize-nw { top: -5px; left: -5px; cursor: nw-resize; }
+.overlay-resize-ne { top: -5px; right: -5px; cursor: ne-resize; }
+.overlay-resize-sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+.overlay-resize-se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+/* ---- Delete button on overlay ---- */
+.overlay-delete-btn {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: transform 0.1s, background 0.15s;
+}
+
+.overlay-delete-btn:hover {
+  background: #dc2626;
+  transform: scale(1.15);
+}
+
+/* ---- Edit button on photo overlay ---- */
+.overlay-edit-btn {
+  position: absolute;
+  top: -10px;
+  right: 16px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  transition: transform 0.1s, background 0.15s;
+}
+
+.overlay-edit-btn:hover {
+  background: #333;
+  transform: scale(1.15);
+}
+
+/* ---- Inline textarea for overlay text editing ---- */
+.overlay-inline-textarea {
+  font-weight: inherit;
+  line-height: 1.4;
+  cursor: text;
+  pointer-events: auto;
+}
+
+.overlay-inline-textarea::placeholder {
+  color: #bbb;
+  opacity: 1;
+}
+
+/* ---- Inline contentEditable for overlay/main text editing ---- */
+.overlay-inline-editable {
+  font-weight: inherit;
+  line-height: 1.4;
+  cursor: text;
+  pointer-events: auto;
+}
+
+.overlay-inline-editable:empty::before {
+  content: attr(data-placeholder);
+  color: #bbb;
+  pointer-events: none;
+  font-size: 0.65em;
+  font-weight: 400;
+  font-style: italic;
 }

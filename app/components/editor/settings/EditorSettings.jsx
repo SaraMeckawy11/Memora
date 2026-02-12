@@ -31,6 +31,7 @@ export default function EditorSettings(props) {
     saveProgress, selectedSize,
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
     onUpload, currentPageIdx, addTextPage, removePage,
+    selectedOverlayIdx, updateOverlayStyle, updateOverlayContent,
   } = props
 
   const selectedImageId =
@@ -116,6 +117,20 @@ export default function EditorSettings(props) {
       return (
         <TextPageSection
           currentPage={currentPage}
+          currentPageIdx={currentPageIdx}
+          uploadedImages={uploadedImages}
+          addOverlayElement={(overlay) => {
+            const newPages = [...pages]
+            const page = newPages[currentPageIdx]
+            page.overlays = [...(page.overlays || []), overlay]
+            setPages(newPages)
+          }}
+          removeOverlayElement={(overlayIdx) => {
+            const newPages = [...pages]
+            const page = newPages[currentPageIdx]
+            page.overlays = (page.overlays || []).filter((_, i) => i !== overlayIdx)
+            setPages(newPages)
+          }}
           updateTextContent={(text) => {
             const newPages = [...pages]
             newPages[currentPageIdx].textContent = text
@@ -134,6 +149,15 @@ export default function EditorSettings(props) {
             newPages[currentPageIdx].pageBgColor = color
             setPages(newPages)
           }}
+          removeText={() => {
+            const newPages = [...pages]
+            newPages[currentPageIdx].textContent = ''
+            setPages(newPages)
+          }}
+          removePage={removePage}
+          selectedOverlayIdx={selectedOverlayIdx}
+          updateOverlayStyle={updateOverlayStyle}
+          updateOverlayContent={updateOverlayContent}
         />
       )
     }
@@ -159,6 +183,19 @@ export default function EditorSettings(props) {
     <TextPageSection
       currentPage={currentPage}
       currentPageIdx={currentPageIdx}
+      uploadedImages={uploadedImages}
+      addOverlayElement={(overlay) => {
+        const newPages = [...pages]
+        const page = newPages[currentPageIdx]
+        page.overlays = [...(page.overlays || []), overlay]
+        setPages(newPages)
+      }}
+      removeOverlayElement={(overlayIdx) => {
+        const newPages = [...pages]
+        const page = newPages[currentPageIdx]
+        page.overlays = (page.overlays || []).filter((_, i) => i !== overlayIdx)
+        setPages(newPages)
+      }}
       updateTextContent={(text) => {
         const newPages = [...pages]
         newPages[currentPageIdx].textContent = text
@@ -207,6 +244,9 @@ export default function EditorSettings(props) {
         setPages(newPages)
       }}
       removePage={removePage}
+      selectedOverlayIdx={selectedOverlayIdx}
+      updateOverlayStyle={updateOverlayStyle}
+      updateOverlayContent={updateOverlayContent}
     />
   )
 
