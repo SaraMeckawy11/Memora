@@ -50,13 +50,31 @@ export function useExport(selectedId, setSelectedId, backgroundColor, activeSide
           backgroundColor: backgroundColor,
         });
         const imgData = canvas.toDataURL('image/png');
+        
+        // Convert pixel dimensions to millimeters (96 DPI standard)
+        const pxToMm = (px) => (px * 25.4) / 96;
+        const pdfWidth = pxToMm(canvas.width);
+        const pdfHeight = pxToMm(canvas.height);
+        
         const pdf = new jsPDF({
-          orientation: imgData.width > imgData.height ? 'landscape' : 'portrait',
-          unit: 'px',
-          format: [imgData.width, imgData.height]
+          orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+          unit: 'mm',
+          format: [pdfWidth, pdfHeight]
         });
-        pdf.addImage(imgData, 'PNG', 0, 0);
-        pdf.save('cover-design.pdf');
+        
+        // Add image to fill the entire page
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        
+        // Use the same download mechanism as PNG and JPEG for consistency
+        const blob = pdf.output('blob');
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = 'cover-design.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
       }
 
     } catch (error) {
