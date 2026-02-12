@@ -510,6 +510,7 @@ export default function StepEditor({
           addTextPage={pageOperations.addTextPage}
           removePage={pageOperations.removePage}
           selectedOverlayIdx={selectedOverlayIdx}
+          onSelectOverlay={(idx) => setSelectedOverlayIdx(idx)}
           updateOverlayStyle={(overlayIdx, key, value) => {
             const newPages = [...pages]
             const page = newPages[currentPageIdx]

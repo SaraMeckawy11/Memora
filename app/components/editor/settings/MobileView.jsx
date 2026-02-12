@@ -49,6 +49,10 @@ export default function MobileView({ activeMobileTab, setActiveMobileTab, mobile
 
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // Ignore clicks inside portaled modals (e.g. photo picker) so the
+      // drawer stays mounted and the modal interaction completes properly.
+      if (event.target.closest('.photo-picker-modal-overlay')) return;
+
       if (drawerRef.current && !drawerRef.current.contains(event.target)) {
         setActiveMobileTab(null);
       }
@@ -56,10 +60,12 @@ export default function MobileView({ activeMobileTab, setActiveMobileTab, mobile
 
     if (activeMobileTab) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
     };
   }, [activeMobileTab, setActiveMobileTab]);
 

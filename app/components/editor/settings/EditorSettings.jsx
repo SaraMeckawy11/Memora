@@ -31,7 +31,7 @@ export default function EditorSettings(props) {
     saveProgress, selectedSize,
     layoutSplitX, layoutSplitY, updateLayoutSplitX, updateLayoutSplitY,
     onUpload, currentPageIdx, addTextPage, removePage,
-    selectedOverlayIdx, updateOverlayStyle, updateOverlayContent,
+    selectedOverlayIdx, onSelectOverlay, updateOverlayStyle, updateOverlayContent,
   } = props
 
   const selectedImageId =
@@ -257,6 +257,7 @@ export default function EditorSettings(props) {
       }}
       removePage={removePage}
       selectedOverlayIdx={selectedOverlayIdx}
+      onSelectOverlay={onSelectOverlay}
       updateOverlayStyle={updateOverlayStyle}
       updateOverlayContent={updateOverlayContent}
     />
