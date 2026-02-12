@@ -61,6 +61,9 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
       const dy = ((cy - startRef.current.my) / ch) * 100
       let nx = startRef.current.ox + dx
       let ny = startRef.current.oy + dy
+      // Clamp so element stays within canvas bounds
+      nx = Math.max(0, Math.min(nx, 100 - overlay.width))
+      ny = Math.max(0, Math.min(ny, 100 - overlay.height))
       onUpdate({ ...overlay, x: nx, y: ny })
       // Report center position to parent for alignment guides
       const centerX = nx + overlay.width / 2
@@ -107,6 +110,14 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
       if (handle.includes('w')) { nw = Math.max(8, ow - dx); nx = ox + (ow - nw) }
       if (handle.includes('s')) nh = Math.max(6, oh + dy)
       if (handle.includes('n')) { nh = Math.max(6, oh - dy); ny = oy + (oh - nh) }
+
+      // Clamp so element stays within canvas bounds
+      if (nx < 0) { nw += nx; nx = 0 }
+      if (ny < 0) { nh += ny; ny = 0 }
+      if (nx + nw > 100) nw = 100 - nx
+      if (ny + nh > 100) nh = 100 - ny
+      nw = Math.max(8, nw)
+      nh = Math.max(6, nh)
 
       onUpdate({ ...overlay, x: nx, y: ny, width: nw, height: nh })
     }
@@ -271,7 +282,7 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            borderRadius: 4,
+            borderRadius: overlay.style?.borderRadius ?? 4,
             pointerEvents: 'none',
             userSelect: 'none',
           }}
@@ -406,6 +417,8 @@ export default function EditorCanvas({
     e.stopPropagation()
     setIsDragging(true)
     setIsTextSelected(true)
+    // Deselect any overlay when main text box is selected
+    onSelectOverlay && onSelectOverlay(null)
     const cx = e.touches ? e.touches[0].clientX : e.clientX
     const cy = e.touches ? e.touches[0].clientY : e.clientY
     // Snapshot current position (center-based %)
@@ -473,6 +486,9 @@ export default function EditorCanvas({
     const h = mainStartRef.current.oh
     let nx = mainStartRef.current.ox + dx
     let ny = mainStartRef.current.oy + dy
+    // Clamp center-based position so edges stay within canvas (0–100%)
+    nx = Math.max(w / 2, Math.min(nx, 100 - w / 2))
+    ny = Math.max(h / 2, Math.min(ny, 100 - h / 2))
     onUpdateTextPosition({ x: nx, y: ny })
   }
 
@@ -494,6 +510,14 @@ export default function EditorCanvas({
     if (handle.includes('s')) nh = Math.max(6, oh + dy)
     if (handle.includes('n')) { nh = Math.max(6, oh - dy); ntly = tly + (oh - nh) }
 
+    // Clamp so element stays within canvas bounds
+    if (ntlx < 0) { nw += ntlx; ntlx = 0 }
+    if (ntly < 0) { nh += ntly; ntly = 0 }
+    if (ntlx + nw > 100) nw = 100 - ntlx
+    if (ntly + nh > 100) nh = 100 - ntly
+    nw = Math.max(8, nw)
+    nh = Math.max(6, nh)
+
     // Convert back to center-based
     const newCenterX = ntlx + nw / 2
     const newCenterY = ntly + nh / 2
@@ -514,8 +538,9 @@ export default function EditorCanvas({
   };
 
   const handleCanvasClick = (e) => {
-    // If clicking on the canvas wrapper (not on the text rectangle), deselect text and overlays
-    if (e.target === e.currentTarget || e.target.classList.contains('editor-page')) {
+    // If clicking anywhere outside an overlay element or the main text rectangle, deselect
+    const clickedOverlay = e.target.closest('.canvas-overlay-element');
+    if (!clickedOverlay) {
       setIsTextSelected(false);
       onSelectOverlay && onSelectOverlay(null);
     }
@@ -611,7 +636,7 @@ export default function EditorCanvas({
               {!currentPage.textBoxHidden && (
               <div
                 ref={rectRef}
-                className={`canvas-overlay-element ${isDragging ? 'dragging' : ''} ${isResizing ? 'dragging' : ''} ${(isTextSelected || isHovering) ? 'selected' : ''}`}
+                className={`canvas-overlay-element ${isDragging ? 'dragging' : ''} ${isResizing ? 'dragging' : ''} ${isTextSelected ? 'selected' : ''}`}
                 style={{
                   position: 'absolute',
                   left: `${currentPage.textPosition?.x || 50}%`,
@@ -629,7 +654,7 @@ export default function EditorCanvas({
                 onMouseLeave={handleMouseLeave}
               >
                 {/* Corner resize handles – same as overlay elements */}
-                {(isDragging || isResizing || isHovering || isTextSelected) && (
+                {(isDragging || isResizing || isTextSelected) && (
                   <>
                     {['nw', 'ne', 'sw', 'se'].map(h => (
                       <div
@@ -771,7 +796,7 @@ export default function EditorCanvas({
                   pageRef={pageElRef}
                   pageMargin={pageMargin}
                   isSelected={selectedOverlayIdx === idx}
-                  onSelect={() => onSelectOverlay && onSelectOverlay(idx)}
+                  onSelect={() => { setIsTextSelected(false); onSelectOverlay && onSelectOverlay(idx) }}
                   onUpdate={(updated) => onUpdateOverlay && onUpdateOverlay(idx, updated)}
                   onRemove={() => onRemoveOverlay && onRemoveOverlay(idx)}
                   onEditPhoto={() => onEditOverlayPhoto && onEditOverlayPhoto(idx)}

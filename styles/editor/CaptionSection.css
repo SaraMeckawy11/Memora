@@ -504,7 +504,7 @@
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.45);
-  z-index: 1000;
+  z-index: 1100;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -684,6 +684,111 @@
   line-height: 1.4;
 }
 
+/* ================= Photo Edit Controls (Modern) ================= */
+.photo-edit-preview-card {
+  width: 100%;
+  max-height: 110px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.photo-edit-preview-card img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  display: block;
+  transition: border-radius 0.15s ease;
+}
+
+.photo-edit-control {
+  padding: 0.6rem 0.7rem;
+  background: #f9fafb;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+}
+
+.photo-edit-control-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+}
+
+.photo-edit-control-header .caption-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.photo-edit-value {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #111;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  min-width: 36px;
+  text-align: center;
+}
+
+.photo-edit-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 4px;
+  background: #e5e7eb;
+  outline: none;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.photo-edit-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #111;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.photo-edit-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.photo-edit-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #111;
+  border: 3px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.photo-edit-slider-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.3rem;
+  font-size: 0.62rem;
+  color: #9ca3af;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
 /* ================= Text Page Card (Modern Redesign) ================= */
 .text-page-card {
   display: flex;
@@ -721,25 +826,6 @@
 .tp-add-btns {
   display: flex;
   gap: 0.3rem;
-}
-
-.tp-add-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  padding: 0.25rem 0.45rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #fff;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.tp-add-btn:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
-  color: #111;
 }
 
 /* ---- Element item rows (main text + overlays) ---- */
@@ -870,6 +956,104 @@
   gap: 0.6rem;
   margin-top: 0.5rem;
   align-items: end;
+}
+
+/* ---- Modern style row (Color + Alignment) ---- */
+.tp-style-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.tp-style-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tp-style-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.tp-color-input {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: 2px solid #e5e7eb;
+  padding: 2px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.tp-color-input:hover {
+  border-color: #111;
+}
+
+.tp-align-group {
+  display: flex;
+  gap: 0;
+  background: #f0f1f3;
+  border-radius: 10px;
+  padding: 3px;
+  border: 1px solid #e5e7eb;
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.tp-align-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 32px;
+  min-width: 36px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: #b0b5bf;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+
+.tp-align-btn:hover {
+  color: #4b5563;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.tp-align-btn.active {
+  background: #fff;
+  color: #111;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+}
+
+/* ---- Add buttons with labels ---- */
+.tp-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.tp-add-btn:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111;
+}
+
+.tp-add-btn span {
+  white-space: nowrap;
 }
 
 /* ---- Delete page button ---- */

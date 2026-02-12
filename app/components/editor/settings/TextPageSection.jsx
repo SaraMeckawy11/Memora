@@ -45,6 +45,7 @@ export default function TextPageSection({
   uploadedImages,
   onUpdateTextPosition,
   selectedOverlayIdx,
+  onSelectOverlay,
   updateOverlayStyle,
   updateOverlayContent,
 }) {
@@ -178,20 +179,16 @@ export default function TextPageSection({
           <label className="caption-label">Page Elements</label>
           <div className="tp-add-btns">
             <button className="tp-add-btn" onClick={handleAddTextBox} title="Add Text Box">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 6.1H3M21 12.1H3M15.1 18H3" />
-              </svg>
+              <span>Text</span>
             </button>
             <button className="tp-add-btn" onClick={() => setShowPhotoPickerModal(true)} title="Add Photo">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
               </svg>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
-              </svg>
+              <span>Photo</span>
             </button>
           </div>
         </div>
@@ -211,7 +208,10 @@ export default function TextPageSection({
         ) : (
         <div
           className={`tp-element-item${showMainEdit ? ' active' : ''}`}
-          onClick={() => setExpandedSection(expandedSection === 'main' ? null : 'main')}
+          onClick={() => {
+            onSelectOverlay && onSelectOverlay(null)
+            setExpandedSection(expandedSection === 'main' ? null : 'main')
+          }}
         >
           <span className="tp-element-icon">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 6.1H3M21 12.1H3M15.1 18H3" /></svg>
@@ -232,6 +232,10 @@ export default function TextPageSection({
           <div
             key={overlay.id}
             className={`tp-element-item${selectedOverlayIdx === idx ? ' active' : ''}`}
+            onClick={() => {
+              setExpandedSection(null)
+              onSelectOverlay && onSelectOverlay(selectedOverlayIdx === idx ? null : idx)
+            }}
           >
             <span className="tp-element-icon">
               {overlay.type === 'text' ? (
@@ -310,26 +314,31 @@ export default function TextPageSection({
             </div>
           </div>
 
-          <div className="tp-controls-row">
-            <div>
+          <div className="tp-style-row">
+            <div className="tp-style-item">
               <label className="caption-label">Color</label>
               <input
                 type="color"
                 value={currentPage.textStyle?.color || '#000000'}
                 onChange={handleColorChange}
-                className="caption-color"
+                className="caption-color tp-color-input"
               />
             </div>
-            <div>
+            <div className="tp-style-item tp-style-grow">
               <label className="caption-label">Alignment</label>
-              <div className="caption-align">
-                {['left', 'center', 'right'].map(align => (
+              <div className="tp-align-group">
+                {[
+                  { value: 'left', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="5" x2="18" y2="5"/><line x1="3" y1="10" x2="14" y2="10"/><line x1="3" y1="15" x2="20" y2="15"/><line x1="3" y1="20" x2="12" y2="20"/></svg> },
+                  { value: 'center', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="5" x2="20" y2="5"/><line x1="6" y1="10" x2="18" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="7" y1="20" x2="17" y2="20"/></svg> },
+                  { value: 'right', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="6" y1="5" x2="21" y2="5"/><line x1="10" y1="10" x2="21" y2="10"/><line x1="4" y1="15" x2="21" y2="15"/><line x1="12" y1="20" x2="21" y2="20"/></svg> },
+                ].map(a => (
                   <button
-                    key={align}
-                    onClick={() => updateTextStyle('textAlign', align)}
-                    className={currentPage.textStyle?.textAlign === align ? 'active' : 'inactive'}
+                    key={a.value}
+                    onClick={() => updateTextStyle('textAlign', a.value)}
+                    className={`tp-align-btn${currentPage.textStyle?.textAlign === a.value ? ' active' : ''}`}
+                    title={a.value.charAt(0).toUpperCase() + a.value.slice(1)}
                   >
-                    {align}
+                    {a.icon}
                   </button>
                 ))}
               </div>
@@ -398,26 +407,31 @@ export default function TextPageSection({
             </div>
           </div>
 
-          <div className="tp-controls-row">
-            <div>
+          <div className="tp-style-row">
+            <div className="tp-style-item">
               <label className="caption-label">Color</label>
               <input
                 type="color"
                 value={selectedOverlay.style?.color || '#000000'}
                 onChange={e => updateOverlayStyle(selectedOverlayIdx, 'color', e.target.value)}
-                className="caption-color"
+                className="caption-color tp-color-input"
               />
             </div>
-            <div>
+            <div className="tp-style-item tp-style-grow">
               <label className="caption-label">Alignment</label>
-              <div className="caption-align">
-                {['left', 'center', 'right'].map(align => (
+              <div className="tp-align-group">
+                {[
+                  { value: 'left', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="3" y1="5" x2="18" y2="5"/><line x1="3" y1="10" x2="14" y2="10"/><line x1="3" y1="15" x2="20" y2="15"/><line x1="3" y1="20" x2="12" y2="20"/></svg> },
+                  { value: 'center', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="4" y1="5" x2="20" y2="5"/><line x1="6" y1="10" x2="18" y2="10"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="7" y1="20" x2="17" y2="20"/></svg> },
+                  { value: 'right', icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="6" y1="5" x2="21" y2="5"/><line x1="10" y1="10" x2="21" y2="10"/><line x1="4" y1="15" x2="21" y2="15"/><line x1="12" y1="20" x2="21" y2="20"/></svg> },
+                ].map(a => (
                   <button
-                    key={align}
-                    onClick={() => updateOverlayStyle(selectedOverlayIdx, 'textAlign', align)}
-                    className={selectedOverlay.style?.textAlign === align ? 'active' : 'inactive'}
+                    key={a.value}
+                    onClick={() => updateOverlayStyle(selectedOverlayIdx, 'textAlign', a.value)}
+                    className={`tp-align-btn${selectedOverlay.style?.textAlign === a.value ? ' active' : ''}`}
+                    title={a.value.charAt(0).toUpperCase() + a.value.slice(1)}
                   >
-                    {align}
+                    {a.icon}
                   </button>
                 ))}
               </div>
@@ -430,14 +444,39 @@ export default function TextPageSection({
       {selectedOverlay?.type === 'photo' && (
         <div className="tp-section tp-edit-section">
           <label className="tp-edit-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+            </svg>
             Photo
             <span className="tp-edit-badge">#{selectedOverlayIdx + 1}</span>
           </label>
-          <div className="overlay-photo-info">
-            <div className="overlay-photo-preview">
-              <img src={selectedOverlay.src} alt={selectedOverlay.name || 'Photo'} />
+
+          <div className="photo-edit-preview-card">
+            <img src={selectedOverlay.src} alt={selectedOverlay.name || 'Photo'} style={{ borderRadius: selectedOverlay.style?.borderRadius ?? 4 }} />
+          </div>
+
+          <div className="photo-edit-control">
+            <div className="photo-edit-control-header">
+              <label className="caption-label">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="5" ry="5" />
+                </svg>
+                Corner Radius
+              </label>
+              <span className="photo-edit-value">{selectedOverlay.style?.borderRadius ?? 4}px</span>
             </div>
-            <p className="overlay-photo-hint">Click the edit button on the canvas to crop &amp; adjust.</p>
+            <input
+              type="range"
+              className="photo-edit-slider"
+              min="0"
+              max="50"
+              value={selectedOverlay.style?.borderRadius ?? 4}
+              onChange={e => updateOverlayStyle(selectedOverlayIdx, 'borderRadius', +e.target.value)}
+            />
+            <div className="photo-edit-slider-labels">
+              <span>Sharp</span>
+              <span>Round</span>
+            </div>
           </div>
         </div>
       )}
@@ -457,16 +496,6 @@ export default function TextPageSection({
         </button>
       </div>
 
-      {/* ---- Hidden file input for photo upload ---- */}
-      <input
-        ref={photoFileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        hidden
-        onChange={handlePhotoFileChange}
-      />
-
       {/* ---- Photo Picker Modal (portaled to body to avoid sidebar clipping) ---- */}
       {showPhotoPickerModal && createPortal(
         <div className="photo-picker-modal-overlay" onClick={() => setShowPhotoPickerModal(false)}>
@@ -479,6 +508,15 @@ export default function TextPageSection({
             </div>
 
             <div className="photo-picker-body">
+              {/* Hidden file input inside portal so it works above the overlay */}
+              <input
+                ref={photoFileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={handlePhotoFileChange}
+              />
               <button
                 className="photo-picker-upload-btn"
                 onClick={() => photoFileInputRef.current?.click()}
@@ -493,7 +531,7 @@ export default function TextPageSection({
 
               {uploadedImages && uploadedImages.length > 0 && (
                 <div className="photo-picker-library">
-                  <label className="caption-label">From your library</label>
+                  <label className="caption-label">Your photos</label>
                   <div className="photo-picker-grid">
                     {uploadedImages.map(img => (
                       <div
