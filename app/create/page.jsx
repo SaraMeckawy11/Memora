@@ -41,7 +41,7 @@ function CreatePageContent() {
 
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
-  const [pageCount] = useState(20)
+  const [pageCount] = useState(10)
 
   const [coverImage, setCoverImage] = useState(null)
   const [coverText, setCoverText] = useState('')
