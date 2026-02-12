@@ -25,6 +25,7 @@ export default function EditorSidebar({
   isDrawMode,
   canvasSettings,
   onUpdateCanvas,
+  onSetBackgroundColor,
   drawingTool,
   onUpdateDrawingTool,
   isInteractingWithCanvas
@@ -228,7 +229,12 @@ export default function EditorSidebar({
                     type="color" 
                     className="color-input-hidden"
                     value={canvasSettings?.backgroundColor || '#ffffff'}
-                    onChange={(e) => onUpdateCanvas({ ...canvasSettings, backgroundColor: e.target.value })}
+                    onChange={(e) => {
+                      onUpdateCanvas({ ...canvasSettings, backgroundColor: e.target.value });
+                      if (onSetBackgroundColor) {
+                        onSetBackgroundColor(e.target.value);
+                      }
+                    }}
                   />
                   <span className="color-value">{canvasSettings?.backgroundColor || '#ffffff'}</span>
                </div>

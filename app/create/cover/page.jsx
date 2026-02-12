@@ -106,6 +106,7 @@ function CoverEditorContent() {
         onUpdateCanvas={(newSettings) => {
           setCanvasSettings(newSettings);
         }}
+        onSetBackgroundColor={setBackgroundColor}
         drawingTool={drawingTool}
         onUpdateDrawingTool={setDrawingTool}
         selectedElement={selectedElement}
