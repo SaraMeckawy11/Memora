@@ -151,7 +151,13 @@ export default function EditorSettings(props) {
           }}
           removeText={() => {
             const newPages = [...pages]
+            newPages[currentPageIdx].textBoxHidden = true
             newPages[currentPageIdx].textContent = ''
+            setPages(newPages)
+          }}
+          restoreTextBox={() => {
+            const newPages = [...pages]
+            newPages[currentPageIdx].textBoxHidden = false
             setPages(newPages)
           }}
           removePage={removePage}
@@ -240,7 +246,13 @@ export default function EditorSettings(props) {
       }}
       removeText={() => {
         const newPages = [...pages]
+        newPages[currentPageIdx].textBoxHidden = true
         newPages[currentPageIdx].textContent = ''
+        setPages(newPages)
+      }}
+      restoreTextBox={() => {
+        const newPages = [...pages]
+        newPages[currentPageIdx].textBoxHidden = false
         setPages(newPages)
       }}
       removePage={removePage}

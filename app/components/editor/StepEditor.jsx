@@ -365,6 +365,7 @@ export default function StepEditor({
             onSelectOverlay={(idx) => setSelectedOverlayIdx(idx)}
             onRemoveText={() => {
               const newPages = [...pages]
+              newPages[currentPageIdx].textBoxHidden = true
               newPages[currentPageIdx].textContent = ''
               setPages(newPages)
             }}

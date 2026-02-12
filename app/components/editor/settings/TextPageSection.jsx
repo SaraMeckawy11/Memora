@@ -37,6 +37,7 @@ export default function TextPageSection({
   updateTextStyle,
   updatePageBgColor,
   removeText,
+  restoreTextBox,
   removePage,
   addOverlayElement,
   removeOverlayElement,
@@ -151,7 +152,7 @@ export default function TextPageSection({
     : null
 
   /* Which editing panel to show: 'main' for main text, or auto-switch to overlay */
-  const showMainEdit = !selectedOverlay && expandedSection === 'main'
+  const showMainEdit = !selectedOverlay && expandedSection === 'main' && !currentPage.textBoxHidden
 
   return (
     <div className="editor-card text-page-card">
@@ -195,6 +196,18 @@ export default function TextPageSection({
         </div>
 
         {/* -- Main text element row -- */}
+        {currentPage.textBoxHidden ? (
+          <div
+            className="tp-element-item"
+            onClick={() => restoreTextBox && restoreTextBox()}
+            style={{ opacity: 0.6 }}
+          >
+            <span className="tp-element-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+            </span>
+            <span className="tp-element-label">Restore Main Text</span>
+          </div>
+        ) : (
         <div
           className={`tp-element-item${showMainEdit ? ' active' : ''}`}
           onClick={() => setExpandedSection(expandedSection === 'main' ? null : 'main')}
@@ -206,11 +219,12 @@ export default function TextPageSection({
           <button
             className="tp-element-delete"
             onClick={(e) => { e.stopPropagation(); removeText() }}
-            title="Clear text"
+            title="Remove text box"
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
           </button>
         </div>
+        )}
 
         {/* -- Overlay element rows -- */}
         {currentPage.overlays?.map((overlay, idx) => (

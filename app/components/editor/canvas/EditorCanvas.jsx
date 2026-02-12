@@ -12,6 +12,8 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
   const [resizeHandle, setResizeHandle] = useState(null)
   const startRef = useRef({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 })
   const inlineRef = useRef(null)
+  const longPressTimer = useRef(null)
+  const longPressTriggered = useRef(false)
 
   // Auto-focus the inline editable when this text overlay becomes selected
   useEffect(() => {
@@ -59,8 +61,6 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
       const dy = ((cy - startRef.current.my) / ch) * 100
       let nx = startRef.current.ox + dx
       let ny = startRef.current.oy + dy
-      nx = Math.max(0, Math.min(100 - overlay.width, nx))
-      ny = Math.max(0, Math.min(100 - overlay.height, ny))
       onUpdate({ ...overlay, x: nx, y: ny })
       // Report center position to parent for alignment guides
       const centerX = nx + overlay.width / 2
@@ -107,11 +107,6 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
       if (handle.includes('w')) { nw = Math.max(8, ow - dx); nx = ox + (ow - nw) }
       if (handle.includes('s')) nh = Math.max(6, oh + dy)
       if (handle.includes('n')) { nh = Math.max(6, oh - dy); ny = oy + (oh - nh) }
-
-      nx = Math.max(0, nx)
-      ny = Math.max(0, ny)
-      nw = Math.min(100 - nx, nw)
-      nh = Math.min(100 - ny, nh)
 
       onUpdate({ ...overlay, x: nx, y: ny, width: nw, height: nh })
     }
@@ -167,15 +162,60 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
               display: 'flex',
               alignItems: 'center',
               justifyContent: overlay.style?.textAlign === 'left' ? 'flex-start' : overlay.style?.textAlign === 'right' ? 'flex-end' : 'center',
+              pointerEvents: 'none',
             }}
-            onMouseDown={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
           >
             <div
               ref={inlineRef}
               className="overlay-inline-editable"
               contentEditable
               suppressContentEditableWarning
+              onMouseDown={(e) => {
+                e.stopPropagation()
+                longPressTriggered.current = false
+                const cx = e.clientX, cy = e.clientY
+                longPressTimer.current = setTimeout(() => {
+                  longPressTriggered.current = true
+                  document.body.style.cursor = 'grabbing'
+                  if (inlineRef.current) {
+                    inlineRef.current.blur()
+                    inlineRef.current.classList.add('long-press-dragging')
+                  }
+                  const synth = new MouseEvent('mousedown', { clientX: cx, clientY: cy, bubbles: true })
+                  elRef.current?.dispatchEvent(synth)
+                  // Reset cursor on next mouseup
+                  const resetCursor = () => {
+                    document.body.style.cursor = ''
+                    if (inlineRef.current) inlineRef.current.classList.remove('long-press-dragging')
+                    window.removeEventListener('mouseup', resetCursor)
+                  }
+                  window.addEventListener('mouseup', resetCursor)
+                }, 300)
+              }}
+              onMouseUp={() => { clearTimeout(longPressTimer.current) }}
+              onMouseLeave={() => { clearTimeout(longPressTimer.current) }}
+              onTouchStart={(e) => {
+                e.stopPropagation()
+                longPressTriggered.current = false
+                const touch = e.touches[0]
+                const cx = touch.clientX, cy = touch.clientY
+                longPressTimer.current = setTimeout(() => {
+                  longPressTriggered.current = true
+                  if (inlineRef.current) {
+                    inlineRef.current.blur()
+                    inlineRef.current.classList.add('long-press-dragging')
+                  }
+                  const synth = new MouseEvent('mousedown', { clientX: cx, clientY: cy, bubbles: true })
+                  elRef.current?.dispatchEvent(synth)
+                  const resetCursor = () => {
+                    if (inlineRef.current) inlineRef.current.classList.remove('long-press-dragging')
+                    window.removeEventListener('touchend', resetCursor)
+                  }
+                  window.addEventListener('touchend', resetCursor)
+                }, 300)
+              }}
+              onTouchEnd={() => { clearTimeout(longPressTimer.current) }}
+              onTouchMove={() => { clearTimeout(longPressTimer.current) }}
               onInput={(e) => onUpdateContent && onUpdateContent(e.currentTarget.textContent)}
               data-placeholder={overlay.placeholder || 'Type here…'}
               style={{
@@ -194,6 +234,7 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
                 overflow: 'hidden',
                 caretColor: overlay.style?.color || '#000',
                 minHeight: '1em',
+                pointerEvents: 'auto',
               }}
             />
           </div>
@@ -309,6 +350,8 @@ export default function EditorCanvas({
   const mainTextRef = useRef(null) // inline textarea for main text
   // snapshot of rect state at start of drag/resize
   const mainStartRef = useRef({ mx: 0, my: 0, ox: 0, oy: 0, ow: 0, oh: 0 })
+  const mainLongPressTimer = useRef(null)
+  const mainLongPressTriggered = useRef(false)
   // Overlay drag alignment state
   const [overlayDragPos, setOverlayDragPos] = useState(null)
   const [isOverlayDragging, setIsOverlayDragging] = useState(false)
@@ -430,9 +473,6 @@ export default function EditorCanvas({
     const h = mainStartRef.current.oh
     let nx = mainStartRef.current.ox + dx
     let ny = mainStartRef.current.oy + dy
-    // Clamp center-based position so rect stays within bounds
-    nx = Math.max(w / 2, Math.min(100 - w / 2, nx))
-    ny = Math.max(h / 2, Math.min(100 - h / 2, ny))
     onUpdateTextPosition({ x: nx, y: ny })
   }
 
@@ -449,16 +489,10 @@ export default function EditorCanvas({
     let nw = ow, nh = oh, ntlx = tlx, ntly = tly
 
     const handle = resizeHandle
-    if (handle.includes('e')) nw = Math.max(15, ow + dx)
-    if (handle.includes('w')) { nw = Math.max(15, ow - dx); ntlx = tlx + (ow - nw) }
-    if (handle.includes('s')) nh = Math.max(10, oh + dy)
-    if (handle.includes('n')) { nh = Math.max(10, oh - dy); ntly = tly + (oh - nh) }
-
-    // Clamp to page bounds
-    ntlx = Math.max(0, ntlx)
-    ntly = Math.max(0, ntly)
-    nw = Math.min(100 - ntlx, nw)
-    nh = Math.min(100 - ntly, nh)
+    if (handle.includes('e')) nw = Math.max(8, ow + dx)
+    if (handle.includes('w')) { nw = Math.max(8, ow - dx); ntlx = tlx + (ow - nw) }
+    if (handle.includes('s')) nh = Math.max(6, oh + dy)
+    if (handle.includes('n')) { nh = Math.max(6, oh - dy); ntly = tly + (oh - nh) }
 
     // Convert back to center-based
     const newCenterX = ntlx + nw / 2
@@ -574,6 +608,7 @@ export default function EditorCanvas({
           {currentPage?.type === 'text' ? (
             <div className="text-page-content">
               {/* Resizable Text Rectangle – styled like overlay elements */}
+              {!currentPage.textBoxHidden && (
               <div
                 ref={rectRef}
                 className={`canvas-overlay-element ${isDragging ? 'dragging' : ''} ${isResizing ? 'dragging' : ''} ${(isTextSelected || isHovering) ? 'selected' : ''}`}
@@ -625,15 +660,59 @@ export default function EditorCanvas({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: currentPage.textStyle?.textAlign === 'left' ? 'flex-start' : currentPage.textStyle?.textAlign === 'right' ? 'flex-end' : 'center',
+                      pointerEvents: 'none',
                     }}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     <div
                       ref={mainTextRef}
                       className="overlay-inline-editable"
                       contentEditable
                       suppressContentEditableWarning
+                      onMouseDown={(e) => {
+                        e.stopPropagation()
+                        mainLongPressTriggered.current = false
+                        const cx = e.clientX, cy = e.clientY
+                        mainLongPressTimer.current = setTimeout(() => {
+                          mainLongPressTriggered.current = true
+                          document.body.style.cursor = 'grabbing'
+                          if (mainTextRef.current) {
+                            mainTextRef.current.blur()
+                            mainTextRef.current.classList.add('long-press-dragging')
+                          }
+                          const synth = new MouseEvent('mousedown', { clientX: cx, clientY: cy, bubbles: true })
+                          rectRef.current?.dispatchEvent(synth)
+                          const resetCursor = () => {
+                            document.body.style.cursor = ''
+                            if (mainTextRef.current) mainTextRef.current.classList.remove('long-press-dragging')
+                            window.removeEventListener('mouseup', resetCursor)
+                          }
+                          window.addEventListener('mouseup', resetCursor)
+                        }, 300)
+                      }}
+                      onMouseUp={() => { clearTimeout(mainLongPressTimer.current) }}
+                      onMouseLeave={() => { clearTimeout(mainLongPressTimer.current) }}
+                      onTouchStart={(e) => {
+                        e.stopPropagation()
+                        mainLongPressTriggered.current = false
+                        const touch = e.touches[0]
+                        const cx = touch.clientX, cy = touch.clientY
+                        mainLongPressTimer.current = setTimeout(() => {
+                          mainLongPressTriggered.current = true
+                          if (mainTextRef.current) {
+                            mainTextRef.current.blur()
+                            mainTextRef.current.classList.add('long-press-dragging')
+                          }
+                          const synth = new MouseEvent('mousedown', { clientX: cx, clientY: cy, bubbles: true })
+                          rectRef.current?.dispatchEvent(synth)
+                          const resetCursor = () => {
+                            if (mainTextRef.current) mainTextRef.current.classList.remove('long-press-dragging')
+                            window.removeEventListener('touchend', resetCursor)
+                          }
+                          window.addEventListener('touchend', resetCursor)
+                        }, 300)
+                      }}
+                      onTouchEnd={() => { clearTimeout(mainLongPressTimer.current) }}
+                      onTouchMove={() => { clearTimeout(mainLongPressTimer.current) }}
                       onInput={(e) => onUpdateTextContent && onUpdateTextContent(e.currentTarget.textContent)}
                       data-placeholder="Type here…"
                       style={{
@@ -652,6 +731,7 @@ export default function EditorCanvas({
                         overflow: 'hidden',
                         caretColor: currentPage.textStyle?.color || '#000000',
                         minHeight: '1em',
+                        pointerEvents: 'auto',
                       }}
                     />
                   </div>
@@ -681,6 +761,7 @@ export default function EditorCanvas({
                   </div>
                 )}
               </div>
+              )}
 
               {/* ---- Overlay elements (extra text boxes + photos) ---- */}
               {currentPage.overlays && currentPage.overlays.map((overlay, idx) => (
