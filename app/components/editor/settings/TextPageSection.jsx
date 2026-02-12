@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import '@/styles/editor/CaptionSection.css'
 
 const FONT_FAMILIES = [
@@ -466,8 +467,8 @@ export default function TextPageSection({
         onChange={handlePhotoFileChange}
       />
 
-      {/* ---- Photo Picker Modal ---- */}
-      {showPhotoPickerModal && (
+      {/* ---- Photo Picker Modal (portaled to body to avoid sidebar clipping) ---- */}
+      {showPhotoPickerModal && createPortal(
         <div className="photo-picker-modal-overlay" onClick={() => setShowPhotoPickerModal(false)}>
           <div className="photo-picker-modal" onClick={e => e.stopPropagation()}>
             <div className="photo-picker-header">
@@ -508,7 +509,8 @@ export default function TextPageSection({
               )}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )
