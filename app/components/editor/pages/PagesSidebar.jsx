@@ -276,7 +276,7 @@ export default function PagesSidebar({
                 {page.textContent ? (
                   <div
                     style={{
-                      fontSize: Math.max(8, (page.textStyle?.fontSize || 24) * 0.15),
+                      fontSize: Math.max(8, (page.textStyle?.fontSize || 14) * 0.15),
                       color: page.textStyle?.color || '#000000',
                       fontFamily: page.textStyle?.fontFamily || 'Inter',
                       textAlign: page.textStyle?.textAlign || 'center',

@@ -742,7 +742,7 @@ export default function EditorCanvas({
                       data-placeholder="Type here…"
                       style={{
                         width: '100%',
-                        fontSize: currentPage.textStyle?.fontSize || 24,
+                        fontSize: currentPage.textStyle?.fontSize || 14,
                         color: currentPage.textStyle?.color || '#000000',
                         fontFamily: currentPage.textStyle?.fontFamily || 'Inter',
                         textAlign: currentPage.textStyle?.textAlign || 'left',
@@ -767,7 +767,7 @@ export default function EditorCanvas({
                     style={{
                       width: '100%',
                       height: '100%',
-                      fontSize: currentPage.textStyle?.fontSize || 24,
+                      fontSize: currentPage.textStyle?.fontSize || 14,
                       color: currentPage.textContent ? (currentPage.textStyle?.color || '#000000') : '#bbb',
                       fontFamily: currentPage.textStyle?.fontFamily || 'Inter',
                       textAlign: currentPage.textStyle?.textAlign || 'left',

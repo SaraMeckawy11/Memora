@@ -114,9 +114,28 @@ export function useSaveManager({
         return img
       }))
 
+      // Convert overlay photo blob URLs to Blobs so they survive reload
+      const pagesToSave = await Promise.all(pages.map(async (p) => {
+        if (!p.overlays?.length) return { ...p }
+        const savedOverlays = await Promise.all(p.overlays.map(async (ov) => {
+          if (ov.type === 'photo' && ov.src && ov.src.startsWith('blob:')) {
+            try {
+              const response = await fetch(ov.src)
+              const blob = await response.blob()
+              return { ...ov, src: null, blob }
+            } catch (e) {
+              console.error('Failed to fetch overlay blob for saving', e)
+              return ov
+            }
+          }
+          return { ...ov }
+        }))
+        return { ...p, overlays: savedOverlays }
+      }))
+
       const draft = {
         step,
-        pages: pages.map(p => ({ ...p })),
+        pages: pagesToSave,
         uploadedImages: imagesToSave,
         selectedProduct,
         selectedSize,
@@ -194,7 +213,21 @@ export function useSaveManager({
         return img
       })
 
-      setPages(Array.isArray(d.pages) ? d.pages.map(p => ({ ...p, pageMargin: 16, pageGutter: 16 })) : [])
+      // Restore overlay photo blobs back to blob URLs
+      const restoredPages = (Array.isArray(d.pages) ? d.pages : []).map(p => {
+        const page = { ...p, pageMargin: 16, pageGutter: 16 }
+        if (page.overlays?.length) {
+          page.overlays = page.overlays.map(ov => {
+            if (ov.type === 'photo' && ov.blob instanceof Blob) {
+              return { ...ov, src: URL.createObjectURL(ov.blob) }
+            }
+            return ov
+          })
+        }
+        return page
+      })
+
+      setPages(restoredPages)
       setUploadedImages(restoredImages)
       
       setSelectedProduct(d.selectedProduct ?? null)
