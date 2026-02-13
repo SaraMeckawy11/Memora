@@ -282,7 +282,7 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            borderRadius: overlay.style?.borderRadius ?? 4,
+            borderRadius: overlay.style?.borderRadius ?? 0,
             pointerEvents: 'none',
             userSelect: 'none',
           }}
@@ -425,7 +425,7 @@ export default function EditorCanvas({
     const posX = currentPage.textPosition?.x || 50
     const posY = currentPage.textPosition?.y || 50
     const w = currentPage.textRect?.width || 50
-    const h = currentPage.textRect?.height || 30
+    const h = currentPage.textRect?.height || 15
     mainStartRef.current = { mx: cx, my: cy, ox: posX, oy: posY, ow: w, oh: h }
   }
 
@@ -446,7 +446,7 @@ export default function EditorCanvas({
     const posX = currentPage.textPosition?.x || 50
     const posY = currentPage.textPosition?.y || 50
     const w = currentPage.textRect?.width || 50
-    const h = currentPage.textRect?.height || 30
+    const h = currentPage.textRect?.height || 15
     mainStartRef.current = { mx: cx, my: cy, ox: posX, oy: posY, ow: w, oh: h }
   }
 
@@ -642,7 +642,7 @@ export default function EditorCanvas({
                   left: `${currentPage.textPosition?.x || 50}%`,
                   top: `${currentPage.textPosition?.y || 50}%`,
                   width: `${currentPage.textRect?.width || 50}%`,
-                  height: `${currentPage.textRect?.height || 30}%`,
+                  height: `${currentPage.textRect?.height || 15}%`,
                   transform: 'translate(-50%, -50%)',
                   cursor: isDragging ? 'grabbing' : 'grab',
                   zIndex: isTextSelected ? 20 : 10,

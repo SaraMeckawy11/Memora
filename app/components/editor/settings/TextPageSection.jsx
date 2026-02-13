@@ -95,10 +95,10 @@ export default function TextPageSection({
       placeholder: 'Type here…',
       x: 20 + Math.random() * 20,   // randomise slightly so they don't stack
       y: 20 + Math.random() * 20,
-      width: 40,
-      height: 20,
+      width: 50,
+      height: 10,
       style: {
-        fontSize: 18,
+        fontSize: 11,
         color: '#000000',
         fontFamily: 'Inter',
         textAlign: 'center',
@@ -452,7 +452,7 @@ export default function TextPageSection({
           </label>
 
           <div className="photo-edit-preview-card">
-            <img src={selectedOverlay.src} alt={selectedOverlay.name || 'Photo'} style={{ borderRadius: selectedOverlay.style?.borderRadius ?? 4 }} />
+            <img src={selectedOverlay.src} alt={selectedOverlay.name || 'Photo'} style={{ borderRadius: selectedOverlay.style?.borderRadius ?? 0 }} />
           </div>
 
           <div className="photo-edit-control">
@@ -463,14 +463,14 @@ export default function TextPageSection({
                 </svg>
                 Corner Radius
               </label>
-              <span className="photo-edit-value">{selectedOverlay.style?.borderRadius ?? 4}px</span>
+              <span className="photo-edit-value">{selectedOverlay.style?.borderRadius ?? 0}px</span>
             </div>
             <input
               type="range"
               className="photo-edit-slider"
               min="0"
               max="50"
-              value={selectedOverlay.style?.borderRadius ?? 4}
+              value={selectedOverlay.style?.borderRadius ?? 0}
               onChange={e => updateOverlayStyle(selectedOverlayIdx, 'borderRadius', +e.target.value)}
             />
             <div className="photo-edit-slider-labels">

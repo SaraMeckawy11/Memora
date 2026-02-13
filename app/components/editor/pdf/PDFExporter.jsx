@@ -94,7 +94,7 @@ export function usePDFExporter({
             const posX = (page.textPosition?.x ?? 50) / 100 * size.width
             const posY = (page.textPosition?.y ?? 50) / 100 * size.height
             const rectW = (page.textRect?.width ?? 50) / 100 * size.width
-            const rectH = (page.textRect?.height ?? 30) / 100 * size.height
+            const rectH = (page.textRect?.height ?? 15) / 100 * size.height
             const boxLeft = posX - rectW / 2
             const boxTop = posY - rectH / 2
 
