@@ -215,7 +215,7 @@ export function useSaveManager({
 
       // Restore overlay photo blobs back to blob URLs
       const restoredPages = (Array.isArray(d.pages) ? d.pages : []).map(p => {
-        const page = { ...p, pageMargin: 8, pageGutter: 4 }
+        const page = { ...p, pageMargin: 16, pageGutter: 16 }
         if (page.overlays?.length) {
           page.overlays = page.overlays.map(ov => {
             if (ov.type === 'photo' && ov.blob instanceof Blob) {
@@ -242,8 +242,8 @@ export function useSaveManager({
       setHistoryIndex(d.historyIndex ?? -1)
 
       const s = d.settings || {}
-      setPageMargin(8)
-      setPageGutter(4)
+      setPageMargin(16)
+      setPageGutter(16)
       setPageBgColor(s.pageBgColor ?? '#ffffff')
       setImageFitMode(s.imageFitMode ?? 'cover')
       setImageBorderRadius(s.imageBorderRadius ?? 0)
@@ -304,8 +304,8 @@ export function useSaveManager({
     setStep(1)
     setLastSaved(null)
 
-    setPageMargin(8)
-    setPageGutter(4)
+    setPageMargin(16)
+    setPageGutter(16)
     setPageBgColor('#ffffff')
     setImageFitMode('cover')
     setImageBorderRadius(0)
