@@ -215,7 +215,7 @@ export function useSaveManager({
 
       // Restore overlay photo blobs back to blob URLs
       const restoredPages = (Array.isArray(d.pages) ? d.pages : []).map(p => {
-        const page = { ...p, pageMargin: 16, pageGutter: 16 }
+        const page = { ...p, pageMargin: 8, pageGutter: 4 }
         if (page.overlays?.length) {
           page.overlays = page.overlays.map(ov => {
             if (ov.type === 'photo' && ov.blob instanceof Blob) {
@@ -242,8 +242,8 @@ export function useSaveManager({
       setHistoryIndex(d.historyIndex ?? -1)
 
       const s = d.settings || {}
-      setPageMargin(16)
-      setPageGutter(16)
+      setPageMargin(8)
+      setPageGutter(4)
       setPageBgColor(s.pageBgColor ?? '#ffffff')
       setImageFitMode(s.imageFitMode ?? 'cover')
       setImageBorderRadius(s.imageBorderRadius ?? 0)
@@ -254,7 +254,7 @@ export function useSaveManager({
 
       if (s.captionDefaults) {
         setSelectedFontFamily(s.captionDefaults.fontFamily ?? 'Inter')
-        setSelectedFontSize(s.captionDefaults.fontSize ?? 12)
+        setSelectedFontSize(s.captionDefaults.fontSize ?? 9)
         setSelectedFontColor(s.captionDefaults.color ?? '#000000')
         setCaptionPosition(s.captionDefaults.position ?? 'bottom')
         setCaptionAlignment(s.captionDefaults.alignment ?? 'center')
@@ -304,8 +304,8 @@ export function useSaveManager({
     setStep(1)
     setLastSaved(null)
 
-    setPageMargin(16)
-    setPageGutter(16)
+    setPageMargin(8)
+    setPageGutter(4)
     setPageBgColor('#ffffff')
     setImageFitMode('cover')
     setImageBorderRadius(0)
@@ -314,7 +314,7 @@ export function useSaveManager({
     setLayoutSplitY(50)
     setSelectedLayout('single')
     setSelectedFontFamily('Inter')
-    setSelectedFontSize(16)
+    setSelectedFontSize(9)
     setSelectedFontColor('#000000')
     setCaptionPosition('bottom')
     setCaptionAlignment('center')

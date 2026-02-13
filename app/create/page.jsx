@@ -54,7 +54,7 @@ function CreatePageContent() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   const [selectedCaption, setSelectedCaption] = useState('')
-  const [selectedFontSize, setSelectedFontSize] = useState(12)
+  const [selectedFontSize, setSelectedFontSize] = useState(9)
   const [selectedFontColor, setSelectedFontColor] = useState('#000000')
   const [selectedFontFamily, setSelectedFontFamily] = useState('Inter')
   const [captionPosition, setCaptionPosition] = useState('bottom')
@@ -62,8 +62,8 @@ function CreatePageContent() {
 
   const [selectedLayout, setSelectedLayout] = useState('single')
 
-  const [pageMargin, setPageMargin] = useState(16)
-  const [pageGutter, setPageGutter] = useState(16)
+  const [pageMargin, setPageMargin] = useState(8)
+  const [pageGutter, setPageGutter] = useState(4)
   const [pageBgColor, setPageBgColor] = useState('#ffffff')
   const [imageFitMode, setImageFitMode] = useState('cover')
   const [imageBorderRadius, setImageBorderRadius] = useState(0)
@@ -153,7 +153,7 @@ function CreatePageContent() {
       const currentPage = pages[currentPageIdx]
       setSelectedCaption(currentPage.caption || '')
       if (currentPage.captionStyle) {
-        setSelectedFontSize(currentPage.captionStyle.fontSize ?? 12)
+        setSelectedFontSize(currentPage.captionStyle.fontSize ?? 9)
         setSelectedFontColor(currentPage.captionStyle.color ?? '#000000')
         setSelectedFontFamily(currentPage.captionStyle.fontFamily ?? 'Inter')
         setCaptionPosition(currentPage.captionStyle.position ?? 'bottom')
@@ -179,8 +179,8 @@ function CreatePageContent() {
             alignment: captionAlignment,
           },
           layout: 'single',
-          pageMargin: 16,
-          pageGutter: 16,
+          pageMargin: 8,
+          pageGutter: 4,
         }))
       )
     }

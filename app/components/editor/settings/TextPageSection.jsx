@@ -303,11 +303,11 @@ export default function TextPageSection({
             <div>
               <label className="caption-label">Size</label>
               <select
-                value={currentPage.textStyle?.fontSize || 14}
+                value={currentPage.textStyle?.fontSize || 11}
                 onChange={e => updateTextStyle('fontSize', +e.target.value)}
                 className="caption-select"
               >
-                {[10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48].map(size => (
+                {[8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48].map(size => (
                   <option key={size} value={size}>{size}px</option>
                 ))}
               </select>
@@ -400,7 +400,7 @@ export default function TextPageSection({
                 onChange={e => updateOverlayStyle(selectedOverlayIdx, 'fontSize', +e.target.value)}
                 className="caption-select"
               >
-                {[10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48].map(size => (
+                {[8, 9, 10, 11, 12, 14, 16, 18, 20, 24, 28, 32, 36, 42, 48].map(size => (
                   <option key={size} value={size}>{size}px</option>
                 ))}
               </select>

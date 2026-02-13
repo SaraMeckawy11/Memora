@@ -103,7 +103,7 @@ export default function CaptionSection({
               onChange={e => updateCaptionStyle('fontSize', +e.target.value)}
               className="caption-select"
             >
-              {[10, 12, 14, 16, 18, 20, 24, 28, 32].map(size => (
+              {[8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32].map(size => (
                 <option key={size} value={size}>{size}px</option>
               ))}
             </select>
