@@ -370,9 +370,11 @@ export default function StepEditor({
               setPages(newPages)
             }}
             onEditOverlayPhoto={(overlayIdx) => {
-              const overlay = currentPage?.overlays?.[overlayIdx]
+              // Read the *live* overlay from pages so we always get the latest
+              // src/originalSrc after previous edits.
+              const overlay = pages[currentPageIdx]?.overlays?.[overlayIdx]
               if (overlay?.type === 'photo') {
-                setEditingOverlayPhoto({ overlayIdx, overlay })
+                setEditingOverlayPhoto({ overlayIdx, overlay: { ...overlay } })
               }
             }}
             onUpdateOverlayContent={(overlayIdx, content) => {
@@ -545,32 +547,96 @@ export default function StepEditor({
             }}
           />
         )}
-        {editingOverlayPhoto && (
-          <ImageEditorModal
-            image={{
-              id: editingOverlayPhoto.overlay.id,
-              src: editingOverlayPhoto.overlay.src,
-              name: editingOverlayPhoto.overlay.name,
-              fit: 'cover',
-            }}
-            slot={{ width: 300, height: 300 }}
-            onClose={() => setEditingOverlayPhoto(null)}
-            onSave={(updatedImage) => {
-              const idx = editingOverlayPhoto.overlayIdx
-              const newPages = [...pages]
-              const page = newPages[currentPageIdx]
-              const overlays = [...(page.overlays || [])]
-              overlays[idx] = {
-                ...overlays[idx],
-                src: updatedImage.src,
-                originalSrc: updatedImage.originalSrc || overlays[idx].src,
-              }
-              page.overlays = overlays
-              setPages(newPages)
-              setEditingOverlayPhoto(null)
-            }}
-          />
-        )}
+        {editingOverlayPhoto && (() => {
+          const ov = editingOverlayPhoto.overlay
+          // Compute the actual slot aspect ratio from the overlay's
+          // percentage-based width/height and the page dimensions.
+          const pageW = (selectedSizeObj?.width || 8) * 96   // inches → px
+          const pageH = (selectedSizeObj?.height || 10) * 96
+          const ovW = ((ov.width || 30) / 100) * pageW
+          const ovH = ((ov.height || 30) / 100) * pageH
+          const SLOT_MAX = 420
+          const ratio = ovW / ovH
+          const overlaySlot = ratio >= 1
+            ? { width: SLOT_MAX, height: SLOT_MAX / ratio }
+            : { height: SLOT_MAX, width: SLOT_MAX * ratio }
+
+          // Always open the modal with the original (full) image when
+          // available so the user can re-crop / re-position from scratch.
+          // The modal's "Revert" and crop tools work against this source.
+          const modalSrc = ov.originalSrc || ov.src
+
+          return (
+            <ImageEditorModal
+              image={{
+                id: ov.id,
+                src: modalSrc,
+                name: ov.name,
+                originalSrc: ov.originalSrc,
+                fit: 'cover',
+              }}
+              slot={overlaySlot}
+              onClose={() => setEditingOverlayPhoto(null)}
+              onSave={(updatedImage) => {
+                const idx = editingOverlayPhoto.overlayIdx
+                const newPages = [...pages]
+                const page = newPages[currentPageIdx]
+                const overlays = [...(page.overlays || [])]
+
+                // Determine the original source to keep for future reverts
+                const keepOriginal = ov.originalSrc || ov.src
+
+                if (updatedImage.crop) {
+                  // Cover-mode pan — bake the visible portion into src
+                  const img = new window.Image()
+                  img.onload = () => {
+                    const c = updatedImage.crop
+                    const sx = (c.x / 100) * img.naturalWidth
+                    const sy = (c.y / 100) * img.naturalHeight
+                    const sw = (c.w / 100) * img.naturalWidth
+                    const sh = (c.h / 100) * img.naturalHeight
+                    const canvas = document.createElement('canvas')
+                    canvas.width = Math.max(1, Math.round(sw))
+                    canvas.height = Math.max(1, Math.round(sh))
+                    const ctx = canvas.getContext('2d')
+                    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height)
+                    const bakedSrc = canvas.toDataURL('image/jpeg', 0.95)
+                    overlays[idx] = {
+                      ...overlays[idx],
+                      src: bakedSrc,
+                      originalSrc: keepOriginal,
+                    }
+                    page.overlays = overlays
+                    setPages([...newPages])
+                    setEditingOverlayPhoto(null)
+                  }
+                  img.onerror = () => setEditingOverlayPhoto(null)
+                  img.src = updatedImage.src
+                } else if (!updatedImage.originalSrc && updatedImage.src === keepOriginal) {
+                  // Reverted to original
+                  overlays[idx] = {
+                    ...overlays[idx],
+                    src: updatedImage.src,
+                    originalSrc: undefined,
+                  }
+                  page.overlays = overlays
+                  setPages(newPages)
+                  setEditingOverlayPhoto(null)
+                } else {
+                  // Freeform crop — src is already a baked data URL
+                  overlays[idx] = {
+                    ...overlays[idx],
+                    src: updatedImage.src,
+                    originalSrc: updatedImage.originalSrc || keepOriginal,
+                  }
+                  page.overlays = overlays
+                  setPages(newPages)
+                  setEditingOverlayPhoto(null)
+                }
+              }}
+            />
+          )
+        })()}
       </div>
     </div>
   )

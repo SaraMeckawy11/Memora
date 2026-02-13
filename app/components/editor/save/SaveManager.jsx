@@ -254,7 +254,7 @@ export function useSaveManager({
 
       if (s.captionDefaults) {
         setSelectedFontFamily(s.captionDefaults.fontFamily ?? 'Inter')
-        setSelectedFontSize(s.captionDefaults.fontSize ?? 12)
+        setSelectedFontSize(s.captionDefaults.fontSize ?? 9)
         setSelectedFontColor(s.captionDefaults.color ?? '#000000')
         setCaptionPosition(s.captionDefaults.position ?? 'bottom')
         setCaptionAlignment(s.captionDefaults.alignment ?? 'center')
@@ -314,7 +314,7 @@ export function useSaveManager({
     setLayoutSplitY(50)
     setSelectedLayout('single')
     setSelectedFontFamily('Inter')
-    setSelectedFontSize(16)
+    setSelectedFontSize(9)
     setSelectedFontColor('#000000')
     setCaptionPosition('bottom')
     setCaptionAlignment('center')

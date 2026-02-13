@@ -6,7 +6,7 @@
   border: 1px solid #e0e0e0;
   font-size: 0.85rem;
   resize: vertical;
-  min-height: 45px;
+  min-height: 32px;
   box-sizing: border-box;
   background-color: #fafafa;
   transition: border-color 0.2s ease;
@@ -255,7 +255,7 @@
 
   .caption-textarea {
     font-size: 0.9rem;
-    min-height: 55px;
+    min-height: 40px;
     padding: 0.6rem;
   }
 
@@ -289,7 +289,7 @@
   .caption-textarea {
     font-size: 1rem;
     padding: 0.7rem;
-    min-height: 65px;
+    min-height: 45px;
   }
 
   .caption-select-display,

@@ -75,7 +75,7 @@ export function usePDFExporter({
           // Main text box
           if (!page.textBoxHidden && page.textContent) {
             const style = page.textStyle || {}
-            const fontSize = (style.fontSize || 14) * pxToPt
+            const fontSize = (style.fontSize || 11) * pxToPt
             const color = style.color || '#000000'
             const align = style.textAlign || 'left'
             const fontFamily = style.fontFamily || 'Inter'
@@ -94,7 +94,7 @@ export function usePDFExporter({
             const posX = (page.textPosition?.x ?? 50) / 100 * size.width
             const posY = (page.textPosition?.y ?? 50) / 100 * size.height
             const rectW = (page.textRect?.width ?? 50) / 100 * size.width
-            const rectH = (page.textRect?.height ?? 30) / 100 * size.height
+            const rectH = (page.textRect?.height ?? 15) / 100 * size.height
             const boxLeft = posX - rectW / 2
             const boxTop = posY - rectH / 2
 
@@ -182,7 +182,7 @@ export function usePDFExporter({
 
           /* ---------- Caption metrics ---------- */
           const cs = page.captionStyle || {}
-          const capFontSize = (cs.fontSize || 12) * pxToPt
+          const capFontSize = (cs.fontSize || 9) * pxToPt
           const capColor = cs.color || '#000000'
           const capFontFamily = cs.fontFamily || 'Inter'
           const capPosition = cs.position || 'bottom'   // 'top' | 'bottom'
