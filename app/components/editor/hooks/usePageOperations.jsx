@@ -57,7 +57,7 @@ export function usePageOperations(
       textPosition: { x: 50, y: 50 }, // Center position (percentage)
       textRect: { width: 50, height: 30 }, // Rectangle dimensions (percentage)
       textStyle: {
-        fontSize: 24,
+        fontSize: 14,
         color: '#000000',
         fontFamily: 'Inter',
         textAlign: 'center',

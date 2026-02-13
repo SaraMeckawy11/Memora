@@ -303,7 +303,7 @@ export default function TextPageSection({
             <div>
               <label className="caption-label">Size</label>
               <select
-                value={currentPage.textStyle?.fontSize || 24}
+                value={currentPage.textStyle?.fontSize || 14}
                 onChange={e => updateTextStyle('fontSize', +e.target.value)}
                 className="caption-select"
               >
