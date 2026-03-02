@@ -56,7 +56,7 @@ function CoverEditorContent() {
 
   // -- HANDLERS --
   const handleBack = () => router.back();
-  const handleSave = () => router.push('/create?step=editor');
+  const handleSave = () => router.push('/create?step=3');
 
   const handleReorderElement = (direction) => {
     if (selectedId) reorder(selectedId, direction);
