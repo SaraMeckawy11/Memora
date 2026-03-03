@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import '@/styles/SelectCover.css'
-import { COVER_PRESETS } from '@/app/create/cover/presets'
+import { COVER_PRESETS } from '@/app/cover/presets'
 import PresetPreview from '@/app/components/cover-editor/PresetPreview'
 import FontLoader from '@/app/components/cover-editor/FontLoader'
 
@@ -160,7 +160,7 @@ export default function SelectCoverPage() {
   const handleSelectPreset = (presetId) => {
     setSelectedPreset(presetId)
     // When a preset is selected, navigate to the main cover editor with all features
-    router.push(`/create/cover?preset=${presetId}`)
+    router.push(`/cover?preset=${presetId}`)
   }
 
   const handleNext = (e) => {
@@ -188,7 +188,7 @@ export default function SelectCoverPage() {
 
         <div className="options-grid">
           {/* Option 1: Design Your Own */}
-          <div className="option-card" onClick={() => router.push('/create/cover')}>
+          <div className="option-card" onClick={() => router.push('/cover')}>
             <div className="option-icon">🎨</div>
             <h2>Design My Own</h2>
             <p>Use our powerful editor to create a fully custom cover with photos, shapes, and personalized text.</p>

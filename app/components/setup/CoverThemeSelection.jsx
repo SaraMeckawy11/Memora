@@ -81,7 +81,7 @@ export default function CoverThemeSelection({ coverTheme, setCoverTheme, coverIm
         {/* Design Custom Cover */}
         <button
           type="button"
-          onClick={() => window.open('/create/cover', '_blank')}
+          onClick={() => window.open('/cover', '_blank')}
           className="theme-card design-card"
         >
           <div className="theme-preview design-preview">

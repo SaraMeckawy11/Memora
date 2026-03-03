@@ -194,7 +194,7 @@ function CreatePageContent() {
     }
     else if (step === 2) {
       // Instead of going to step 3, go to the cover selection page
-      router.replace('/create/select-cover')
+      router.replace('/select-cover')
     }
     else if (step === 3) {
       // Store order data in localStorage for order page
@@ -213,7 +213,7 @@ function CreatePageContent() {
       router.push('/')
     }
     else if (step === 3) {
-      router.push('/create/select-cover')
+      router.push('/select-cover')
     }
     else {
       const prevStep = step - 1
