@@ -1,157 +1,13 @@
 'use client'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import '@/styles/SelectCover.css'
+import '@/styles/select-cover/SelectCover.css'
+import '@/styles/select-cover/CoverPresets.css'
 import { COVER_PRESETS } from '@/app/cover/presets'
 import PresetPreview from '@/app/components/cover-editor/PresetPreview'
 import FontLoader from '@/app/components/cover-editor/FontLoader'
-
-const PRESETS = [
-  { 
-    id: 'travel3', 
-    name: 'Travel Adventures', 
-    preview: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Travel'
-  },
-  { 
-    id: 'travel2', 
-    name: 'Vintage Wanderlust', 
-    preview: 'https://images.unsplash.com/photo-1527631746610-bca00a040d60?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Travel'
-  },
-  { 
-    id: 'travel', 
-    name: 'Travel Adventures', 
-    preview: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Travel'
-  },
-  { 
-    id: 'summer', 
-    name: 'Summer Vibes', 
-    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'travel4', 
-    name: 'Travel Adventures', 
-    preview: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Travel'
-  }, 
-  { 
-    id: 'ibiza', 
-    name: 'Ibiza Night', 
-    preview: 'https://images.unsplash.com/photo-1573155993874-d5d48af862ba?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Travel'
-  },
-  { 
-    id: 'lionBirthPoster', 
-    name: 'baby', 
-    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'memories'
-  },
-  { 
-    id: 'baby', 
-    name: 'Baby Memories', 
-    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'memories'
-  },
-  { 
-    id: 'babyJournal', 
-    name: 'Baby Journal', 
-    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'memories'
-  },
-  { 
-    id: 'babyLove', 
-    name: 'Baby Love', 
-    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'memories'
-  },
-  { 
-    id: 'baby5', 
-    name: 'Baby Book', 
-    preview: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'memories'
-  },
-  { 
-    id: 'wedding', 
-    name: 'Our Wedding Day', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Wedding'
-  },
-  { 
-    id: 'wedding2', 
-    name: 'Our Wedding Day', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Wedding'
-  },
-  { 
-    id: 'wedding3', 
-    name: 'Our Wedding Day', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Wedding'
-  },
-  { 
-    id: 'wedding4', 
-    name: 'Our Wedding Day', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Wedding'
-  },
-  { 
-    id: 'MothersDay', 
-    name: 'Mother\'s Day Special', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'mothersDay2', 
-    name: 'Mother\'s Day Special', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'mothersDay3', 
-    name: 'Mother\'s Day Special', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'mothersDay4', 
-    name: 'Mother\'s Day Special', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'nightLove', 
-    name: 'Night Love', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'tiedWithLove', 
-    name: 'Tied With Love', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'ourStory', 
-    name: 'Our Story', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'withLove', 
-    name: 'With Love', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  },
-  { 
-    id: 'loveYou', 
-    name: 'Love You', 
-    preview: 'https://images.unsplash.com/photo-1519741497674-6114d186b2b8?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=600',
-    category: 'Seasonal'
-  }
-] 
+import { PRESETS } from './constants'
+import DesignOptionCard from './DesignOptionCard' 
 
 export default function SelectCoverPage() {
   const router = useRouter()
@@ -187,44 +43,35 @@ export default function SelectCoverPage() {
         </div>
 
         <div className="options-grid">
-          {/* Option 1: Design Your Own */}
-          <div className="option-card" onClick={() => router.push('/cover')}>
-            <div className="option-icon">🎨</div>
-            <h2>Design My Own</h2>
-            <p>Use our powerful editor to create a fully custom cover with photos, shapes, and personalized text.</p>
-            <div className="btn-select btn-primary-option">Start Designing</div>
-          </div>
-
-          {/* Option 2: Choose a Template */}
-          <div className="option-card" onClick={() => document.getElementById('presets-section').scrollIntoView({ behavior: 'smooth' })}>
-            <div className="option-icon">✨</div>
-            <h2>Quick Templates</h2>
-            <p>Choose from our curated collection of beautiful, ready-to-use cover layouts.</p>
-            <div className="btn-select btn-secondary-option">Browse Presets</div>
-          </div>
+          <DesignOptionCard />
         </div>
 
         <div id="presets-section" className="presets-section">
-          <h3>Cover Designs</h3>
-          <div className="presets-grid">
-            {PRESETS.map((preset) => (
-              <div 
-                key={preset.id} 
-                className={`preset-item ${selectedPreset === preset.id ? 'selected' : ''}`}
-                onClick={() => handleSelectPreset(preset.id)}
-              >
-                <div className="preset-preview-container">
-                  <PresetPreview 
-                    preset={COVER_PRESETS[preset.id]} 
-                  />
-                </div>
-                <div className="preset-overlay">
-                  <span className="preset-category">{preset.category}</span>
-                  <span className="preset-name">{preset.name}</span>
-                </div>
+          <h3 className="section-header">Cover Designs</h3>
+          
+          {[...new Set(PRESETS.map(p => p.category))].map(category => (
+            <div key={category} className="category-section">
+              <h4 className="category-title">{category}</h4>
+              <div className="presets-grid">
+                {PRESETS.filter(p => p.category === category).map((preset) => (
+                  <div 
+                    key={preset.id} 
+                    className={`preset-item ${selectedPreset === preset.id ? 'selected' : ''}`}
+                    onClick={() => handleSelectPreset(preset.id)}
+                  >
+                    <div className="preset-preview-container">
+                      <PresetPreview 
+                        preset={COVER_PRESETS[preset.id]} 
+                      />
+                    </div>
+                    <div className="preset-overlay">
+                      <span className="preset-name">{preset.name}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
 
         <div className="select-cover-footer">

@@ -1,0 +1,164 @@
+.presets-section {
+  margin-top: 6rem;
+  width: 100%;
+}
+
+.section-header {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text, #1e293b);
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.category-section {
+  margin-bottom: 5rem;
+}
+
+.category-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text, #334155);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+}
+
+.category-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(to bottom, var(--accent-start, #1B1F3B), var(--accent-end, #06b6d4));
+  border-radius: 4px;
+  margin-right: 16px;
+}
+
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 2rem;
+}
+
+.preset-item {
+  aspect-ratio: 8.93/12.63;
+  background: var(--surface, white);
+  border-radius: var(--radius, 14px);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-2, 0 6px 18px rgba(15,23,42,0.06));
+  position: relative;
+}
+
+.preset-item:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-1, 0 8px 30px rgba(15,23,42,0.08));
+  border-color: rgba(6, 182, 212, 0.4);
+}
+
+.preset-item.selected {
+  border-color: var(--accent-end, #06b6d4);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.3);
+}
+
+.preset-preview-container {
+  width: 100%;
+  height: 100%;
+  background: #f1f5f9;
+  position: relative;
+  overflow: hidden;
+}
+
+.preset-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preset-item:hover .preset-preview {
+  transform: scale(1.08);
+}
+
+.preset-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1.25rem 1.25rem;
+  background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  opacity: 0.9;
+  transition: opacity 0.3s;
+}
+
+.preset-item:hover .preset-overlay {
+  opacity: 1;
+}
+
+.preset-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  letter-spacing: 0.01em;
+}
+
+/* Tablet adjustments causing issues around 772px potentially */
+/* Let's smooth the grid transition */
+@media (max-width: 772px) {
+  .presets-grid {
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  /* Force 2 columns on mobile */
+  .presets-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .preset-item {
+    border-radius: 10px;
+  }
+
+  .preset-overlay {
+    padding: 1.25rem 0.75rem 0.75rem;
+    background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0) 100%);
+  }
+
+  .preset-name {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .category-section {
+    margin-bottom: 3rem;
+  }
+
+  .category-title {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+  }
+  
+  .section-header {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .preset-name {
+    font-size: 0.75rem;
+  }
+}
