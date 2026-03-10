@@ -32,8 +32,8 @@ export default function SelectCoverPage() {
   return (
     <div className="select-cover-root">
       <FontLoader />
-      <div className="select-cover-container">
-        <div className="select-cover-nav">
+      <div className="select-cover-nav">
+        <div className="select-cover-nav-inner">
           <button className="back-link" onClick={handleBack}>
             ← Back to Editor
           </button>
@@ -44,6 +44,8 @@ export default function SelectCoverPage() {
             Review Order →
           </button>
         </div>
+      </div>
+      <div className="select-cover-container">
 
         <div className="select-cover-header">
           <h1>Choose Your Cover</h1>
