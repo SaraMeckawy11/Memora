@@ -9,8 +9,6 @@ export default function DesignOptionCard() {
   return (
     <div className="option-card" onClick={() => router.push('/cover')}>
       <div className="option-card-bg-glow" />
-      <div className="option-icon-wrapper">
-      </div>
       <div className="option-card-content">
         <div className="option-card-header">
           <h2>Design My Own</h2>
