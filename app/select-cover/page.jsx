@@ -33,9 +33,17 @@ export default function SelectCoverPage() {
     <div className="select-cover-root">
       <FontLoader />
       <div className="select-cover-container">
-        <button className="back-link" onClick={handleBack}>
-          ← Back to Editor
-        </button>
+        <div className="select-cover-nav">
+          <button className="back-link" onClick={handleBack}>
+            ← Back to Editor
+          </button>
+          <button 
+            className="btn-next-step"
+            onClick={handleNext}
+          >
+            Review Order →
+          </button>
+        </div>
 
         <div className="select-cover-header">
           <h1>Choose Your Cover</h1>
@@ -75,12 +83,7 @@ export default function SelectCoverPage() {
         </div>
 
         <div className="select-cover-footer">
-          <button 
-            className="btn-next-step"
-            onClick={handleNext}
-          >
-            Next: Review Order →
-          </button>
+          {/* Footer removed */}
         </div>
       </div>
     </div>
