@@ -1,9 +1,9 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 
-export default function OrderSuccess() {
+function SuccessContent() {
   const searchParams = useSearchParams()
   // Paymob redirects with query params
   const orderId = searchParams.get('merchant_order_id')
@@ -17,6 +17,7 @@ export default function OrderSuccess() {
             <div className="sm:border-l sm:border-gray-200 sm:pl-6">
               <h1 className="text-4xl font-bold tracking-tight text-green-600 sm:text-5xl">Order Confirmed!</h1>
               <p className="mt-1 text-base text-gray-500">Thank you for your purchase.</p>
+              {orderId && <p className="mt-2 text-sm text-gray-500">Order ID: {orderId}</p>}
             </div>
             <div className="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
               <Link
@@ -36,5 +37,13 @@ export default function OrderSuccess() {
         </main>
       </div>
     </div>
+  )
+}
+
+export default function OrderSuccess() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
   )
 }
