@@ -1,0 +1,84 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Order {
+  id        String   @id @default(cuid())
+  
+  // Customer Info
+  customerName  String
+  customerEmail String
+  customerPhone String
+  
+  // Delivery Address
+  street      String
+  building    String?
+  floor       String?
+  apartment   String?
+  city        String
+  governorate String
+  country     String
+  postalCode  String?
+  
+  // Order Details
+  bookSize    String
+  // Using String to store JSON data for maximum compatibility
+  photoUrls   String   // JSON array of strings
+  coverConfig String   // JSON object
+  
+  status      String   @default("pending")
+  
+  // Payment
+  paymentMethod    String  @default("paymob")
+  paymobOrderId    String?
+  transactionId    String?
+  amountCents      Int?
+  currency         String  @default("EGP")
+  paidAt           DateTime?
+  
+  // Promo
+  promoCode        String?
+  discountAmount   Float   @default(0)
+  
+  totalPrice       Float
+  
+  // Shipping
+  trackingNumber   String?
+  shippedAt        DateTime?
+  estimatedDelivery DateTime?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DiscountCode {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  type            String    // percentage, fixed
+  value           Float
+  minOrderAmount  Float     @default(0)
+  maxDiscountAmount Float?
+  isActive        Boolean   @default(true)
+  expiresAt       DateTime?
+  usageLimit      Int?
+  usedCount       Int       @default(0)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Template {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  config      String   // JSON object
+  isActive    Boolean  @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

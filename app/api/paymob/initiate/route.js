@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '../../../../backend/lib/db';
-import Order from '../../../../backend/models/Order';
+import prisma from '../../../../backend/lib/prisma';
 import { getPaymobToken, registerPaymobOrder, getPaymentKey, getIframeUrl } from '../../../../backend/lib/paymob';
 
 export async function POST(req) {
@@ -11,8 +10,9 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Order ID required' }, { status: 400 });
     }
 
-    await dbConnect();
-    const order = await Order.findById(orderId);
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
 
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
@@ -27,33 +27,36 @@ export async function POST(req) {
     const authToken = await getPaymobToken();
 
     // 2. Register Order
-    const amountCents = order.totalPrice * 100; // Paymob uses cents
-    const merchantOrderId = order._id.toString();
+    const amountCents = Math.round(order.totalPrice * 100); 
+    const merchantOrderId = order.id;
+    
+    // This function returns the Paymob Order ID 
     const paymobOrderId = await registerPaymobOrder(authToken, merchantOrderId, amountCents);
     
     // Save Paymob Order ID to our database
-    order.payment = { 
-        ...order.payment, 
-        paymobOrderId: paymobOrderId,
-        amountCents: amountCents
-    };
-    await order.save();
+    await prisma.order.update({
+        where: { id: orderId },
+        data: {
+            paymobOrderId: String(paymobOrderId),
+            amountCents: amountCents,
+        }
+    });
 
     // 3. Get Payment Key
     const billingData = {
-      email: order.customer.email,
-      firstName: order.customer.name.split(' ')[0] || "Customer",
-      lastName: order.customer.name.split(' ').slice(1).join(' ') || "Name",
-      phone: order.customer.phone,
-      street: order.deliveryAddress.street,
-      building: order.deliveryAddress.building,
-      floor: order.deliveryAddress.floor,
-      apartment: order.deliveryAddress.apartment,
-      city: order.deliveryAddress.city,
-      district: order.deliveryAddress.district,
-      postalCode: order.deliveryAddress.postalCode,
-      country: order.deliveryAddress.country || "EG",
-      state: order.deliveryAddress.governorate,
+      email: order.customerEmail,
+      firstName: order.customerName.split(' ')[0] || "Customer",
+      lastName: order.customerName.split(' ').slice(1).join(' ') || "Name",
+      phone: order.customerPhone,
+      street: order.street,
+      building: order.building || "NA",
+      floor: order.floor || "NA",
+      apartment: order.apartment || "NA",
+      city: order.city,
+      district: order.city, 
+      postalCode: order.postalCode || "00000",
+      country: order.country || "EG",
+      state: order.governorate,
     };
 
     const paymentKey = await getPaymentKey(authToken, paymobOrderId, amountCents, billingData);

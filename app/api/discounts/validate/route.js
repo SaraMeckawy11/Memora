@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '../../../../backend/lib/db';
-import DiscountCode from '../../../../backend/models/DiscountCode';
+import prisma from '../../../../backend/lib/prisma';
 
 export async function POST(req) {
   try {
@@ -10,14 +9,11 @@ export async function POST(req) {
       return NextResponse.json({ valid: false, message: 'Code required' }, { status: 400 });
     }
 
-    await dbConnect();
-
-    const discount = await DiscountCode.findOne({ 
-      code: code.toUpperCase(), 
-      isActive: true 
+    const discount = await prisma.discountCode.findUnique({
+      where: { code: code.toUpperCase() },
     });
 
-    if (!discount) {
+    if (!discount || !discount.isActive) {
       return NextResponse.json({ valid: false, message: 'Invalid code' }, { status: 404 });
     }
 
@@ -25,7 +21,7 @@ export async function POST(req) {
       return NextResponse.json({ valid: false, message: 'Code expired' }, { status: 400 });
     }
 
-    if (discount.usageLimit !== undefined && discount.usedCount >= discount.usageLimit) {
+    if (discount.usageLimit !== null && discount.usedCount >= discount.usageLimit) {
       return NextResponse.json({ valid: false, message: 'Usage limit reached' }, { status: 400 });
     }
 
