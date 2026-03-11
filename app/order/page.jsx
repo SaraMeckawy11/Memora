@@ -7,13 +7,20 @@ export default function OrderPage() {
   const router = useRouter()
   const [format, setFormat] = useState('pdf')
   const [exporting, setExporting] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
+  
   const [shippingInfo, setShippingInfo] = useState({
     name: '',
     email: '',
-    address: '',
+    phone: '',
+    street: '',
+    building: '',
+    floor: '',
+    apartment: '',
     city: '',
+    governorate: '',
     postalCode: '',
-    country: 'USA'
+    country: 'Egypt'
   })
   const [quantity, setQuantity] = useState(1)
   const [notification, setNotification] = useState(null)
@@ -21,6 +28,7 @@ export default function OrderPage() {
   const [selectedPageSize, setSelectedPageSize] = useState('8×10 Portrait')
   const [selectedProduct, setSelectedProduct] = useState('Hardcover')
   const [selectedTheme, setSelectedTheme] = useState('Classic')
+  const [photoUrls, setPhotoUrls] = useState([])
 
   // Load data from localStorage on mount
   useEffect(() => {
@@ -32,6 +40,8 @@ export default function OrderPage() {
         if (draft.selectedSize?.name) setSelectedPageSize(draft.selectedSize.name)
         if (draft.selectedProduct?.name) setSelectedProduct(draft.selectedProduct.name)
         if (draft.coverTheme) setSelectedTheme(draft.coverTheme)
+        // Assuming draft might have photoUrls if they were uploaded
+        if (draft.photoUrls) setPhotoUrls(draft.photoUrls) 
       } catch (e) {
         console.warn('Failed to load draft:', e)
       }
@@ -39,12 +49,12 @@ export default function OrderPage() {
   }, [])
 
   // Calculate pricing
-  const basePrice = 19.99
+  const basePrice = 499 // Changed to EGP logical price
   const productMultiplier = { 'Hardcover': 1.5, 'Softcover': 1 }[selectedProduct] || 1
-  const pagePrice = pages.length * 0.50
+  const pagePrice = pages.length * 10 // 10 EGP per page
   const subtotal = (basePrice * productMultiplier + pagePrice) * quantity
-  const shipping = quantity * 5.00
-  const tax = (subtotal + shipping) * 0.08
+  const shipping = quantity * 50 // 50 EGP shipping
+  const tax = (subtotal + shipping) * 0.14 // 14% VAT
   const total = subtotal + shipping + tax
 
   const handleInputChange = (e) => {
@@ -63,74 +73,88 @@ export default function OrderPage() {
     setTimeout(() => setNotification(null), 3000)
   }, [])
 
-  const handleExport = useCallback(async (fmt) => {
-    setExporting(true)
-    try {
-      const exportData = {
-        format: fmt,
-        pages: pages.length,
-        product: selectedProduct,
-        size: selectedPageSize,
-        timestamp: new Date().toISOString()
-      }
-      console.log('📥 Exporting:', exportData)
-      const dataStr = JSON.stringify(exportData, null, 2)
-      const dataBlob = new Blob([dataStr], { type: 'application/octet-stream' })
-      const url = URL.createObjectURL(dataBlob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `photobook-export.${fmt === 'pdf' ? 'pdf' : fmt === 'png' ? 'zip' : 'docx'}`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(url)
-      showNotification(`✓ Exported as ${fmt.toUpperCase()}`, 'success')
-    } catch (error) {
-      console.error('Export error:', error)
-      showNotification('Failed to export', 'error')
-    } finally {
-      setExporting(false)
+  const handleCheckout = useCallback(async () => {
+    // Validation
+    const required = ['name', 'email', 'phone', 'street', 'city', 'governorate'];
+    for (const field of required) {
+        if (!shippingInfo[field]) {
+            showNotification(`Please fill in ${field}`, 'error');
+            return;
+        }
     }
-  }, [format, pages.length, selectedProduct, selectedPageSize, showNotification])
-
-  const handleCheckout = useCallback(() => {
-    if (!shippingInfo.name || !shippingInfo.email || !shippingInfo.address || !shippingInfo.city || !shippingInfo.postalCode) {
-      showNotification('Please fill in all required fields', 'error')
-      return
-    }
+    
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(shippingInfo.email)) {
       showNotification('Please enter a valid email address', 'error')
       return
     }
-    const orderData = {
-      id: `order_${Date.now()}`,
-      pages: pages.length,
-      quantity,
-      product: selectedProduct,
-      size: selectedPageSize,
-      pricing: { subtotal, shipping, tax, total },
-      shipping: shippingInfo,
-      timestamp: new Date().toISOString()
-    }
-    console.log('📦 Order created:', orderData)
-    showNotification(`✓ Order placed! (Order #${orderData.id.substring(0, 12)})`, 'success')
+
+    setIsProcessing(true);
+
     try {
-      const orders = JSON.parse(localStorage.getItem('photobook_orders') || '[]')
-      orders.push(orderData)
-      localStorage.setItem('photobook_orders', JSON.stringify(orders))
-    } catch (e) {
-      console.warn('Failed to save order:', e)
+        // 1. Create Order
+        const orderPayload = {
+            sessionId: `session_${Date.now()}`, // Or get from auth/cookie
+            customer: {
+                name: shippingInfo.name,
+                email: shippingInfo.email,
+                phone: shippingInfo.phone,
+            },
+            deliveryAddress: {
+                street: shippingInfo.street,
+                building: shippingInfo.building,
+                floor: shippingInfo.floor,
+                apartment: shippingInfo.apartment,
+                city: shippingInfo.city,
+                governorate: shippingInfo.governorate,
+                postalCode: shippingInfo.postalCode,
+                country: shippingInfo.country,
+            },
+            bookSize: selectedPageSize,
+            photoUrls: photoUrls, 
+            coverConfig: { theme: selectedTheme, product: selectedProduct },
+            totalPrice: total,
+        };
+
+        const createRes = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderPayload),
+        });
+
+        if (!createRes.ok) {
+            throw new Error('Failed to create order');
+        }
+
+        const { orderId } = await createRes.json();
+
+        // 2. Initiate Payment
+        const payRes = await fetch('/api/paymob/initiate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId }),
+        });
+
+        if (!payRes.ok) {
+            throw new Error('Failed to initiate payment');
+        }
+
+        const { iframeUrl } = await payRes.json();
+
+        // 3. Redirect
+        window.location.href = iframeUrl;
+
+    } catch (error) {
+        console.error('Checkout error:', error);
+        showNotification('Something went wrong. Please try again.', 'error');
+        setIsProcessing(false);
     }
-    setTimeout(() => {
-      window.location.href = '/'
-    }, 2000)
-  }, [shippingInfo, quantity, pages.length, selectedProduct, selectedPageSize, subtotal, shipping, tax, total, showNotification])
+  }, [shippingInfo, photoUrls, selectedPageSize, selectedTheme, selectedProduct, total, showNotification])
 
   return (
     <>
       {/* Toolbar */}
       <div style={{ padding: '16px 0', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0', position: 'sticky', top: 0, zIndex: 30, boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-        <div className="container" style={{ display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'space-between', maxWidth: '1400px' }}>
+        <div className="container" style={{ display: 'flex', gap: '16px', alignItems: 'center', justifyContent: 'space-between', maxWidth: '1400px', margin: '0 auto', padding: '0 16px' }}>
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
             <button onClick={handleBackToEditor} style={{ background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'none', color: '#666', fontWeight: 500, padding: '0.5rem 0', fontSize: '1rem' }}>← Back</button>
             <div style={{ height: '24px', width: '1px', backgroundColor: '#e0e0e0' }} />
@@ -159,18 +183,17 @@ export default function OrderPage() {
       )}
 
       {/* Main Content */}
-      <div className="container" style={{ padding: '32px 24px', maxWidth: '1400px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: '32px' }}>
+      <div className="container" style={{ padding: '32px 24px', maxWidth: '1400px', margin: '0 auto' }}>
+        <div className="layout-grid">
           {/* Left Column */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {/* Order Summary */}
             <div style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '28px', boxShadow: '0 8px 24px rgba(15,23,42,0.08)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
                 <h3 style={{ margin: 0, fontSize: '1.15rem' }}>📖 Order Summary</h3>
-                <span style={{ backgroundColor: 'rgba(109, 40, 217, 0.1)', color: '#6d28d9', padding: '6px 12px', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600 }}>Step 4 of 4</span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px', marginBottom: '24px' }}>
+              <div className="summary-grid" style={{ gap: '24px', marginBottom: '24px' }}>
                 <div style={{ padding: '16px', backgroundColor: '#f8f9fa', borderRadius: '10px', borderLeft: '3px solid #6d28d9' }}>
                   <p style={{ margin: '0 0 8px 0', fontSize: '0.9rem', color: '#666' }}>Product Type</p>
                   <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>{selectedProduct}</p>
@@ -200,50 +223,9 @@ export default function OrderPage() {
               </div>
             </div>
 
-            {/* Export Options */}
-            <div style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '28px', boxShadow: '0 8px 24px rgba(15,23,42,0.08)' }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: '1.15rem' }}>📥 Export Your Book</h3>
-              <p style={{ margin: '0 0 16px 0', color: '#666', fontSize: '0.95rem' }}>Download your photo book as a digital file before ordering physical copies</p>
-
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '16px' }}>
-                {['pdf', 'png', 'docx'].map(fmt => (
-                  <button
-                    key={fmt}
-                    onClick={() => setFormat(fmt)}
-                    style={{
-                      padding: '16px',
-                      border: format === fmt ? '2px solid #0ea5a3' : '1px solid #ddd',
-                      borderRadius: '10px',
-                      backgroundColor: format === fmt ? 'rgba(14, 165, 163, 0.05)' : '#fff',
-                      cursor: 'pointer',
-                      fontWeight: format === fmt ? 600 : 400,
-                      fontSize: '0.95rem',
-                      transition: 'all 0.22s',
-                      color: format === fmt ? '#0ea5a3' : '#333'
-                    }}
-                  >
-                    {fmt.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                onClick={() => handleExport(format)}
-                disabled={exporting || pages.length === 0}
-                className="btn btn-primary"
-                style={{
-                  width: '100%',
-                  opacity: exporting || pages.length === 0 ? 0.6 : 1,
-                  cursor: exporting ? 'not-allowed' : 'pointer'
-                }}
-              >
-                {exporting ? '⏳ Exporting...' : `📥 Download as ${format.toUpperCase()}`}
-              </button>
-            </div>
-
             {/* Shipping Details */}
             <div style={{ backgroundColor: '#fff', borderRadius: '14px', padding: '28px', boxShadow: '0 8px 24px rgba(15,23,42,0.08)' }}>
-              <h3 style={{ margin: '0 0 20px 0', fontSize: '1.15rem' }}>🚚 Shipping Details</h3>
+              <h3 style={{ margin: '0 0 20px 0', fontSize: '1.15rem' }}>🚚 Delivery Details</h3>
 
               <div style={{ display: 'grid', gap: '16px' }}>
                 <input
@@ -252,118 +234,103 @@ export default function OrderPage() {
                   placeholder="Full Name *"
                   value={shippingInfo.name}
                   onChange={handleInputChange}
-                  style={{
-                    padding: '12px 14px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'Inter, sans-serif',
-                    transition: 'all 0.22s',
-                    outline: 'none'
-                  }}
-                  onFocus={e => e.target.style.borderColor = '#0ea5a3'}
-                  onBlur={e => e.target.style.borderColor = '#ddd'}
+                  className="form-input"
                 />
 
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email Address *"
-                  value={shippingInfo.email}
-                  onChange={handleInputChange}
-                  style={{
-                    padding: '12px 14px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'Inter, sans-serif',
-                    transition: 'all 0.22s',
-                    outline: 'none'
-                  }}
-                  onFocus={e => e.target.style.borderColor = '#0ea5a3'}
-                  onBlur={e => e.target.style.borderColor = '#ddd'}
-                />
+                <div className="input-grid-2" style={{ gap: '16px' }}>
+                    <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address *"
+                    value={shippingInfo.email}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    />
+                    <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number *"
+                    value={shippingInfo.phone}
+                    onChange={handleInputChange}
+                    className="form-input"
+                    />
+                </div>
 
                 <input
                   type="text"
-                  name="address"
+                  name="street"
                   placeholder="Street Address *"
-                  value={shippingInfo.address}
+                  value={shippingInfo.street}
                   onChange={handleInputChange}
-                  style={{
-                    padding: '12px 14px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'Inter, sans-serif',
-                    transition: 'all 0.22s',
-                    outline: 'none'
-                  }}
-                  onFocus={e => e.target.style.borderColor = '#0ea5a3'}
-                  onBlur={e => e.target.style.borderColor = '#ddd'}
+                  className="form-input"
                 />
 
-                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+                <div className="input-grid-3" style={{ gap: '12px' }}>
+                    <input
+                        type="text"
+                        name="building"
+                        placeholder="Building"
+                        value={shippingInfo.building}
+                        onChange={handleInputChange}
+                        className="form-input"
+                    />
+                    <input
+                        type="text"
+                        name="floor"
+                        placeholder="Floor"
+                        value={shippingInfo.floor}
+                        onChange={handleInputChange}
+                        className="form-input"
+                    />
+                    <input
+                        type="text"
+                        name="apartment"
+                        placeholder="Apartment"
+                        value={shippingInfo.apartment}
+                        onChange={handleInputChange}
+                        className="form-input"
+                    />
+                </div>
+
+                <div className="input-grid-2" style={{ gap: '12px' }}>
                   <input
                     type="text"
                     name="city"
                     placeholder="City *"
                     value={shippingInfo.city}
                     onChange={handleInputChange}
-                    style={{
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '0.95rem',
-                      fontFamily: 'Inter, sans-serif',
-                      transition: 'all 0.22s',
-                      outline: 'none'
-                    }}
-                    onFocus={e => e.target.style.borderColor = '#0ea5a3'}
-                    onBlur={e => e.target.style.borderColor = '#ddd'}
+                    className="form-input"
                   />
 
                   <input
                     type="text"
-                    name="postalCode"
-                    placeholder="Postal Code *"
-                    value={shippingInfo.postalCode}
+                    name="governorate"
+                    placeholder="Governorate/State *"
+                    value={shippingInfo.governorate}
                     onChange={handleInputChange}
-                    style={{
-                      padding: '12px 14px',
-                      border: '1px solid #ddd',
-                      borderRadius: '8px',
-                      fontSize: '0.95rem',
-                      fontFamily: 'Inter, sans-serif',
-                      transition: 'all 0.22s',
-                      outline: 'none'
-                    }}
-                    onFocus={e => e.target.style.borderColor = '#0ea5a3'}
-                    onBlur={e => e.target.style.borderColor = '#ddd'}
+                    className="form-input"
                   />
                 </div>
+                
+                 <div className="input-grid-2" style={{ gap: '12px' }}>
+                    <input
+                        type="text"
+                        name="postalCode"
+                        placeholder="Postal Code"
+                        value={shippingInfo.postalCode}
+                        onChange={handleInputChange}
+                        className="form-input"
+                    />
+                    <input
+                        type="text"
+                        name="country"
+                        placeholder="Country"
+                        value={shippingInfo.country}
+                        disabled
+                        className="form-input bg-gray-100 text-gray-500"
+                    />
+                </div>
 
-                <select
-                  name="country"
-                  value={shippingInfo.country}
-                  onChange={handleInputChange}
-                  style={{
-                    padding: '12px 14px',
-                    border: '1px solid #ddd',
-                    borderRadius: '8px',
-                    fontSize: '0.95rem',
-                    fontFamily: 'Inter, sans-serif',
-                    transition: 'all 0.22s',
-                    outline: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option>USA</option>
-                  <option>Canada</option>
-                  <option>UK</option>
-                  <option>Australia</option>
-                  <option>Other</option>
-                </select>
               </div>
             </div>
           </div>
@@ -376,40 +343,41 @@ export default function OrderPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e0e0e0' }}>
                 <span>{selectedProduct} ({selectedPageSize})</span>
-                <span style={{ fontWeight: 600 }}>${(basePrice * productMultiplier).toFixed(2)}</span>
+                <span style={{ fontWeight: 600 }}>{(basePrice * productMultiplier).toFixed(2)} EGP</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e0e0e0' }}>
-                <span>{pages.length} pages × ${(0.50).toFixed(2)}</span>
-                <span style={{ fontWeight: 600 }}>${pagePrice.toFixed(2)}</span>
+                <span>{pages.length} pages × ${(10).toFixed(2)} EGP</span>
+                <span style={{ fontWeight: 600 }}>{pagePrice.toFixed(2)} EGP</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e0e0e0' }}>
                 <span>Subtotal (×{quantity})</span>
-                <span style={{ fontWeight: 600 }}>${subtotal.toFixed(2)}</span>
+                <span style={{ fontWeight: 600 }}>{subtotal.toFixed(2)} EGP</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e0e0e0' }}>
                 <span>Shipping</span>
-                <span style={{ fontWeight: 600 }}>${shipping.toFixed(2)}</span>
+                <span style={{ fontWeight: 600 }}>{shipping.toFixed(2)} EGP</span>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', marginBottom: '12px', paddingBottom: '12px', borderBottom: '2px solid #ddd' }}>
-                <span>Tax (8%)</span>
-                <span style={{ fontWeight: 600 }}>${tax.toFixed(2)}</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem', marginBottom: '12px', paddingBottom: '2px solid #ddd' }}>
+                <span>VAT (14%)</span>
+                <span style={{ fontWeight: 600 }}>{tax.toFixed(2)} EGP</span>
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.15rem', fontWeight: 700, color: '#0ea5a3', marginBottom: '20px' }}>
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{total.toFixed(2)} EGP</span>
               </div>
 
               <button
                 onClick={handleCheckout}
+                disabled={isProcessing}
                 className="btn btn-primary"
-                style={{ width: '100%', marginBottom: '8px', fontSize: '1rem', fontWeight: 600 }}
+                style={{ width: '100%', marginBottom: '8px', fontSize: '1rem', fontWeight: 600, opacity: isProcessing ? 0.7 : 1, cursor: isProcessing ? 'wait' : 'pointer' }}
               >
-                ✓ Place Order
+                {isProcessing ? 'Processing...' : '✓ Pay Now'}
               </button>
 
               <button onClick={handleBackToEditor} className="btn btn-ghost" style={{ width: '100%', textAlign: 'center', padding: '10px' }}>
@@ -420,7 +388,7 @@ export default function OrderPage() {
             {/* Info Card */}
             <div style={{ backgroundColor: 'rgba(14, 165, 163, 0.1)', borderRadius: '14px', padding: '16px', borderLeft: '4px solid #0ea5a3' }}>
               <p style={{ margin: 0, fontSize: '0.9rem', color: '#333', fontWeight: 500 }}>
-                💡 <strong>Free delivery</strong> on orders over $50. Your photo book will arrive in 5-7 business days.
+                💡 <strong>Secure Payment</strong> via Paymob. Your photobook will arrive in 5-7 business days.
               </p>
             </div>
           </aside>
@@ -436,6 +404,69 @@ export default function OrderPage() {
           to {
             transform: translateX(0);
             opacity: 1;
+          }
+        }
+        .form-input {
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: Inter, sans-serif;
+            transition: all 0.22s;
+            outline: none;
+            width: 100%;
+        }
+        .form-input:focus {
+            border-color: #0ea5a3;
+            box-shadow: 0 0 0 2px rgba(14, 165, 163, 0.1);
+        }
+        
+        .layout-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) 380px;
+          gap: 32px;
+        }
+
+        .summary-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 24px;
+        }
+
+        .input-grid-2 {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+
+        .input-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 1024px) {
+          .layout-grid {
+             grid-template-columns: 1fr; /* Stack columns */
+          }
+
+          /* Ensure sidebar stays at bottom (natural order) and doesn't stick */
+          .layout-grid > aside {
+             position: static !important;
+             width: 100%;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .summary-grid {
+            grid-template-columns: 1fr; /* Stack summary items on mobile */
+          }
+          
+          .input-grid-2, .input-grid-3 {
+             grid-template-columns: 1fr; /* Stack inputs on mobile */
+          }
+
+          .container {
+             padding: 16px !important;
           }
         }
       `}</style>
