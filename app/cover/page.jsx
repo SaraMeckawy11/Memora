@@ -30,6 +30,15 @@ function CoverEditorContent() {
   const [isInteractingWithCanvas, setIsInteractingWithCanvas] = useState(false)
   const [canvasSettings, setCanvasSettings] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showDebug, setShowDebug] = useState(true)
+
+  // Hide debug overlay after 3 seconds once loaded
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => setShowDebug(false), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [loading])
 
   // Load layout from create page selection
   useEffect(() => {
@@ -166,7 +175,9 @@ function CoverEditorContent() {
           zIndex: 99999, 
           fontSize: 12,
           pointerEvents: 'none',
-          whiteSpace: 'nowrap'
+          whiteSpace: 'nowrap',
+          opacity: showDebug ? 1 : 0,
+          transition: 'opacity 0.5s ease-out'
       }}>
         {debugInfo}
       </div>
