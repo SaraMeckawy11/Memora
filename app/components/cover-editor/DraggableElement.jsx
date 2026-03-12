@@ -21,6 +21,9 @@ export default function DraggableElement({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [initialDims, setInitialDims] = useState({ x: 0, y: 0, w: 0, h: 0 })
   const [isEditing, setIsEditing] = useState(false)
+  
+  // Local state for smooth dragging without history spam
+  const [localTransform, setLocalTransform] = useState(null) 
 
   // Handle Dragging
   const handleMouseDown = (e) => {
@@ -34,6 +37,10 @@ export default function DraggableElement({
     e.stopPropagation()
     onSelect(element.id)
     setIsDragging(true)
+    
+    // Initialize local transform
+    setLocalTransform({ x: element.x, y: element.y, width: element.width, height: element.height })
+    
     setDragStart({ x: e.clientX, y: e.clientY })
     setInitialDims({ x: element.x, y: element.y, w: element.width, h: element.height })
     if (onDragStart) onDragStart()
@@ -53,6 +60,10 @@ export default function DraggableElement({
     e.stopPropagation()
     onSelect(element.id)
     setIsDragging(true)
+    
+    // Initialize local transform
+    setLocalTransform({ x: element.x, y: element.y, width: element.width, height: element.height })
+
     const touch = e.touches[0]
     setDragStart({ x: touch.clientX, y: touch.clientY })
     setInitialDims({ x: element.x, y: element.y, w: element.width, h: element.height })
@@ -70,11 +81,21 @@ export default function DraggableElement({
     e.stopPropagation()
     setIsResizing(true)
     setResizeHandle(handle)
+    
+    // Initialize local transform
+    setLocalTransform({ x: element.x, y: element.y, width: element.width, height: element.height })
+    
     const clientX = e.touches ? e.touches[0].clientX : e.clientX
     const clientY = e.touches ? e.touches[0].clientY : e.clientY
     setDragStart({ x: clientX, y: clientY })
     setInitialDims({ x: element.x, y: element.y, w: element.width, h: element.height })
   }
+
+  // Ref to hold the latest local transform for access in handleEnd
+  const latestTransformRef = useRef(null)
+  useEffect(() => {
+    latestTransformRef.current = localTransform
+  }, [localTransform])
 
   useEffect(() => {
     const handleMove = (clientX, clientY) => {
@@ -84,9 +105,11 @@ export default function DraggableElement({
       const dy = (clientY - dragStart.y) / canvasScale
 
       if (isDragging) {
-        onChange(element.id, {
+        setLocalTransform({
           x: initialDims.x + dx,
-          y: initialDims.y + dy
+          y: initialDims.y + dy,
+          width: initialDims.w,
+          height: initialDims.h
         })
       } else if (isResizing) {
         let newX = initialDims.x
@@ -107,30 +130,30 @@ export default function DraggableElement({
           newH = initialDims.h - deltaH
         }
 
-        onChange(element.id, { x: newX, y: newY, width: newW, height: newH })
+        setLocalTransform({ x: newX, y: newY, width: newW, height: newH })
       }
     }
 
     const handleMouseMove = (e) => handleMove(e.clientX, e.clientY)
     const handleTouchMove = (e) => {
-      // If user adds a second finger, stop dragging and allow scrolling/zooming
-      if (e.touches && e.touches.length > 1) {
-          handleEnd();
-          return;
-      }
-
-      // Prevent scrolling while dragging/resizing with ONE finger
-      if (isDragging || isResizing) {
-        if (e.cancelable) e.preventDefault() 
-      }
+      if (e.touches && e.touches.length > 1) { handleEnd(); return; }
+      if (isDragging || isResizing) { if (e.cancelable) e.preventDefault(); }
       handleMove(e.touches[0].clientX, e.touches[0].clientY)
     }
 
     const handleEnd = () => {
       if (isDragging && onDragEnd) onDragEnd()
+      
+      // Commit final change to history
+      if (latestTransformRef.current) {
+        onChange(element.id, latestTransformRef.current)
+      }
+
       setIsDragging(false)
       setIsResizing(false)
       setResizeHandle(null)
+      setLocalTransform(null)
+      latestTransformRef.current = null
     }
 
     if (isDragging || isResizing) {
@@ -146,13 +169,15 @@ export default function DraggableElement({
       window.removeEventListener('touchmove', handleTouchMove)
       window.removeEventListener('touchend', handleEnd)
     }
-  }, [isDragging, isResizing, dragStart, initialDims, canvasScale, element.id, onChange, resizeHandle, onDragEnd])
+  }, [isDragging, isResizing, dragStart, initialDims, canvasScale, element.id, onChange, resizeHandle, onDragEnd, localTransform])
+
+  const effectiveElement = localTransform ? { ...element, ...localTransform } : element
 
   const style = {
-    left: `${element.x}px`,
-    top: `${element.y}px`,
-    width: `${element.width}px`,
-    height: `${element.height}px`,
+    left: `${effectiveElement.x}px`,
+    top: `${effectiveElement.y}px`,
+    width: `${effectiveElement.width}px`,
+    height: `${effectiveElement.height}px`,
     zIndex: element.zIndex || 1,
     transform: `rotate(${element.rotation || 0}deg)`,
     // backgroundColor handled in renderContent for shapes
@@ -165,25 +190,28 @@ export default function DraggableElement({
     userSelect: 'none'
   }
 
-  const renderContent = () => {
-    if (element.type === 'text') {
+  const renderContent = (contentElement) => {
+    // Fallback if not passed (though we always pass effectiveElement now)
+    const elementToRender = contentElement || element
+
+    if (elementToRender.type === 'text') {
       if (isEditing) {
         return (
           <textarea
             autoFocus
-            value={element.content}
-            onChange={(e) => onChange(element.id, { content: e.target.value })}
+            value={elementToRender.content}
+            onChange={(e) => onChange(elementToRender.id, { content: e.target.value })}
             onBlur={() => setIsEditing(false)}
             onMouseDown={(e) => e.stopPropagation()}
             style={{
-              fontSize: `${element.fontSize}px`,
-              color: element.color,
-              fontFamily: element.fontFamily,
-              fontWeight: element.fontWeight,
-              fontStyle: element.fontStyle,
-              textDecoration: element.textDecoration,
-              textAlign: element.textAlign,
-              letterSpacing: element.letterSpacing,
+              fontSize: `${elementToRender.fontSize}px`,
+              color: elementToRender.color,
+              fontFamily: elementToRender.fontFamily,
+              fontWeight: elementToRender.fontWeight,
+              fontStyle: elementToRender.fontStyle,
+              textDecoration: elementToRender.textDecoration,
+              textAlign: elementToRender.textAlign,
+              letterSpacing: elementToRender.letterSpacing,
               width: '100%',
               height: '100%',
               resize: 'none',
@@ -192,7 +220,7 @@ export default function DraggableElement({
               outline: 'none',
               padding: 0,
               margin: 0,
-              lineHeight: element.lineHeight || 1.2,
+              lineHeight: elementToRender.lineHeight || 1.2,
               overflow: 'hidden'
             }}
           />
@@ -201,29 +229,30 @@ export default function DraggableElement({
 
       return (
         <div style={{
-          fontSize: `${element.fontSize}px`,
-          color: element.color,
-          fontFamily: element.fontFamily,
-          fontWeight: element.fontWeight,
-          fontStyle: element.fontStyle,
-          textDecoration: element.textDecoration,
-          textAlign: element.textAlign,
-          letterSpacing: element.letterSpacing,
+          fontSize: `${elementToRender.fontSize}px`,
+          color: elementToRender.color,
+          fontFamily: elementToRender.fontFamily,
+          fontWeight: elementToRender.fontWeight,
+          fontStyle: elementToRender.fontStyle,
+          textDecoration: elementToRender.textDecoration,
+          textAlign: elementToRender.textAlign,
+          letterSpacing: elementToRender.letterSpacing,
           width: '100%',
           height: '100%',
           whiteSpace: 'pre-wrap',
-          lineHeight: element.lineHeight || 1.2,
+          lineHeight: elementToRender.lineHeight || 1.2,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: element.textAlign === 'center' ? 'center' : (element.textAlign === 'right' ? 'flex-end' : 'flex-start'),
+          alignItems: elementToRender.textAlign === 'center' ? 'center' : (elementToRender.textAlign === 'right' ? 'flex-end' : 'flex-start'),
           justifyContent: 'center', // Always center vertically within the box
         }}>
-          {element.content}
+          {elementToRender.content}
         </div>
       )
     }
 
-    if (element.type === 'image') {
+    if (elementToRender.type === 'image') {
+      const element = elementToRender // Map back for easier copy-paste logic below
       // Each property works independently with different effects
       
       // Exposure: Primary brightness control (like camera exposure)
@@ -393,7 +422,8 @@ export default function DraggableElement({
       )
     }
 
-    if (element.type === 'drawing') {
+    if (elementToRender.type === 'drawing') {
+      const element = elementToRender
       const viewBoxW = element.originalWidth || element.width
       const viewBoxH = element.originalHeight || element.height
       
@@ -420,7 +450,8 @@ export default function DraggableElement({
       )
     }
 
-    if (element.type === 'shape') {
+    if (elementToRender.type === 'shape') {
+      const element = elementToRender
       let opacityValue = element.opacity !== undefined ? element.opacity : 100;
       if (opacityValue <= 1 && opacityValue > 0) opacityValue = opacityValue * 100;
 
@@ -505,12 +536,12 @@ export default function DraggableElement({
       <div style={{ 
         width: '100%', 
         height: '100%', 
-        transform: `scaleX(${element.scaleX || 1}) scaleY(${element.scaleY || 1})`,
+        transform: `scaleX(${effectiveElement.scaleX || 1}) scaleY(${effectiveElement.scaleY || 1})`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        {renderContent()}
+        {renderContent(effectiveElement)}
       </div>
       
       {isSelected && !isEditing && (

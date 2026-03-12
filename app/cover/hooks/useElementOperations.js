@@ -30,14 +30,14 @@ export function useElementOperations(elements, setElements, setSelectedId) {
     setSelectedId(newId);
   };
 
-  const updateElement = (id, updatedProps, action) => {
+  const updateElement = (id, updatedProps, action, options = {}) => {
     if (action === 'delete') {
-      setElements(prev => prev.filter(el => el.id !== id));
+      setElements(prev => prev.filter(el => el.id !== id), options);
       setSelectedId(null);
       return;
     }
     if (updatedProps) {
-      setElements(prev => prev.map(el => el.id === id ? { ...el, ...updatedProps } : el));
+      setElements(prev => prev.map(el => el.id === id ? { ...el, ...updatedProps } : el), options);
     }
   };
 

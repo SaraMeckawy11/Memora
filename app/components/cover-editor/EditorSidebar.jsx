@@ -1,14 +1,8 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import '@/styles/cover-editor/sidebar.css'
 
-const PAPER_SIZES = {
-  A4: { width: 595, height: 842, label: 'A4', desc: 'Print Standard' }, 
-  A5: { width: 420, height: 595, label: 'A5', desc: 'Compact' },
-  B5: { width: 498, height: 708, label: 'B5', desc: 'Trade Book' },
-}
 
-const PIXEL_SCALE = 1.5 // Multiplier for screen editing resolution (e.g. A4 becomes ~900x1260)
 
 const SHAPES = [
   { id: 'square', type: 'shape', shapeType: 'rect', fill: '#10b981', name: 'Square', width: 100, height: 100 },
@@ -31,7 +25,31 @@ export default function EditorSidebar({
   isInteractingWithCanvas
 }) {
   const [activeTab, setActiveTab] = useState(null)
-  
+  const sidebarRef = useRef(null)
+  const panelRef = useRef(null)
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (!activeTab) return;
+
+      const sidebarElement = sidebarRef.current;
+      const panelElement = panelRef.current;
+      const target = event.target;
+      
+      const sidebarContains = sidebarElement && sidebarElement.contains(target);
+      const panelContains = panelElement && panelElement.contains(target);
+      
+      if (!sidebarContains && !panelContains) {
+        setActiveTab(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [activeTab]);
+
   // Safe access to canvas settings
   const safeCanvasSettings = canvasSettings || { 
     sizeName: 'A4', 
@@ -51,28 +69,7 @@ export default function EditorSidebar({
     }
   }
 
-  const handleResizeCanvas = (sizeName, orientation) => {
-    const baseSize = PAPER_SIZES[sizeName]
-    if (!baseSize) return
 
-    let width = baseSize.width * PIXEL_SCALE
-    let height = baseSize.height * PIXEL_SCALE
-
-    if (orientation === 'landscape') {
-      [width, height] = [height, width]
-    }
-
-    const newSettings = {
-      ...safeCanvasSettings,
-      width: Math.round(width),
-      height: Math.round(height),
-      sizeName,
-      orientation
-    }
-    
-    console.log('📐 Button clicked: Resizing to', sizeName, orientation, '→', newSettings.width, 'x', newSettings.height);
-    onUpdateCanvas(newSettings)
-  }
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0]
@@ -92,21 +89,7 @@ export default function EditorSidebar({
 
   return (
     <>
-      <div className="editor-sidebar">
-        <button 
-          className={`sidebar-btn ${!isDrawMode && !activeTab ? 'active' : ''}`}
-          onClick={() => {
-            if (isDrawMode) onToggleDrawMode()
-            setActiveTab(null)
-          }}
-          title="Cursor / Select"
-        >
-          <span className="sidebar-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
-          </span>
-          <span className="sidebar-label">Select</span>
-        </button>
-
+      <div className="editor-sidebar" ref={sidebarRef}>
         <button 
           className={`sidebar-btn ${activeTab === 'text' ? 'active' : ''}`}
           onClick={() => handleTabClick('text')}
@@ -122,12 +105,11 @@ export default function EditorSidebar({
           onClick={() => handleTabClick('shapes')}
         >
           <span className="sidebar-icon">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M3 3h18v18H3z" stroke="none" fill="none"/></svg>
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{position: 'absolute', opacity: 0}}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
-             <div style={{ display: 'flex', gap: 2 }}>
-                <div style={{ width: 10, height: 10, border: '2px solid currentColor', borderRadius: 2 }}></div>
-                <div style={{ width: 10, height: 10, border: '2px solid currentColor', borderRadius: '50%' }}></div>
-             </div>
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+               <path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z" />
+               <rect x="3" y="14" width="7" height="7" rx="1" />
+               <circle cx="17.5" cy="17.5" r="3.5" />
+             </svg>
           </span>
           <span className="sidebar-label">Shapes</span>
         </button>
@@ -135,12 +117,12 @@ export default function EditorSidebar({
         <button 
           className={`sidebar-btn ${activeTab === 'background' ? 'active' : ''}`}
           onClick={() => handleTabClick('background')}
-          title="Canvas Setup & Background"
+          title="Background Color"
         >
           <span className="sidebar-icon">
-             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
           </span>
-          <span className="sidebar-label">Layout</span>
+          <span className="sidebar-label">Background</span>
         </button>
 
         <label className="sidebar-btn" style={{ cursor: 'pointer' }}>
@@ -153,12 +135,15 @@ export default function EditorSidebar({
       </div>
 
       {/* Asset Panel */}
-      <div className={`asset-panel ${activeTab && !isInteractingWithCanvas ? '' : 'collapsed'}`}>
+      <div 
+        className={`asset-panel ${activeTab && !isInteractingWithCanvas ? '' : 'collapsed'}`}
+        ref={panelRef}
+      >
         <div className="panel-header">
           <div className="panel-title">
             {activeTab === 'shapes' && 'Elements'}
             {activeTab === 'text' && 'Text Options'}
-            {activeTab === 'background' && 'Canvas Setup'}
+            {activeTab === 'background' && 'Background'}
           </div>
           
           <button 
@@ -178,42 +163,6 @@ export default function EditorSidebar({
         <div className="panel-content">
           {activeTab === 'background' && (
             <div className="panel-section">
-               <h4 className="section-title">Canvas Size</h4>
-               <div className="options-grid">
-                  {Object.entries(PAPER_SIZES).map(([key, size]) => (
-                    <button
-                      key={key}
-                      className={`option-card ${safeCanvasSettings.sizeName === key ? 'selected' : ''}`}
-                      onClick={() => handleResizeCanvas(key, safeCanvasSettings.orientation || 'portrait')}
-                    >
-                      <span className="option-label">{size.label}</span>
-                      <span className="option-desc">{size.desc}</span>
-                    </button>
-                  ))}
-               </div>
-
-               <h4 className="section-title">Orientation</h4>
-               <div className="options-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <button
-                    className={`option-card ${safeCanvasSettings.orientation !== 'landscape' ? 'selected' : ''}`}
-                    onClick={() => handleResizeCanvas(safeCanvasSettings.sizeName || 'A4', 'portrait')}
-                  >
-                    <span className="option-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="6" y="4" width="12" height="16" rx="2"/></svg>
-                    </span>
-                    <span className="option-label">Portrait</span>
-                  </button>
-                  <button
-                    className={`option-card ${safeCanvasSettings.orientation === 'landscape' ? 'selected' : ''}`}
-                    onClick={() => handleResizeCanvas(safeCanvasSettings.sizeName || 'A4', 'landscape')}
-                  >
-                    <span className="option-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="6" width="16" height="12" rx="2"/></svg>
-                    </span>
-                    <span className="option-label">Landscape</span>
-                  </button>
-               </div>
-
                <h4 className="section-title">Background Color</h4>
                <div className="color-preview-large" style={{ backgroundColor: safeCanvasSettings?.backgroundColor || '#ffffff' }}>
                   <input 

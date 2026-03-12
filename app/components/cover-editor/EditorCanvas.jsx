@@ -396,6 +396,7 @@ export default function EditorCanvas({
         style={{
           width: width,
           height: height,
+          margin: 0, // IMPORTANT: Override CSS auto-margin so origin 0 0 works correctly with parent container
           backgroundColor: canvasSettings?.backgroundColor || '#ffffff',
           // Support for grid/graph paper pattern
           ...(canvasSettings?.backgroundPattern === 'grid' && {

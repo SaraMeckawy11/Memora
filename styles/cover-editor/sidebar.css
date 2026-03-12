@@ -718,15 +718,6 @@
    SMALL MOBILE (<400px)
 =========================================== */
 @media (max-width: 400px) {
-  .sidebar-label {
-    display: none;
-  }
-
-  .sidebar-icon {
-    font-size: 1.4rem;
-    margin-bottom: 0;
-  }
-
   .asset-grid {
     grid-template-columns: repeat(2, 1fr);
   }

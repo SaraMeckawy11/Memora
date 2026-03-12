@@ -188,7 +188,16 @@ function CreatePageContent() {
 
   /* ================= NAV ================= */
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Save progress before navigating
+    try {
+      if (step === 1 || step === 2) {
+        await saveProgress();
+      }
+    } catch (error) {
+      console.error("Failed to save progress before navigation:", error);
+    }
+
     if (step === 1 && selectedProduct && selectedSize) {
       router.push('/create?step=2')
     }

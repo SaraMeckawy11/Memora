@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { loadProject } from '@/app/utils/storage'
+import { SIZES } from '@/app/components/setup/SizeSelection'
 import EditorSidebar from '@/app/components/cover-editor/EditorSidebar'
 import EditorCanvas from '@/app/components/cover-editor/EditorCanvas'
 import EditorToolbar from '@/app/components/cover-editor/EditorToolbar'
@@ -26,21 +28,75 @@ function CoverEditorContent() {
   const [isDrawMode, setIsDrawMode] = useState(false)
   const [drawingTool, setDrawingTool] = useState({ type: 'pen', color: '#000000', width: 10, opacity: 1 })
   const [isInteractingWithCanvas, setIsInteractingWithCanvas] = useState(false)
-  const [canvasSettings, setCanvasSettings] = useState({
-    width: 893, height: 1263, sizeName: 'A4', orientation: 'portrait'
-  })
+  const [canvasSettings, setCanvasSettings] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  // Load layout from create page selection
+  useEffect(() => {
+    const initLayout = async () => {
+      try {
+        const project = await loadProject()
+        console.log('Cover Editor: Loaded project from DB:', project)
+        
+        let sizeData = project?.selectedSize
+        
+        // If stored as ID (number/string), find the full object from SIZES constant
+        if (typeof sizeData === 'number' || typeof sizeData === 'string') {
+           const found = SIZES.find(s => s.id == sizeData)
+           if (found) sizeData = found
+        }
+        
+        if (sizeData && sizeData.width && sizeData.height) {
+          console.log('Cover Editor: specific size data:', sizeData)
+          const { width, height, name } = sizeData
+          // Match standard web DPI (96) used in StepEditor
+          const pxScale = 96
+          
+          setCanvasSettings({
+            width: Math.round(width * pxScale),
+            height: Math.round(height * pxScale),
+            sizeName: name || 'Custom',
+            orientation: width > height ? 'landscape' : 'portrait'
+          })
+        } else {
+             console.log('Cover Editor: No valid selectedSize in project, using defaults (A4 Portrait)')
+             setCanvasSettings({
+                width: 794, height: 1123, sizeName: 'A4', orientation: 'portrait'
+             })
+        }
+      } catch (err) {
+        console.error('Failed to load project layout:', err)
+        setCanvasSettings({
+            width: 794, height: 1123, sizeName: 'A4', orientation: 'portrait'
+         })
+      } finally {
+        setLoading(false)
+      }
+    }
+    initLayout()
+  }, [])
+
+  // -- DEBUG OVERLAY --
+  const debugInfo = canvasSettings ? 
+    `Size: ${canvasSettings.sizeName} (${canvasSettings.width}x${canvasSettings.height})` : 
+    'Loading Layout...';
+
 
   // -- CANVAS ENGINE HOOKS --
+  // Use default or loaded settings. If loading, use default to init hooks but don't render content yet?
+  // Actually hook initialization must be unconditional.
+  const effectiveCanvasSettings = canvasSettings || { width: 794, height: 1123, sizeName: 'A4', orientation: 'portrait' }
+
   const { 
     front, back, activeSide, setActiveSide,
     elements, backgroundColor, setElements, setBackgroundColor,
     handleUndo, handleRedo, historyIndex, historyLength, updateState, currentState 
-  } = useCanvasState(searchParams, canvasSettings, setCanvasSettings);
+  } = useCanvasState(searchParams, effectiveCanvasSettings, setCanvasSettings);
 
   const {
     zoomLevel, handleZoom, handleZoomToFit, setIsAutoFitMode, handleManualZoomChange,
     handleMouseDown, handleMouseMove, handleMouseUp, handleWheel
-  } = useZoomPan(wrapperRef, canvasSettings, searchParams);
+  } = useZoomPan(wrapperRef, effectiveCanvasSettings, searchParams);
 
   const {
     isExporting, isDownloadMenuOpen, setIsDownloadMenuOpen, handleDownload
@@ -52,7 +108,8 @@ function CoverEditorContent() {
 
   const { 
     handleSaveProject, handleLoadProject 
-  } = useProjectPersistence(currentState, canvasSettings, updateState, setCanvasSettings);
+  } = useProjectPersistence(currentState, effectiveCanvasSettings, updateState, setCanvasSettings);
+
 
   // -- HANDLERS --
   const handleBack = () => router.back();
@@ -94,7 +151,33 @@ function CoverEditorContent() {
 
   return (
     <div className="cover-editor-root">
+      {/* 
+         DEBUG OVERLAY: Remove this after confirming layout is correct.
+      */}
+      <div style={{
+          position: 'fixed', 
+          top: 60, 
+          left: '50%', 
+          transform: 'translateX(-50%)', 
+          background: 'rgba(0,0,0,0.8)', 
+          color: 'white', 
+          padding: '4px 12px', 
+          borderRadius: 4, 
+          zIndex: 99999, 
+          fontSize: 12,
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap'
+      }}>
+        {debugInfo}
+      </div>
       <FontLoader />
+      {loading ? (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ fontSize: '2rem' }}>🎨</div>
+          <div>Loading your canvas...</div>
+        </div>
+      ) : (
+      <>
       <EditorSidebar 
         onAddElement={addElement} 
         isDrawMode={isDrawMode}
@@ -102,7 +185,7 @@ function CoverEditorContent() {
           if (typeof force === 'boolean') setIsDrawMode(force)
           else setIsDrawMode(!isDrawMode)
         }}
-        canvasSettings={canvasSettings}
+        canvasSettings={effectiveCanvasSettings}
         onUpdateCanvas={(newSettings) => {
           setCanvasSettings(newSettings);
         }}
@@ -195,6 +278,7 @@ function CoverEditorContent() {
             {activeSide === 'back' ? (
               <div className="cover-container active">
                 <EditorCanvas 
+                  key={(effectiveCanvasSettings?.sizeName || 'A4') + '-back'}
                   id="canvas-back"
                   elements={back.elements} 
                   selectedId={selectedId} 
@@ -202,7 +286,7 @@ function CoverEditorContent() {
                   onUpdate={updateElement}
                   isDrawMode={isDrawMode}
                   onAddDrawing={(drawing) => addElement('drawing', drawing)}
-                  canvasSettings={{ ...canvasSettings, backgroundColor: back.backgroundColor }}
+                  canvasSettings={{ ...effectiveCanvasSettings, backgroundColor: back.backgroundColor }}
                   drawingTool={drawingTool}
                   zoomLevel={zoomLevel}
                   onZoomChange={handleManualZoomChange}
@@ -213,6 +297,7 @@ function CoverEditorContent() {
             ) : (
               <div className="cover-container active">
                 <EditorCanvas 
+                  key={(effectiveCanvasSettings?.sizeName || 'A4') + '-front'}
                   id="canvas-front"
                   elements={front.elements} 
                   selectedId={selectedId} 
@@ -220,7 +305,7 @@ function CoverEditorContent() {
                   onUpdate={updateElement}
                   isDrawMode={isDrawMode}
                   onAddDrawing={(drawing) => addElement('drawing', drawing)}
-                  canvasSettings={{ ...canvasSettings, backgroundColor: front.backgroundColor }}
+                  canvasSettings={{ ...effectiveCanvasSettings, backgroundColor: front.backgroundColor }}
                   drawingTool={drawingTool}
                   zoomLevel={zoomLevel}
                   onZoomChange={handleManualZoomChange}
@@ -253,7 +338,8 @@ function CoverEditorContent() {
           onClose={() => setSelectedId(null)}
         />
       )}
-
+      </>
+      )}
       <style jsx>{`
         .dropdown-item {
           text-align: left; 
