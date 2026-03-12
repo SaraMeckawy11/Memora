@@ -100,6 +100,19 @@ export function useZoomPan(wrapperRef, canvasSettings, searchParams) {
     setIsPanning(false);
   };
 
+  // Dedicated Wheel Handler for Trackpad: 
+  // - Handles Pinch-to-Zoom (e.ctrlKey)
+  // - Handles Two-Finger Scroll (Native + Force correction)
+  const handleWheel = (e) => {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      // Refined zoom step for trackpad smoothness
+      const delta = -e.deltaY * 0.002; 
+      handleZoom(delta);
+    } 
+    // If not ctrlKey, allow native scroll
+  };
+
   return {
     zoomLevel,
     setZoomLevel,
@@ -109,6 +122,8 @@ export function useZoomPan(wrapperRef, canvasSettings, searchParams) {
     isPanning,
     handleMouseDown,
     handleMouseMove,
-    handleMouseUp
+    handleMouseUp,
+    handleWheel
   };
 }
+

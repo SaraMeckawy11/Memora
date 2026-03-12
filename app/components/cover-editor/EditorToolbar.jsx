@@ -18,23 +18,15 @@ const FILTERS = [
 ]
 
 const IMAGE_TOOLS = [
-  { id: 'exposure', label: 'Exposure', icon: '☀', prop: 'exposure', min: 50, max: 150, default: 100 },
-  { id: 'brilliance', label: 'Brilliance', icon: '✨', prop: 'brilliance', min: 50, max: 150, default: 100 },
-  { id: 'highlights', label: 'Highlights', icon: '⚪', prop: 'highlights', min: 50, max: 150, default: 100 },
-  { id: 'shadows', label: 'Shadows', icon: '⚫', prop: 'shadows', min: 50, max: 150, default: 100 },
-  { id: 'contrast', label: 'Contrast', icon: '◑', prop: 'contrast', min: 50, max: 150, default: 100 },
-  { id: 'brightness', label: 'Brightness', icon: '🔆', prop: 'brightness', min: 50, max: 150, default: 100 },
-  { id: 'blackpoint', label: 'Black Point', icon: '🌑', prop: 'blackpoint', min: 50, max: 150, default: 100 },
-  { id: 'saturation', label: 'Saturation', icon: '🌈', prop: 'saturate', min: 0, max: 200, default: 100 },
-  { id: 'vibrance', label: 'Vibrance', icon: '🌺', prop: 'vibrance', min: 0, max: 200, default: 100 },
-  { id: 'warmth', label: 'Warmth', icon: '🌡', prop: 'warmth', min: 0, max: 100, default: 0 },
-  { id: 'tint', label: 'Tint', icon: '🎨', prop: 'hueRotate', min: 0, max: 360, default: 0 },
-  { id: 'sharpness', label: 'Sharpness', icon: '📐', prop: 'sharpness', min: 0, max: 100, default: 0 },
-  { id: 'definition', label: 'Definition', icon: '💎', prop: 'definition', min: 0, max: 100, default: 0 },
-  { id: 'noise', label: 'Noise', icon: '🌫', prop: 'noise', min: 0, max: 100, default: 0 },
-  { id: 'vignette', label: 'Vignette', icon: '⭕', prop: 'vignette', min: 0, max: 100, default: 0 },
-  { id: 'blur', label: 'Blur', icon: '💧', prop: 'blur', min: 0, max: 20, default: 0 },
-  { id: 'opacity', label: 'Opacity', icon: '👁', prop: 'opacity', min: 0, max: 100, default: 100 },
+  { id: 'exposure', label: 'Exposure', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>, prop: 'exposure', min: 50, max: 150, default: 100 },
+  { id: 'contrast', label: 'Contrast', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"/></svg>, prop: 'contrast', min: 50, max: 150, default: 100 },
+  { id: 'saturation', label: 'Saturation', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20.24 9.24a6 6 0 0 0-8.49-8.49L5 8.5a6 6 0 0 0 8.49 8.49l6.75-7.75z"/></svg>, prop: 'saturate', min: 0, max: 200, default: 100 },
+  { id: 'brightness', label: 'Brightness', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 4V2M12 22v-2M4 12H2M22 12h-2M17.6 17.6l1.4 1.4M5 5l1.4 1.4M17.6 6.4l1.4-1.4M5 19l1.4-1.4"/></svg>, prop: 'brightness', min: 50, max: 150, default: 100 },
+  { id: 'vignette', label: 'Vignette', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="9"/><circle cx="12" cy="12" r="4"/></svg>, prop: 'vignette', min: 0, max: 100, default: 0 },
+  { id: 'blur', label: 'Blur', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, prop: 'blur', min: 0, max: 20, default: 0 },
+  { id: 'sepia', label: 'Sepia', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>, prop: 'sepia', min: 0, max: 100, default: 0 },
+  { id: 'opacity', label: 'Opacity', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>, prop: 'opacity', min: 0, max: 100, default: 100 },
+  { id: 'hue', label: 'Hue', icon: <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>, prop: 'hueRotate', min: 0, max: 360, default: 0 },
 ]
 
 const ToolbarSection = ({ title, children, defaultOpen = false }) => {
@@ -47,7 +39,9 @@ const ToolbarSection = ({ title, children, defaultOpen = false }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="section-title">{title}</span>
-        <span className="section-arrow">▼</span>
+        <span className="section-arrow">
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 1l4 4 4-4"/></svg>
+        </span>
       </button>
       {isOpen && (
         <div className="toolbar-section-content">
@@ -83,11 +77,11 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
     }
 
     return (
-      <div className="mobile-tools-container">
-        {/* Active Tool Slider (Floating above) */}
+      <div className="mobile-compact-container">
+        {/* Active Tool Slider */}
         {activeMobileTool && (
-          <div className="mobile-active-tool-slider">
-            <div className="tool-header">
+          <div className="mobile-slider-group" style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #F3F4F6' }}>
+            <div className="mobile-label-sm">
               <span>{activeMobileTool.label}</span>
               <span>{selectedElement[activeMobileTool.prop] || activeMobileTool.default}</span>
             </div>
@@ -102,21 +96,22 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
         )}
 
         {/* Tool Icons Strip */}
-        <div className="mobile-tools-scroll">
+        <div className="mobile-tools-scroll" style={{ padding: '4px 0', gap: '8px' }}>
           {IMAGE_TOOLS.map((tool) => (
             <button 
               key={tool.id}
               className={`mobile-tool-btn ${activeMobileTool?.id === tool.id ? 'active' : ''}`}
               onClick={() => setActiveMobileTool(tool)}
+              style={{ minWidth: '60px', flexDirection: 'column', gap: '4px', padding: '8px 4px' }}
             >
-              <span className="tool-icon">{tool.icon}</span>
-              <span className="tool-label">{tool.label}</span>
+              <span className="tool-icon" style={{ marginBottom: 0 }}>{tool.icon}</span>
+              <span className="tool-label" style={{ fontSize: '10px' }}>{tool.label}</span>
             </button>
           ))}
-          
-          <div style={{ width: '1px', height: '40px', background: '#e2e8f0', margin: '0 0.5rem' }}></div>
-          
-          <label className="mobile-tool-btn" style={{ cursor: 'pointer' }}>
+        </div>
+
+        <div className="mobile-control-row" style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #F3F4F6' }}>
+           <label className="mobile-action-btn secondary" style={{ cursor: 'pointer', flex: 1 }}>
             <input 
               type="file" 
               accept="image/*" 
@@ -132,13 +127,11 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
                 }
               }}
             />
-            <span className="tool-icon">📷</span>
-            <span className="tool-label">Replace</span>
+            <span>📷 Replace</span>
           </label>
           
-          <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ color: '#ef4444' }}>
-            <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fef2f2' }}>🗑️</span>
-            <span className="tool-label">Delete</span>
+          <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ flex: 1 }}>
+            🗑️ Delete
           </button>
         </div>
       </div>
@@ -146,264 +139,361 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
   }
 
   const renderMobileTextTools = () => (
-    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
-      {/* Font & Size Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-        <div>
-          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Font</div>
-          <SearchableFontSelect 
-            fonts={FONT_FAMILIES}
-            selectedFont={selectedElement.fontFamily}
-            onChange={(font) => onUpdate({ fontFamily: font })}
-          />
-        </div>
-        <div>
-          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Size</div>
-          <input 
-            type="number" 
-            className="toolbar-input" 
-            value={selectedElement.fontSize} 
-            onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-        </div>
-      </div>
-
-      {/* Size Slider */}
-      <div style={{ marginBottom: '1rem' }}>
-         <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Size</div>
-         <input 
-          type="range" 
-          min="10" 
-          max="200" 
-          value={selectedElement.fontSize} 
-          onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
-          style={{ width: '100%' }}
+    <div className="mobile-compact-container">
+      {/* Content Input */}
+      <div className="mobile-control-row">
+        <textarea
+          className="mobile-textarea"
+          value={selectedElement.content}
+          onChange={(e) => onUpdate({ content: e.target.value })}
+          placeholder="Type here..."
+          rows={3}
+          style={{ height: '70px' }}
         />
       </div>
 
-      {/* Letter Spacing Slider */}
-      <div style={{ marginBottom: '1.5rem' }}>
-         <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Letter Spacing: {parseFloat(selectedElement.letterSpacing) || 0}em</div>
-         <input 
-          type="range" 
-          min="-0.1" 
-          max="1.0" 
-          step="0.01"
-          value={parseFloat(selectedElement.letterSpacing) || 0} 
-          onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
-          style={{ width: '100%' }}
+      {/* Font Selection */}
+      <div className="mobile-slider-group">
+        <div className="mobile-label-sm">Font</div>
+        <SearchableFontSelect 
+          fonts={FONT_FAMILIES}
+          selectedFont={selectedElement.fontFamily}
+          onChange={(font) => onUpdate({ fontFamily: font })}
         />
       </div>
 
-      {/* Style & Alignment */}
-      <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Style</div>
-      <div className="mobile-tools-scroll" style={{ marginBottom: '1.5rem' }}>
-        <div className="color-picker-wrapper mobile-tool-btn">
+      {/* Formatting Row (Color, B, I, U, Align) */}
+      <div className="mobile-control-row" style={{ overflowX: 'auto', paddingBottom: '4px' }}>
+        <div className="mobile-color-preview" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
            <input 
               type="color" 
+              className="mobile-color-input-hidden"
               value={selectedElement.color} 
               onChange={(e) => onUpdate({ color: e.target.value })} 
             />
-            <span className="tool-icon" style={{backgroundColor: selectedElement.color}}></span>
-            <span className="tool-label">Color</span>
+            <div style={{ backgroundColor: selectedElement.color, width: '100%', height: '100%' }} />
         </div>
-        
-        <button className={`mobile-tool-btn ${selectedElement.fontWeight === 'bold' ? 'active' : ''}`} onClick={() => onUpdate({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}>
-          <span className="tool-icon">B</span>
-          <span className="tool-label">Bold</span>
+
+        <div style={{ width: '1px', height: '24px', background: '#E5E7EB', margin: '0 4px' }}></div>
+
+        <button 
+          className="mobile-tool-btn" 
+          onClick={() => onUpdate({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}
+          style={{ background: selectedElement.fontWeight === 'bold' ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
+        >
+          <span style={{ fontWeight: 800 }}>B</span>
         </button>
-        
-        <button className={`mobile-tool-btn ${selectedElement.fontStyle === 'italic' ? 'active' : ''}`} onClick={() => onUpdate({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}>
-          <span className="tool-icon">I</span>
-          <span className="tool-label">Italic</span>
+        <button 
+          className="mobile-tool-btn" 
+          onClick={() => onUpdate({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}
+          style={{ background: selectedElement.fontStyle === 'italic' ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
+        >
+          <span style={{ fontStyle: 'italic' }}>I</span>
+        </button>
+        <button 
+          className="mobile-tool-btn" 
+          onClick={() => onUpdate({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}
+          style={{ background: selectedElement.textDecoration === 'underline' ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
+        >
+          <span style={{ textDecoration: 'underline' }}>U</span>
         </button>
 
-        <button className={`mobile-tool-btn ${selectedElement.textDecoration === 'underline' ? 'active' : ''}`} onClick={() => onUpdate({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}>
-          <span className="tool-icon">U</span>
-          <span className="tool-label">Underline</span>
-        </button>
+         <div style={{ width: '1px', height: '24px', background: '#E5E7EB', margin: '0 4px' }}></div>
 
-        <div style={{ width: '1px', height: '40px', background: '#e2e8f0', margin: '0 0.5rem' }}></div>
+         {['left', 'center', 'right'].map(align => (
+           <button 
+            key={align}
+            className="mobile-tool-btn" 
+            onClick={() => onUpdate({ textAlign: align })}
+            style={{ background: selectedElement.textAlign === align ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
+          >
+            {align === 'left' && <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>}
+            {align === 'center' && <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="18" y1="18" x2="6" y2="18"/></svg>}
+            {align === 'right' && <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>}
+          </button>
+         ))}
+      </div>
 
-        <button className={`mobile-tool-btn ${selectedElement.textAlign === 'left' ? 'active' : ''}`} onClick={() => onUpdate({ textAlign: 'left' })}>
-          <span className="tool-icon">⇤</span>
-          <span className="tool-label">Left</span>
-        </button>
-
-        <button className={`mobile-tool-btn ${selectedElement.textAlign === 'center' ? 'active' : ''}`} onClick={() => onUpdate({ textAlign: 'center' })}>
-          <span className="tool-icon">↔</span>
-          <span className="tool-label">Center</span>
-        </button>
-
-        <button className={`mobile-tool-btn ${selectedElement.textAlign === 'right' ? 'active' : ''}`} onClick={() => onUpdate({ textAlign: 'right' })}>
-          <span className="tool-icon">⇥</span>
-          <span className="tool-label">Right</span>
-        </button>
+      {/* Sliders Grid */}
+      <div className="mobile-control-grid">
+         <div className="mobile-slider-group">
+          <div className="mobile-label-sm">
+            <span>Size</span>
+            <span>{selectedElement.fontSize}</span>
+          </div>
+          <input 
+            type="range" 
+            min="10" max="200" 
+            value={selectedElement.fontSize} 
+            onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+          />
+        </div>
+        <div className="mobile-slider-group">
+           <div className="mobile-label-sm">
+             <span>Space</span>
+             <span>{(parseFloat(selectedElement.letterSpacing) || 0).toFixed(2)}</span>
+           </div>
+           <input 
+            type="range" 
+            min="-0.1" max="1.0" step="0.01"
+            value={parseFloat(selectedElement.letterSpacing) || 0} 
+            onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
+          />
+        </div>
       </div>
       
       {/* Delete Button */}
-      <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ width: '100%', justifyContent: 'center', color: '#ef4444', background: '#fef2f2', borderColor: '#fee2e2' }}>
-        <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fff' }}>🗑️</span>
-        <span className="tool-label">Delete Element</span>
+      <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')}>
+        🗑️ Delete Element
       </button>
     </div>
   )
 
   // Mobile View for Layout (Position, Size, Layering)
   const renderMobileLayoutTools = () => (
-    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+    <div className="mobile-compact-container">
+      {/* Position/Dimensions Grid */}
+      <div className="mobile-control-grid">
         <div>
-          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>X Position</div>
+          <div className="mobile-label-sm">X Pos</div>
           <input 
             type="number" 
-            className="toolbar-input" 
+            className="mobile-input-compact" 
             value={Math.round(selectedElement.x)} 
             onChange={(e) => onUpdate({ x: Number(e.target.value) })}
-            style={{ width: '100%', padding: '0.5rem' }}
           />
         </div>
         <div>
-          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Y Position</div>
+          <div className="mobile-label-sm">Y Pos</div>
           <input 
             type="number" 
-            className="toolbar-input" 
+            className="mobile-input-compact" 
             value={Math.round(selectedElement.y)} 
             onChange={(e) => onUpdate({ y: Number(e.target.value) })}
-            style={{ width: '100%', padding: '0.5rem' }}
           />
         </div>
         <div>
-          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Width</div>
+          <div className="mobile-label-sm">Width</div>
           <input 
             type="number" 
-            className="toolbar-input" 
+            className="mobile-input-compact" 
             value={Math.round(selectedElement.width)} 
             onChange={(e) => onUpdate({ width: Number(e.target.value) })}
-            style={{ width: '100%', padding: '0.5rem' }}
           />
         </div>
         <div>
-          <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Height</div>
+          <div className="mobile-label-sm">Height</div>
           <input 
             type="number" 
-            className="toolbar-input" 
+            className="mobile-input-compact" 
             value={Math.round(selectedElement.height)} 
             onChange={(e) => onUpdate({ height: Number(e.target.value) })}
-            style={{ width: '100%', padding: '0.5rem' }}
           />
         </div>
       </div>
       
-      <div style={{ marginBottom: '1rem' }}>
-        <div className="tool-header" style={{ marginBottom: '0.25rem' }}>Rotation: {Math.round(selectedElement.rotation || 0)}°</div>
+      {/* Rotation */}
+      <div className="mobile-slider-group">
+        <div className="mobile-label-sm">
+          <span>Rotation</span>
+          <span>{Math.round(selectedElement.rotation || 0)}°</span>
+        </div>
         <input 
           type="range" 
-          min="0" 
-          max="360" 
+          min="0" max="360" 
           value={selectedElement.rotation || 0} 
           onChange={(e) => onUpdate({ rotation: Number(e.target.value) })}
-          style={{ width: '100%' }}
         />
       </div>
 
-      <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Layering</div>
-      <div className="mobile-tools-scroll" style={{ justifyContent: 'space-between', paddingBottom: '1rem' }}>
-        <button className="mobile-tool-btn" onClick={() => onReorder('front')}>
-          <span className="tool-icon">↑</span>
-          <span className="tool-label">To Front</span>
-        </button>
-        <button className="mobile-tool-btn" onClick={() => onReorder('forward')}>
-          <span className="tool-icon">↗</span>
-          <span className="tool-label">Forward</span>
-        </button>
-        <button className="mobile-tool-btn" onClick={() => onReorder('backward')}>
-          <span className="tool-icon">↙</span>
-          <span className="tool-label">Backward</span>
-        </button>
-        <button className="mobile-tool-btn" onClick={() => onReorder('back')}>
-          <span className="tool-icon">↓</span>
-          <span className="tool-label">To Back</span>
-        </button>
+      {/* Layering Actions */}
+      <div className="mobile-control-row">
+         <button className="mobile-action-btn secondary" onClick={() => onReorder('forward')}>
+           ↑ Forward
+         </button>
+         <button className="mobile-action-btn secondary" onClick={() => onReorder('backward')}>
+           ↓ Backward
+         </button>
+      </div>
+
+       <div className="mobile-control-row">
+         <button className="mobile-action-btn secondary" onClick={() => onReorder('front')}>
+           ⇈ To Front
+         </button>
+         <button className="mobile-action-btn secondary" onClick={() => onReorder('back')}>
+           ⇊ To Back
+         </button>
       </div>
     </div>
   )
 
-  const renderMobileShapeTools = () => (
-    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
-       <div style={{ marginBottom: '1.5rem' }}>
-          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Color</div>
-          <div className="color-picker-wrapper" style={{ width: '100%', height: '40px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+  // Mobile View for Shape Properties
+  const renderMobileShapeTools = () => {
+    const isLine = selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow';
+    
+    return (
+    <div className="mobile-compact-container">
+       {/* Shape Type Selector */}
+       {!isLine && (
+         <div className="mobile-control-row" style={{ justifyContent: 'space-around', marginBottom: '12px', background: '#f9fafb', padding: '8px', borderRadius: '8px' }}>
+            {['rect', 'circle', 'triangle', 'star'].map(type => (
+              <button 
+                key={type}
+                className={`mobile-tool-btn ${(!selectedElement.shapeType && type === 'rect') || selectedElement.shapeType === type ? 'active' : ''}`}
+                onClick={() => onUpdate({ shapeType: type === 'rect' ? null : type })}
+                style={{ width: '40px', height: '40px', padding: '0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent' }}
+                title={type}
+              >
+                {type === 'rect' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
+                )}
+                {type === 'circle' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="9"/></svg>
+                )}
+                {type === 'triangle' && (
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 3l10 18H2L12 3z" strokeLinejoin="round"/></svg>
+                )}
+                {type === 'star' && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" strokeLinejoin="round"/></svg>
+                )}
+              </button>
+            ))}
+         </div>
+       )}
+
+       {/* Fill Color */}
+       <div className="mobile-control-row">
+          <div className="mobile-label-sm">Fill</div>
+          <div className="mobile-color-preview" style={{ width: '100%', height: '40px' }}>
              <input 
                 type="color" 
-                value={selectedElement.fill || selectedElement.stroke} 
-                onChange={(e) => onUpdate(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow' ? { stroke: e.target.value } : { fill: e.target.value })} 
-                style={{ width: '100%', height: '100%', padding: 0, border: 'none', cursor: 'pointer' }}
+                className="mobile-color-input-hidden"
+                value={selectedElement.fill || selectedElement.stroke || '#000000'} 
+                onChange={(e) => isLine 
+                  ? onUpdate({ stroke: e.target.value }) 
+                  : onUpdate({ fill: e.target.value })
+                } 
+              />
+              <div style={{ backgroundColor: selectedElement.fill || selectedElement.stroke, width: '100%', height: '100%', borderRadius: '6px', border: '1px solid #e5e7eb' }} />
+          </div>
+       </div>
+
+       {/* Border Controls */}
+       <div className="mobile-subheader" style={{ marginTop: '12px', marginBottom: '8px', fontSize: '13px', fontWeight: 600, color: '#4b5563' }}>Border</div>
+       <div className="mobile-control-row">
+          <div className="mobile-color-preview" style={{ width: '44px', height: '44px', flexShrink: 0 }}>
+             <input 
+                type="color" 
+                className="mobile-color-input-hidden"
+                value={isLine ? selectedElement.stroke : (selectedElement.options?.stroke || '#000000')} 
+                onChange={(e) => isLine 
+                  ? onUpdate({ stroke: e.target.value }) 
+                  : onUpdate({ options: { ...selectedElement.options, stroke: e.target.value } })
+                } 
+              />
+              <div 
+                style={{ 
+                  backgroundColor: !isLine ? (selectedElement.options?.stroke || 'transparent') : selectedElement.stroke, 
+                  width: '100%', height: '100%', borderRadius: '6px', border: '1px solid #e5e7eb', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center' 
+                }}
+              >
+                 {(!isLine && !selectedElement.options?.stroke) && <div style={{ width: '2px', height: '100%', background: 'red', transform: 'rotate(45deg)' }}></div>}
+              </div>
+          </div>
+           
+          <div className="mobile-slider-group" style={{ flex: 1, marginLeft: '12px' }}>
+             <div className="mobile-label-sm">
+                <span>Thickness</span>
+                <span>{isLine ? selectedElement.strokeWidth : (selectedElement.options?.strokeWidth || 0)}px</span>
+             </div>
+             <input 
+                type="range" 
+                min="0" max="20" 
+                value={isLine ? selectedElement.strokeWidth : (selectedElement.options?.strokeWidth || 0)} 
+                onChange={(e) => isLine
+                  ? onUpdate({ strokeWidth: Number(e.target.value) })
+                  : onUpdate({ options: { ...selectedElement.options, strokeWidth: Number(e.target.value) } })
+                }
               />
           </div>
        </div>
 
-       {(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') && (
-         <div style={{ marginBottom: '1.5rem' }}>
-            <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Thickness: {selectedElement.strokeWidth}px</div>
+       {/* Radius & Opacity Grid */}
+       <div className="mobile-control-grid" style={{ marginTop: '12px' }}>
+         {(!selectedElement.shapeType || selectedElement.shapeType === 'rect') && !isLine && (
+            <div className="mobile-slider-group">
+                <div className="mobile-label-sm">Radius</div>
+                <input 
+                  type="range" 
+                  min="0" max="50" 
+                  value={selectedElement.options?.borderRadius || 0} 
+                  onChange={(e) => onUpdate({ options: { ...selectedElement.options, borderRadius: Number(e.target.value) } })}
+                />
+            </div>
+         )}
+         
+         <div className="mobile-slider-group">
+            <div className="mobile-label-sm">Opacity</div>
             <input 
               type="range" 
-              min="1" max="20" 
-              value={selectedElement.strokeWidth} 
-              onChange={(e) => onUpdate({ strokeWidth: Number(e.target.value) })}
-              style={{ width: '100%' }}
+              min="0" max="100" 
+              value={selectedElement.opacity !== undefined ? (selectedElement.opacity <= 1 ? selectedElement.opacity * 100 : selectedElement.opacity) : 100} 
+              onChange={(e) => onUpdate({ opacity: Number(e.target.value) / 100 })}
             />
          </div>
-       )}
-        
-        <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ width: '100%', justifyContent: 'center', color: '#ef4444', background: '#fef2f2', borderColor: '#fee2e2' }}>
-          <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fff' }}>🗑️</span>
-          <span className="tool-label">Delete Element</span>
+       </div>
+
+        <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')}>
+          🗑️ Delete Shape
         </button>
     </div>
-  )
+  )}
 
   // Mobile View for Drawing (Stroke) Properties
   const renderMobileDrawingTools = () => (
-    <div className="mobile-tools-container" style={{ padding: '1rem', overflowY: 'auto' }}>
-       <div style={{ marginBottom: '1.5rem' }}>
-          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Color</div>
-          <div className="color-picker-wrapper" style={{ width: '100%', height: '40px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+    <div className="mobile-compact-container">
+       <div className="mobile-control-row">
+          <div className="mobile-label-sm">Color</div>
+          <div className="mobile-color-preview" style={{ width: '100%', maxWidth: '200px' }}>
              <input 
                 type="color" 
+                className="mobile-color-input-hidden"
                 value={selectedElement.stroke} 
                 onChange={(e) => onUpdate({ stroke: e.target.value })} 
-                style={{ width: '100%', height: '100%', padding: 0, border: 'none', cursor: 'pointer' }}
               />
+              <div style={{ backgroundColor: selectedElement.stroke, width: '100%', height: '100%' }} />
           </div>
        </div>
 
-       <div style={{ marginBottom: '1.5rem' }}>
-          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Thickness: {selectedElement.strokeWidth}px</div>
+       <div className="mobile-slider-group">
+          <div className="mobile-label-sm">
+            <span>Thickness</span>
+            <span>{selectedElement.strokeWidth}px</span>
+          </div>
           <input 
             type="range" 
             min="1" max="50" 
             value={selectedElement.strokeWidth} 
             onChange={(e) => onUpdate({ strokeWidth: Number(e.target.value) })}
-            style={{ width: '100%' }}
           />
        </div>
 
-       <div style={{ marginBottom: '1.5rem' }}>
-          <div className="tool-header" style={{ marginBottom: '0.5rem' }}>Opacity: {Math.round((selectedElement.opacity || 1) * 100)}%</div>
+       <div className="mobile-slider-group">
+          <div className="mobile-label-sm">
+            <span>Opacity</span>
+            <span>{Math.round((selectedElement.opacity || 1) * 100)}%</span>
+          </div>
           <input 
             type="range" 
             min="0.1" max="1" step="0.1"
             value={selectedElement.opacity || 1} 
             onChange={(e) => onUpdate({ opacity: Number(e.target.value) })}
-            style={{ width: '100%' }}
           />
        </div>
         
-        <button className="mobile-tool-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ width: '100%', justifyContent: 'center', color: '#ef4444', background: '#fef2f2', borderColor: '#fee2e2' }}>
-          <span className="tool-icon" style={{ borderColor: '#fee2e2', background: '#fff' }}>🗑️</span>
-          <span className="tool-label">Delete Element</span>
+        <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')}>
+          🗑️ Delete Drawing
         </button>
     </div>
   )
@@ -688,44 +778,132 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
         {/* Shape Properties */}
         {selectedElement.type === 'shape' && (
           <ToolbarSection title="Shape Style" defaultOpen={true}>
-            {selectedElement.shapeType !== 'line' && selectedElement.shapeType !== 'arrow' && (
+            {/* Shape Switcher */}
+            {(selectedElement.shapeType !== 'line' && selectedElement.shapeType !== 'arrow') && (
+              <div className="control-group">
+                <label className="control-label">Shape Type</label>
+                <div className="grid-4" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+                  {['rect', 'circle', 'triangle', 'star'].map(type => (
+                    <button 
+                      key={type}
+                      className={`toolbar-btn icon-only ${(!selectedElement.shapeType && type === 'rect') || selectedElement.shapeType === type ? 'active' : ''}`}
+                      onClick={() => onUpdate({ shapeType: type === 'rect' ? null : type })}
+                      title={type.charAt(0).toUpperCase() + type.slice(1)}
+                      style={{ height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    >
+                      {type === 'rect' && <div style={{width:'14px', height:'14px', border:'2px solid currentColor', borderRadius:'2px'}}></div>}
+                      {type === 'circle' && <div style={{width:'16px', height:'16px', border:'2px solid currentColor', borderRadius:'50%'}}></div>}
+                      {type === 'triangle' && <div style={{width:0, height:0, borderLeft:'6px solid transparent', borderRight:'6px solid transparent', borderBottom:'12px solid currentColor'}}></div>}
+                      {type === 'star' && <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Fill Color */}
+            {(selectedElement.shapeType !== 'line' && selectedElement.shapeType !== 'arrow') && (
               <div className="control-group">
                 <label className="control-label">Fill Color</label>
                 <div className="color-picker-wrapper">
                   <input 
                     type="color" 
-                    value={selectedElement.fill} 
+                    value={selectedElement.fill || '#000000'} 
                     onChange={(e) => onUpdate({ fill: e.target.value })} 
                   />
-                  <div className="color-preview" style={{ backgroundColor: selectedElement.fill }} />
+                  <div className="color-preview" style={{ backgroundColor: selectedElement.fill || 'transparent', border: !selectedElement.fill ? '1px dashed #ccc' : 'none' }} />
+                  <span className="color-value">{selectedElement.fill || 'None'}</span>
                 </div>
               </div>
             )}
             
-            {(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') && (
-              <>
-                <div className="control-group">
-                  <label className="control-label">Stroke Color</label>
-                  <div className="color-picker-wrapper">
-                    <input 
-                      type="color" 
-                      value={selectedElement.stroke} 
-                      onChange={(e) => onUpdate({ stroke: e.target.value })} 
-                    />
-                    <div className="color-preview" style={{ backgroundColor: selectedElement.stroke }} />
+            {/* Border / Stroke Controls (Compact Group) */}
+            <div className="control-group">
+              <label className="control-label">
+                {(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') ? 'Line Style' : 'Border Style'}
+              </label>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                {/* Color Picker */}
+                <div className="color-picker-wrapper" style={{ width: '42px', flexShrink: 0 }} title="Border Color">
+                  <input 
+                    type="color" 
+                    value={
+                      (selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') 
+                      ? selectedElement.stroke 
+                      : (selectedElement.options?.stroke || '#000000')
+                    } 
+                    onChange={(e) => (selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') 
+                      ? onUpdate({ stroke: e.target.value }) 
+                      : onUpdate({ options: { ...selectedElement.options, stroke: e.target.value } })
+                    } 
+                  />
+                  <div 
+                    className="color-preview" 
+                    style={{ 
+                      backgroundColor: (selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') 
+                        ? selectedElement.stroke 
+                        : (selectedElement.options?.stroke || 'transparent'),
+                      border: '1px solid #e5e7eb',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      width: '100%', height: '100%'
+                    }} 
+                  >
+                     {(!(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') && !selectedElement.options?.stroke) && (
+                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/></svg>
+                     )}
                   </div>
                 </div>
-                <div className="control-group">
-                  <label className="control-label">Thickness</label>
-                  <input 
-                    type="range" 
-                    min="1" max="20" 
-                    value={selectedElement.strokeWidth} 
-                    onChange={(e) => onUpdate({ strokeWidth: Number(e.target.value) })}
-                  />
+
+                {/* Thickness Slider */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px', color: '#6b7280', fontWeight: 500 }}>
+                      <span>Thickness</span>
+                      <span>{(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') ? selectedElement.strokeWidth : (selectedElement.options?.strokeWidth || 0)}px</span>
+                   </div>
+                   <input 
+                      type="range" 
+                      min="0" max="20" 
+                      className="toolbar-slider"
+                      value={(selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow') ? selectedElement.strokeWidth : (selectedElement.options?.strokeWidth || 0)} 
+                      onChange={(e) => (selectedElement.shapeType === 'line' || selectedElement.shapeType === 'arrow')
+                        ? onUpdate({ strokeWidth: Number(e.target.value) })
+                        : onUpdate({ options: { ...selectedElement.options, strokeWidth: Number(e.target.value) } })
+                      }
+                      style={{ width: '100%', height: '4px', accentColor: '#3b82f6' }}
+                    />
                 </div>
-              </>
+              </div>
+            </div>
+
+            {/* Radius (Rect Only) */}
+            {(!selectedElement.shapeType || selectedElement.shapeType === 'rect') && (
+              <div className="control-group">
+                <label className="control-label">
+                  <span>Corner Radius</span>
+                  <span>{selectedElement.options?.borderRadius || 0}px</span>
+                </label>
+                <input 
+                  type="range" 
+                  min="0" max="100" 
+                  value={selectedElement.options?.borderRadius || 0} 
+                  onChange={(e) => onUpdate({ options: { ...selectedElement.options, borderRadius: Number(e.target.value) } })}
+                />
+              </div>
             )}
+
+            {/* Opacity */}
+            <div className="control-group">
+              <label className="control-label">
+                <span>Opacity</span>
+                <span>{Math.round((selectedElement.opacity !== undefined ? (selectedElement.opacity <= 1 ? selectedElement.opacity : selectedElement.opacity/100) : 1) * 100)}%</span>
+              </label>
+              <input 
+                type="range" 
+                min="0" max="100" 
+                value={selectedElement.opacity !== undefined ? (selectedElement.opacity <= 1 ? selectedElement.opacity * 100 : selectedElement.opacity) : 100} 
+                onChange={(e) => onUpdate({ opacity: Number(e.target.value) / 100 })}
+              />
+            </div>
           </ToolbarSection>
         )}
 

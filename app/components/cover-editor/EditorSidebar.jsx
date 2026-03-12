@@ -31,13 +31,22 @@ export default function EditorSidebar({
   isInteractingWithCanvas
 }) {
   const [activeTab, setActiveTab] = useState(null)
+  
+  // Safe access to canvas settings
+  const safeCanvasSettings = canvasSettings || { 
+    sizeName: 'A4', 
+    orientation: 'portrait', 
+    backgroundColor: '#ffffff',
+    width: 595, 
+    height: 842 
+  }
 
   const handleTabClick = (tab) => {
     if (tab === 'draw') {
-      onToggleDrawMode()
+      if (onToggleDrawMode) onToggleDrawMode()
       setActiveTab(isDrawMode ? null : 'draw')
     } else {
-      if (isDrawMode) onToggleDrawMode() // Turn off draw mode if switching tabs
+      if (isDrawMode && onToggleDrawMode) onToggleDrawMode() // Turn off draw mode if switching tabs
       setActiveTab(activeTab === tab ? null : tab)
     }
   }
@@ -54,7 +63,7 @@ export default function EditorSidebar({
     }
 
     const newSettings = {
-      ...canvasSettings,
+      ...safeCanvasSettings,
       width: Math.round(width),
       height: Math.round(height),
       sizeName,
@@ -92,15 +101,19 @@ export default function EditorSidebar({
           }}
           title="Cursor / Select"
         >
-          <span className="sidebar-icon">👆</span>
-          <span className="sidebar-label">Cursor</span>
+          <span className="sidebar-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+          </span>
+          <span className="sidebar-label">Select</span>
         </button>
 
         <button 
           className={`sidebar-btn ${activeTab === 'text' ? 'active' : ''}`}
           onClick={() => handleTabClick('text')}
         >
-          <span className="sidebar-icon">T</span>
+          <span className="sidebar-icon">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+          </span>
           <span className="sidebar-label">Text</span>
         </button>
 
@@ -108,43 +121,15 @@ export default function EditorSidebar({
           className={`sidebar-btn ${activeTab === 'shapes' ? 'active' : ''}`}
           onClick={() => handleTabClick('shapes')}
         >
-          <span className="sidebar-icon">■</span>
-          <span className="sidebar-label">Elements</span>
-        </button>
-
-        <button 
-          className={`sidebar-btn ${isDrawMode && drawingTool.type === 'pen' ? 'active' : ''}`}
-          onClick={() => {
-            if (!isDrawMode || drawingTool.type !== 'pen') {
-              onToggleDrawMode(true) // Ensure draw mode is on
-              onUpdateDrawingTool({ ...drawingTool, type: 'pen' })
-              setActiveTab('draw-pen')
-            } else {
-              // Toggle off if already active? Or just keep it active?
-              // User wants separate options.
-              // If I click pen again, maybe close the settings panel?
-              setActiveTab(activeTab === 'draw-pen' ? null : 'draw-pen')
-            }
-          }}
-        >
-          <span className="sidebar-icon">🖊️</span>
-          <span className="sidebar-label">Pen</span>
-        </button>
-
-        <button 
-          className={`sidebar-btn ${isDrawMode && drawingTool.type === 'eraser' ? 'active' : ''}`}
-          onClick={() => {
-            if (!isDrawMode || drawingTool.type !== 'eraser') {
-              onToggleDrawMode(true) // Ensure draw mode is on
-              onUpdateDrawingTool({ ...drawingTool, type: 'eraser' })
-              setActiveTab('draw-eraser')
-            } else {
-              setActiveTab(activeTab === 'draw-eraser' ? null : 'draw-eraser')
-            }
-          }}
-        >
-          <span className="sidebar-icon">🧹</span>
-          <span className="sidebar-label">Eraser</span>
+          <span className="sidebar-icon">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M3 3h18v18H3z" stroke="none" fill="none"/></svg>
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{position: 'absolute', opacity: 0}}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+             <div style={{ display: 'flex', gap: 2 }}>
+                <div style={{ width: 10, height: 10, border: '2px solid currentColor', borderRadius: 2 }}></div>
+                <div style={{ width: 10, height: 10, border: '2px solid currentColor', borderRadius: '50%' }}></div>
+             </div>
+          </span>
+          <span className="sidebar-label">Shapes</span>
         </button>
 
         <button 
@@ -152,13 +137,17 @@ export default function EditorSidebar({
           onClick={() => handleTabClick('background')}
           title="Canvas Setup & Background"
         >
-          <span className="sidebar-icon">🎨</span>
-          <span className="sidebar-label">Canvas</span>
+          <span className="sidebar-icon">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </span>
+          <span className="sidebar-label">Layout</span>
         </button>
 
-        <label className="sidebar-btn">
+        <label className="sidebar-btn" style={{ cursor: 'pointer' }}>
           <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
-          <span className="sidebar-icon">🖼️</span>
+          <span className="sidebar-icon">
+             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </span>
           <span className="sidebar-label">Upload</span>
         </label>
       </div>
@@ -170,8 +159,6 @@ export default function EditorSidebar({
             {activeTab === 'shapes' && 'Elements'}
             {activeTab === 'text' && 'Text Options'}
             {activeTab === 'background' && 'Canvas Setup'}
-            {activeTab === 'draw-pen' && 'Pen Settings'}
-            {activeTab === 'draw-eraser' && 'Eraser Settings'}
           </div>
           
           <button 
@@ -196,8 +183,8 @@ export default function EditorSidebar({
                   {Object.entries(PAPER_SIZES).map(([key, size]) => (
                     <button
                       key={key}
-                      className={`option-card ${canvasSettings.sizeName === key ? 'selected' : ''}`}
-                      onClick={() => handleResizeCanvas(key, canvasSettings.orientation || 'portrait')}
+                      className={`option-card ${safeCanvasSettings.sizeName === key ? 'selected' : ''}`}
+                      onClick={() => handleResizeCanvas(key, safeCanvasSettings.orientation || 'portrait')}
                     >
                       <span className="option-label">{size.label}</span>
                       <span className="option-desc">{size.desc}</span>
@@ -206,37 +193,41 @@ export default function EditorSidebar({
                </div>
 
                <h4 className="section-title">Orientation</h4>
-               <div className="options-grid">
+               <div className="options-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                   <button
-                    className={`option-card ${canvasSettings.orientation !== 'landscape' ? 'selected' : ''}`}
-                    onClick={() => handleResizeCanvas(canvasSettings.sizeName || 'A4', 'portrait')}
+                    className={`option-card ${safeCanvasSettings.orientation !== 'landscape' ? 'selected' : ''}`}
+                    onClick={() => handleResizeCanvas(safeCanvasSettings.sizeName || 'A4', 'portrait')}
                   >
-                    <span className="option-icon" style={{ fontSize: '20px' }}>▯</span>
+                    <span className="option-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="6" y="4" width="12" height="16" rx="2"/></svg>
+                    </span>
                     <span className="option-label">Portrait</span>
                   </button>
                   <button
-                    className={`option-card ${canvasSettings.orientation === 'landscape' ? 'selected' : ''}`}
-                    onClick={() => handleResizeCanvas(canvasSettings.sizeName || 'A4', 'landscape')}
+                    className={`option-card ${safeCanvasSettings.orientation === 'landscape' ? 'selected' : ''}`}
+                    onClick={() => handleResizeCanvas(safeCanvasSettings.sizeName || 'A4', 'landscape')}
                   >
-                    <span className="option-icon" style={{ fontSize: '20px', transform: 'rotate(90deg)', display: 'inline-block' }}>▯</span>
+                    <span className="option-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="4" y="6" width="16" height="12" rx="2"/></svg>
+                    </span>
                     <span className="option-label">Landscape</span>
                   </button>
                </div>
 
                <h4 className="section-title">Background Color</h4>
-               <div className="color-preview-large" style={{ backgroundColor: canvasSettings?.backgroundColor || '#ffffff' }}>
+               <div className="color-preview-large" style={{ backgroundColor: safeCanvasSettings?.backgroundColor || '#ffffff' }}>
                   <input 
                     type="color" 
                     className="color-input-hidden"
-                    value={canvasSettings?.backgroundColor || '#ffffff'}
+                    value={safeCanvasSettings?.backgroundColor || '#ffffff'}
                     onChange={(e) => {
-                      onUpdateCanvas({ ...canvasSettings, backgroundColor: e.target.value });
+                      onUpdateCanvas({ ...safeCanvasSettings, backgroundColor: e.target.value });
                       if (onSetBackgroundColor) {
                         onSetBackgroundColor(e.target.value);
                       }
                     }}
                   />
-                  <span className="color-value">{canvasSettings?.backgroundColor || '#ffffff'}</span>
+                  <span className="color-value">{safeCanvasSettings?.backgroundColor || '#ffffff'}</span>
                </div>
             </div>
           )}
@@ -244,31 +235,35 @@ export default function EditorSidebar({
           {activeTab === 'shapes' && (
             <div className="panel-section">
               <h4 className="section-title">Basic Shapes</h4>
-              <div className="asset-grid">
+              <div className="compact-shape-grid">
                 {SHAPES.map((shape, i) => (
                   <button 
                     key={i} 
-                    className="asset-item"
+                    className="compact-shape-btn"
                     onClick={() => handleAddElementAndClose('shape', { ...shape })}
-                    title={shape.name}
+                    title={`Add ${shape.name}`}
                   >
-                    {shape.shapeType === 'arrow' ? (
-                      <div style={{ fontSize: '24px', color: shape.stroke, lineHeight: 1 }}>➜</div>
-                    ) : (
-                      <div 
-                        className="shape-preview" 
-                        style={{ 
-                          backgroundColor: shape.shapeType === 'line' ? 'transparent' : shape.fill,
-                          border: shape.shapeType === 'line' ? `2px solid ${shape.stroke}` : 'none',
-                          height: shape.shapeType === 'line' ? '0px' : '32px',
-                          width: '32px',
-                          borderRadius: shape.shapeType === 'circle' ? '50%' : '0',
-                          clipPath: shape.shapeType === 'triangle' ? 'polygon(50% 0%, 0% 100%, 100% 100%)' : 
-                                    shape.shapeType === 'star' ? 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' : 'none'
-                        }} 
-                      />
+                    {shape.shapeType === 'rect' && (
+                      <div style={{ width: '20px', height: '20px', border: '2px solid currentColor', borderRadius: '4px' }}></div>
                     )}
-                    <span className="asset-label">{shape.name}</span>
+                    {shape.shapeType === 'circle' && (
+                      <div style={{ width: '22px', height: '22px', border: '2px solid currentColor', borderRadius: '50%' }}></div>
+                    )}
+                    {shape.shapeType === 'triangle' && (
+                      <div style={{ width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '16px solid currentColor' }}></div>
+                    )}
+                    {shape.shapeType === 'star' && (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    )}
+                    {shape.shapeType === 'line' && (
+                      <div style={{ width: '22px', height: '3px', background: 'currentColor', borderRadius: '2px', transform: 'rotate(-45deg)' }}></div>
+                    )}
+                    {shape.shapeType === 'arrow' && (
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: 'rotate(-45deg)' }}>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                      </svg>
+                    )}
                   </button>
                 ))}
               </div>
@@ -300,56 +295,6 @@ export default function EditorSidebar({
                     <span className="preset-desc">Regular paragraph text</span>
                   </div>
                 </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'draw-pen' && (
-            <div className="draw-settings-group">
-              <div className="setting-item">
-                <label>Color</label>
-                <div className="color-picker-wrapper">
-                  <input 
-                    type="color" 
-                    value={drawingTool.color} 
-                    onChange={(e) => onUpdateDrawingTool({ ...drawingTool, color: e.target.value })} 
-                  />
-                  <div className="color-preview-inner" style={{ backgroundColor: drawingTool.color }} />
-                </div>
-              </div>
-
-              <div className="setting-item">
-                <label>Size: {drawingTool.width}px</label>
-                <input 
-                  type="range" 
-                  min="1" 
-                  max="50" 
-                  value={drawingTool.width} 
-                  onChange={(e) => onUpdateDrawingTool({ ...drawingTool, width: parseInt(e.target.value) })}
-                  className="custom-range"
-                />
-              </div>
-              
-              <div className="setting-item">
-                <label>Opacity: {Math.round(drawingTool.opacity * 100)}%</label>
-                <input 
-                  type="range" 
-                  min="0.1" 
-                  max="1" 
-                  step="0.1"
-                  value={drawingTool.opacity} 
-                  onChange={(e) => onUpdateDrawingTool({ ...drawingTool, opacity: parseFloat(e.target.value) })}
-                  className="custom-range"
-                />
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'draw-eraser' && (
-            <div className="draw-settings-group">
-              <div className="eraser-info-box">
-                
-                <p>Tap on elements to erase them from the canvas.</p>
               </div>
             </div>
           )}

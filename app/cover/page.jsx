@@ -39,7 +39,7 @@ function CoverEditorContent() {
 
   const {
     zoomLevel, handleZoom, handleZoomToFit, setIsAutoFitMode, handleManualZoomChange,
-    handleMouseDown, handleMouseMove, handleMouseUp
+    handleMouseDown, handleMouseMove, handleMouseUp, handleWheel
   } = useZoomPan(wrapperRef, canvasSettings, searchParams);
 
   const {
@@ -124,35 +124,61 @@ function CoverEditorContent() {
           </div>
           
           <div className="header-right">
-            <button className="toolbar-btn" onClick={handleUndo} disabled={historyIndex <= 0} title="Undo">↩</button>
-            <button className="toolbar-btn" onClick={handleRedo} disabled={historyIndex >= historyLength - 1} title="Redo">↪</button>
+            <div className="history-controls">
+              <button className="header-icon-btn" onClick={handleUndo} disabled={historyIndex <= 0} title="Undo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+              </button>
+              <button className="header-icon-btn" onClick={handleRedo} disabled={historyIndex >= historyLength - 1} title="Redo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 3.7"/></svg>
+              </button>
+            </div>
             
+            <div className="header-divider hide-mobile" />
+
             <div className="download-dropdown-container" style={{ position: 'relative' }}>
               <button 
-                className="save-btn secondary"
+                className={`header-btn secondary dropdown-trigger ${isDownloadMenuOpen ? 'active' : ''}`}
                 onClick={() => setIsDownloadMenuOpen(!isDownloadMenuOpen)}
                 disabled={isExporting}
-                style={{ cursor: 'pointer', padding: '10px 14px', borderRadius: '8px', fontSize: '13px', background: '#f1f5f9', color: '#334155', display: 'flex', gap: '6px', alignItems: 'center', border: 'none' }}
               >
-                <span className="hide-mobile">{isExporting ? 'Saving...' : 'Download'}</span>
-                <span className="show-mobile">↓</span>
-                <span style={{ fontSize: '10px' }}>▼</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span className="hide-mobile">{isExporting ? 'Exporting...' : 'Download'}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={`chevron ${isDownloadMenuOpen ? 'rotate' : ''}`} style={{ opacity: 0.5 }}><polyline points="6 9 12 15 18 9"/></svg>
               </button>
 
               {isDownloadMenuOpen && (
-                <div style={{ position: 'absolute', top: '100%', right: 0, marginTop: '8px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', zIndex: 200, minWidth: '160px', display: 'flex', flexDirection: 'column', padding: '6px' }}>
-                  <button onClick={() => handleDownload('png')} className="dropdown-item">Download PNG</button>
-                  <button onClick={() => handleDownload('jpeg')} className="dropdown-item">Download JPG</button>
-                  <button onClick={() => handleDownload('pdf')} className="dropdown-item">Download PDF</button>
+                <div className="header-dropdown-menu">
+                  <div className="dropdown-label">Download Format</div>
+                  <button onClick={() => handleDownload('png')} className="dropdown-item">
+                    <span className="file-icon png">P</span>
+                    <div className="dropdown-text">
+                      <span className="main-text">PNG Image</span>
+                      <span className="sub-text">Best for social media</span>
+                    </div>
+                  </button>
+                  <button onClick={() => handleDownload('jpeg')} className="dropdown-item">
+                    <span className="file-icon jpg">J</span>
+                    <div className="dropdown-text">
+                      <span className="main-text">JPG Image</span>
+                      <span className="sub-text">Smaller file size</span>
+                    </div>
+                  </button>
+                  <button onClick={() => handleDownload('pdf')} className="dropdown-item">
+                    <span className="file-icon pdf">D</span>
+                    <div className="dropdown-text">
+                      <span className="main-text">PDF Document</span>
+                      <span className="sub-text">Print ready</span>
+                    </div>
+                  </button>
                 </div>
               )}
             </div>
 
-            <button className="save-btn" style={{ cursor: 'pointer', borderRadius: '8px', background: '#f1f5f9', color: '#475569', border: 'none', padding: '10px 16px' }} onClick={handleBack}>
-              <span className="hide-mobile">Back</span>
-              <span className="show-mobile">✕</span>
+            <button className="header-btn secondary" onClick={handleBack}>
+              <span className="hide-mobile">Close</span>
+              <span className="show-mobile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
-            <button className="save-btn" style={{ cursor: 'pointer', borderRadius: '8px', padding: '10px 18px', fontWeight: '600' }} onClick={handleSave}>Done</button>
+            <button className="header-btn primary" onClick={handleSave}>Done</button>
           </div>
         </div>
         
@@ -163,6 +189,7 @@ function CoverEditorContent() {
           onMouseMove={(e) => handleMouseMove(e, isDrawMode)}
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
+          onWheel={handleWheel}
         >
           <div className="single-canvas-container">
             {activeSide === 'back' ? (

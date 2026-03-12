@@ -40,6 +40,9 @@ export default function DraggableElement({
   }
 
   const handleTouchStart = (e) => {
+    // Multi-touch Support: Allow 2-finger gestures to bubble up for pan/zoom
+    if (e.touches && e.touches.length > 1) return;
+
     if (isEraserActive) {
       e.stopPropagation()
       if (onDelete) onDelete()
@@ -110,9 +113,15 @@ export default function DraggableElement({
 
     const handleMouseMove = (e) => handleMove(e.clientX, e.clientY)
     const handleTouchMove = (e) => {
-      // Prevent scrolling while dragging/resizing
+      // If user adds a second finger, stop dragging and allow scrolling/zooming
+      if (e.touches && e.touches.length > 1) {
+          handleEnd();
+          return;
+      }
+
+      // Prevent scrolling while dragging/resizing with ONE finger
       if (isDragging || isResizing) {
-        e.preventDefault() 
+        if (e.cancelable) e.preventDefault() 
       }
       handleMove(e.touches[0].clientX, e.touches[0].clientY)
     }
@@ -506,6 +515,25 @@ export default function DraggableElement({
       
       {isSelected && !isEditing && (
         <>
+          {/* Delete Button (Top Right) */}
+          <div 
+            className="element-delete-btn"
+            onClick={(e) => {
+              e.stopPropagation()
+              onDelete && onDelete()
+            }}
+            onTouchStart={(e) => {
+              e.stopPropagation()
+              onDelete && onDelete()
+            }}
+            title="Delete"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+
           <div className="resize-handle nw" onMouseDown={(e) => handleResizeStart(e, 'nw')} onTouchStart={(e) => handleResizeStart(e, 'nw')} />
           <div className="resize-handle n" onMouseDown={(e) => handleResizeStart(e, 'n')} onTouchStart={(e) => handleResizeStart(e, 'n')} />
           <div className="resize-handle ne" onMouseDown={(e) => handleResizeStart(e, 'ne')} onTouchStart={(e) => handleResizeStart(e, 'ne')} />

@@ -12,6 +12,7 @@ const nextConfig = {
       },
     ],
   },
+  // Force rebuild comment
 };
 
 export default nextConfig;

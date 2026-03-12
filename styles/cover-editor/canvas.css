@@ -5,31 +5,35 @@
 /* ===== CANVAS CONTAINER ===== */
 .canvas-wrapper {
   flex: 1;
-  background: linear-gradient(145deg, #e2e8f0 0%, #cbd5e1 100%);
+  background-color: var(--bg-page);
   display: flex;
-  align-items: flex-start; /* Align top for scrolling */
-  /* justify-content: center; Removed to prevent clipping */
-  overflow: auto; /* Allow scrolling in both directions */
-  padding: 2rem;
+  align-items: flex-start;
+  overflow: auto;
+  padding: 4rem;
   position: relative;
   container-type: size;
-  cursor: grab; /* Indicate panning is available */
+  cursor: grab;
+  /* Ensure smooth momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* Allow native pan gestures */
+  touch-action: pan-x pan-y;
+  /* Prevent browser navigation swipes (back/forward) during horizontal scroll */
+  overscroll-behavior: none;
+  /* Subtle dot pattern for engineering/precision feel */
+  background-image: 
+    radial-gradient(#E5E7EB 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 .canvas-wrapper:active {
   cursor: grabbing;
 }
 
-.canvas-wrapper.draw-mode {
-  cursor: default;
-}
-
 .canvas-container {
-  /* This is the inner wrapper from EditorCanvas.jsx */
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  width: auto; /* Allow width to fit content */
+  width: auto;
   min-width: 0;
   height: auto;
   margin: 0;
@@ -37,75 +41,88 @@
 
 .single-canvas-container {
   display: flex;
-  padding: 80px;
+  padding: 40px;
   margin: auto;
   align-items: flex-start;
   justify-content: center;
+  /* Ensure container reflects the full size of its contents (zoomed canvas) */
   min-width: 100%;
+  width: fit-content;
+  flex-shrink: 0;
 }
 
 .cover-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 32px;
   position: relative;
 }
 
 .editor-canvas {
   background-color: #fff;
-  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.2);
+  /* Photorealistic book shadow */
+  box-shadow: 
+    0 1px 2px rgba(0,0,0,0.02), 
+    0 4px 8px rgba(0,0,0,0.02), 
+    0 8px 16px rgba(0,0,0,0.02), 
+    0 12px 24px rgba(0,0,0,0.02),
+    0 20px 40px rgba(0,0,0,0.04);
   position: relative;
   overflow: hidden;
   border-radius: 2px;
-  flex-shrink: 0; /* Prevent flex shrinking */
-  margin: auto; /* Center in the wrapper */
-  transform-origin: top left; /* Match JS */
-}
-
-.editor-canvas.draw-cursor {
-  cursor: crosshair;
-  touch-action: none;
+  flex-shrink: 0;
+  margin: auto;
+  transform-origin: top left;
+  transition: box-shadow 0.3s ease;
 }
 
 /* ===== CANVAS ELEMENTS ===== */
 .canvas-element,
 .draggable-element {
   position: absolute;
-  cursor: move;
+  cursor: default;
   user-select: none;
   box-sizing: border-box;
 }
 
-.canvas-element.selected,
-.draggable-element.selected {
-  outline: 2px solid #3b82f6;
+.canvas-element:hover {
+  outline: 1px dashed var(--primary-color);
   outline-offset: 2px;
+  cursor: move;
 }
 
-/* Resize Handles */
+.canvas-element.selected,
+.draggable-element.selected {
+  outline: 1px solid var(--primary-color);
+  outline-offset: 0;
+}
+
+/* Resize Handles - Minimalist */
 .resize-handle {
   position: absolute;
   width: 10px;
   height: 10px;
   background-color: #fff;
-  border: 2px solid #3b82f6;
+  border: 1px solid var(--primary-color);
   border-radius: 50%;
   z-index: 101;
-  transition: transform 0.1s;
+  transition: transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .resize-handle:hover {
   transform: scale(1.2);
-  background-color: #3b82f6;
+  background-color: var(--primary-color);
 }
 
-.resize-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
-.resize-handle.n { top: -5px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
-.resize-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
-.resize-handle.w { top: 50%; left: -5px; transform: translateY(-50%); cursor: w-resize; }
-.resize-handle.e { top: 50%; right: -5px; transform: translateY(-50%); cursor: e-resize; }
-.resize-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
-.resize-handle.s { bottom: -5px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+.resize-handle.nw { top: -6px; left: -6px; cursor: nw-resize; }
+.resize-handle.n { top: -6px; left: 50%; transform: translateX(-50%); cursor: n-resize; }
+.resize-handle.ne { top: -6px; right: -6px; cursor: ne-resize; }
+.resize-handle.e { top: 50%; right: -6px; transform: translateY(-50%); cursor: e-resize; }
+.resize-handle.se { bottom: -6px; right: -6px; cursor: se-resize; }
+.resize-handle.s { bottom: -6px; left: 50%; transform: translateX(-50%); cursor: s-resize; }
+.resize-handle.sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+.resize-handle.w { top: 50%; left: -6px; transform: translateY(-50%); cursor: w-resize; }
 .resize-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
 
 /* ===========================================
@@ -190,3 +207,29 @@
     border-width: 3px;
   }
 }
+
+
+/* Delete Button for Selected Elements */
+.element-delete-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: #EF4444;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 102;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  color: white;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.element-delete-btn:hover {
+  transform: scale(1.1);
+  background-color: #DC2626;
+}
+
