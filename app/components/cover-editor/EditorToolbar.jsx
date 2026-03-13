@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { FONT_LIST } from './FontLoader'
 import SearchableFontSelect from './SearchableFontSelect'
 import '@/styles/cover-editor/toolbar.css'
+import '@/styles/editor/CaptionSection.css'
 
 const FONT_FAMILIES = FONT_LIST
 
@@ -52,7 +53,7 @@ const ToolbarSection = ({ title, children, defaultOpen = false }) => {
   )
 }
 
-export default function EditorToolbar({ selectedElement, onUpdate, onReorder, onClose }) {
+export default function EditorToolbar({ selectedElement, onUpdate, onReorder, onClose, isInteractingWithCanvas }) {
   const [activeMobileTool, setActiveMobileTool] = useState(null)
   const [activeTab, setActiveTab] = useState('adjust') // 'adjust' | 'filters'
 
@@ -139,111 +140,131 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
   }
 
   const renderMobileTextTools = () => (
-    <div className="mobile-compact-container">
-      {/* Content Input */}
-      <div className="mobile-control-row">
-        <textarea
-          className="mobile-textarea"
-          value={selectedElement.content}
-          onChange={(e) => onUpdate({ content: e.target.value })}
-          placeholder="Type here..."
-          rows={3}
-          style={{ height: '70px' }}
-        />
-      </div>
+    <div className="mobile-compact-container" style={{ padding: '16px' }}>
+      <textarea
+        className="caption-textarea"
+        value={selectedElement.content}
+        onChange={(e) => onUpdate({ content: e.target.value })}
+        placeholder="Type here..."
+        style={{ marginBottom: '16px', height: 'auto', minHeight: '60px' }}
+      />
 
-      {/* Font Selection */}
-      <div className="mobile-slider-group">
-        <div className="mobile-label-sm">Font</div>
-        <SearchableFontSelect 
-          fonts={FONT_FAMILIES}
-          selectedFont={selectedElement.fontFamily}
-          onChange={(font) => onUpdate({ fontFamily: font })}
-        />
-      </div>
-
-      {/* Formatting Row (Color, B, I, U, Align) */}
-      <div className="mobile-control-row" style={{ overflowX: 'auto', paddingBottom: '4px' }}>
-        <div className="mobile-color-preview" style={{ width: '40px', height: '40px', flexShrink: 0 }}>
-           <input 
-              type="color" 
-              className="mobile-color-input-hidden"
-              value={selectedElement.color} 
-              onChange={(e) => onUpdate({ color: e.target.value })} 
+      <div className="caption-controls">
+        <div className="caption-row">
+          <div>
+            <label className="caption-label">Font</label>
+            <SearchableFontSelect 
+              fonts={FONT_FAMILIES}
+              selectedFont={selectedElement.fontFamily}
+              onChange={(font) => onUpdate({ fontFamily: font })}
             />
-            <div style={{ backgroundColor: selectedElement.color, width: '100%', height: '100%' }} />
+          </div>
+
+          <div>
+            <label className="caption-label">Size</label>
+            <select
+              value={selectedElement.fontSize}
+              onChange={e => onUpdate({ fontSize: Number(e.target.value) })}
+              className="caption-select"
+            >
+              {[8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96, 120, 150, 200].map(size => (
+                <option key={size} value={size}>{size}px</option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div style={{ width: '1px', height: '24px', background: '#E5E7EB', margin: '0 4px' }}></div>
+        <div className="caption-row">
+          <div>
+            <label className="caption-label">Color</label>
+            <div className="caption-color" style={{ position: 'relative', overflow: 'hidden' }}>
+                <input 
+                  type="color" 
+                  value={selectedElement.color} 
+                  onChange={(e) => onUpdate({ color: e.target.value })} 
+                  style={{ 
+                    position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+                    opacity: 0, cursor: 'pointer' 
+                  }} 
+                />
+                <div style={{ width: '100%', height: '100%', backgroundColor: selectedElement.color }} />
+            </div>
+          </div>
 
-        <button 
-          className="mobile-tool-btn" 
-          onClick={() => onUpdate({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}
-          style={{ background: selectedElement.fontWeight === 'bold' ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
-        >
-          <span style={{ fontWeight: 800 }}>B</span>
-        </button>
-        <button 
-          className="mobile-tool-btn" 
-          onClick={() => onUpdate({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}
-          style={{ background: selectedElement.fontStyle === 'italic' ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
-        >
-          <span style={{ fontStyle: 'italic' }}>I</span>
-        </button>
-        <button 
-          className="mobile-tool-btn" 
-          onClick={() => onUpdate({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}
-          style={{ background: selectedElement.textDecoration === 'underline' ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
-        >
-          <span style={{ textDecoration: 'underline' }}>U</span>
-        </button>
-
-         <div style={{ width: '1px', height: '24px', background: '#E5E7EB', margin: '0 4px' }}></div>
-
-         {['left', 'center', 'right'].map(align => (
-           <button 
-            key={align}
-            className="mobile-tool-btn" 
-            onClick={() => onUpdate({ textAlign: align })}
-            style={{ background: selectedElement.textAlign === align ? '#F3F4F6' : '#fff', width: '40px', height: '40px', padding: 0, justifyContent: 'center' }}
-          >
-            {align === 'left' && <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>}
-            {align === 'center' && <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="18" y1="18" x2="6" y2="18"/></svg>}
-            {align === 'right' && <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>}
-          </button>
-         ))}
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-end' }}>
+             <button 
+               className={`caption-select ${selectedElement.fontWeight === 'bold' ? 'active' : ''}`}
+               onClick={() => onUpdate({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}
+               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', background: selectedElement.fontWeight === 'bold' ? '#e0e0e0' : '#fff' }}
+             >B</button>
+             <button 
+               className={`caption-select ${selectedElement.fontStyle === 'italic' ? 'active' : ''}`}
+               onClick={() => onUpdate({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}
+               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontStyle: 'italic', background: selectedElement.fontStyle === 'italic' ? '#e0e0e0' : '#fff' }}
+             >I</button>
+             <button 
+               className={`caption-select ${selectedElement.textDecoration === 'underline' ? 'active' : ''}`}
+               onClick={() => onUpdate({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}
+               style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'underline', background: selectedElement.textDecoration === 'underline' ? '#e0e0e0' : '#fff' }}
+             >U</button>
+          </div>
+        </div>
       </div>
 
-      {/* Sliders Grid */}
-      <div className="mobile-control-grid">
-         <div className="mobile-slider-group">
-          <div className="mobile-label-sm">
-            <span>Size</span>
-            <span>{selectedElement.fontSize}</span>
-          </div>
+      <div className="caption-align-wrapper" style={{ marginTop: '12px' }}>
+        <label className="caption-label">Alignment</label>
+        <div className="caption-align">
+          {['left', 'center', 'right'].map(align => (
+            <button
+              key={align}
+              onClick={() => onUpdate({ textAlign: align })}
+              className={`caption-select ${selectedElement.textAlign === align ? 'active' : ''}`}
+              style={{ 
+                flex: 1, 
+                background: selectedElement.textAlign === align ? '#e0e0e0' : '#fff',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+              }}
+            >
+              {align.charAt(0).toUpperCase() + align.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+       <div className="control-group" style={{ marginTop: '16px' }}>
+        <label className="caption-label">Line Spacing</label>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           <input 
             type="range" 
-            min="10" max="200" 
-            value={selectedElement.fontSize} 
-            onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
+            min="0.5" 
+            max="3.0" 
+            step="0.1"
+            value={selectedElement.lineHeight || 1.2} 
+            onChange={(e) => onUpdate({ lineHeight: Number(e.target.value) })}
+            style={{ flex: 1 }}
           />
+          <span style={{ fontSize: '12px', width: '24px' }}>{selectedElement.lineHeight || 1.2}</span>
         </div>
-        <div className="mobile-slider-group">
-           <div className="mobile-label-sm">
-             <span>Space</span>
-             <span>{(parseFloat(selectedElement.letterSpacing) || 0).toFixed(2)}</span>
-           </div>
-           <input 
+      </div>
+
+      <div className="control-group">
+        <label className="caption-label">Letter Spacing</label>
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <input 
             type="range" 
-            min="-0.1" max="1.0" step="0.01"
+            min="-0.1" 
+            max="1.0" 
+            step="0.01"
             value={parseFloat(selectedElement.letterSpacing) || 0} 
             onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
+            style={{ flex: 1 }}
           />
+          <span style={{ fontSize: '12px', width: '24px' }}>{parseFloat(selectedElement.letterSpacing) || 0}</span>
         </div>
       </div>
       
       {/* Delete Button */}
-      <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')}>
+      <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ marginTop: '24px' }}>
         🗑️ Delete Element
       </button>
     </div>
@@ -252,46 +273,6 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
   // Mobile View for Layout (Position, Size, Layering)
   const renderMobileLayoutTools = () => (
     <div className="mobile-compact-container">
-      {/* Position/Dimensions Grid */}
-      <div className="mobile-control-grid">
-        <div>
-          <div className="mobile-label-sm">X Pos</div>
-          <input 
-            type="number" 
-            className="mobile-input-compact" 
-            value={Math.round(selectedElement.x)} 
-            onChange={(e) => onUpdate({ x: Number(e.target.value) })}
-          />
-        </div>
-        <div>
-          <div className="mobile-label-sm">Y Pos</div>
-          <input 
-            type="number" 
-            className="mobile-input-compact" 
-            value={Math.round(selectedElement.y)} 
-            onChange={(e) => onUpdate({ y: Number(e.target.value) })}
-          />
-        </div>
-        <div>
-          <div className="mobile-label-sm">Width</div>
-          <input 
-            type="number" 
-            className="mobile-input-compact" 
-            value={Math.round(selectedElement.width)} 
-            onChange={(e) => onUpdate({ width: Number(e.target.value) })}
-          />
-        </div>
-        <div>
-          <div className="mobile-label-sm">Height</div>
-          <input 
-            type="number" 
-            className="mobile-input-compact" 
-            value={Math.round(selectedElement.height)} 
-            onChange={(e) => onUpdate({ height: Number(e.target.value) })}
-          />
-        </div>
-      </div>
-      
       {/* Rotation */}
       <div className="mobile-slider-group">
         <div className="mobile-label-sm">
@@ -499,7 +480,7 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
   )
 
   return (
-    <div className="editor-toolbar">
+    <div className={`editor-toolbar ${isInteractingWithCanvas ? 'interaction-active' : ''}`}>
       {/* Mobile Close Handle */}
       <div className="mobile-close-handle" onClick={onClose} />
       
@@ -531,44 +512,8 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
 
       {/* Desktop View (Standard List) - Hidden on Mobile via CSS */}
       <div className="desktop-toolbar-content">
-        {/* Common Properties: Position & Size */}
-        <ToolbarSection title="Position & Size" defaultOpen={true}>
-          <div className="input-row">
-            <span className="input-label">X</span>
-            <input 
-              type="number" 
-              className="toolbar-input" 
-              value={Math.round(selectedElement.x)} 
-              onChange={(e) => onUpdate({ x: Number(e.target.value) })}
-            />
-          </div>
-          <div className="input-row">
-            <span className="input-label">Y</span>
-            <input 
-              type="number" 
-              className="toolbar-input" 
-              value={Math.round(selectedElement.y)} 
-              onChange={(e) => onUpdate({ y: Number(e.target.value) })}
-            />
-          </div>
-          <div className="input-row">
-            <span className="input-label">W</span>
-            <input 
-              type="number" 
-              className="toolbar-input" 
-              value={Math.round(selectedElement.width)} 
-              onChange={(e) => onUpdate({ width: Number(e.target.value) })}
-            />
-          </div>
-          <div className="input-row">
-            <span className="input-label">H</span>
-            <input 
-              type="number" 
-              className="toolbar-input" 
-              value={Math.round(selectedElement.height)} 
-              onChange={(e) => onUpdate({ height: Number(e.target.value) })}
-            />
-          </div>
+        {/* Common Properties: Layout */}
+        <ToolbarSection title="Rotation" defaultOpen={true}>
           <div className="input-row">
             <span className="input-label">R</span>
             <input 
@@ -579,6 +524,136 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
             />
           </div>
         </ToolbarSection>
+
+        {/* Text Properties */}
+        {selectedElement.type === 'text' && (
+          <ToolbarSection title="Text Style" defaultOpen={true}>
+            <div style={{ padding: '0 4px' }}>
+              <div className="control-group">
+                <textarea 
+                  className="caption-textarea" 
+                  rows={3}
+                  value={selectedElement.content} 
+                  onChange={(e) => onUpdate({ content: e.target.value })}
+                  placeholder="Type here..."
+                  style={{ width: '100%', marginBottom: '12px' }}
+                />
+              </div>
+
+              <div className="caption-row">
+                <div>
+                  <label className="caption-label">Font</label>
+                  <SearchableFontSelect 
+                    fonts={FONT_FAMILIES}
+                    selectedFont={selectedElement.fontFamily}
+                    onChange={(font) => onUpdate({ fontFamily: font })}
+                  />
+                </div>
+                
+                <div>
+                  <label className="caption-label">Size</label>
+                  <select
+                    value={selectedElement.fontSize}
+                    onChange={e => onUpdate({ fontSize: Number(e.target.value) })}
+                    className="caption-select"
+                  >
+                    {[8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 72, 96, 120, 150, 200].map(size => (
+                      <option key={size} value={size}>{size}px</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="caption-row">
+                <div>
+                  <label className="caption-label">Color</label>
+                  <div className="caption-color" style={{ position: 'relative', overflow: 'hidden' }}>
+                      <input 
+                        type="color" 
+                        value={selectedElement.color} 
+                        onChange={(e) => onUpdate({ color: e.target.value })} 
+                        style={{ 
+                          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', 
+                          opacity: 0, cursor: 'pointer' 
+                        }} 
+                      />
+                      <div style={{ width: '100%', height: '100%', backgroundColor: selectedElement.color }} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-end' }}>
+                   <button 
+                     className={`caption-select ${selectedElement.fontWeight === 'bold' ? 'active' : ''}`}
+                     onClick={() => onUpdate({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}
+                     style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', background: selectedElement.fontWeight === 'bold' ? '#e0e0e0' : '#fff' }}
+                   >B</button>
+                   <button 
+                     className={`caption-select ${selectedElement.fontStyle === 'italic' ? 'active' : ''}`}
+                     onClick={() => onUpdate({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}
+                     style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontStyle: 'italic', background: selectedElement.fontStyle === 'italic' ? '#e0e0e0' : '#fff' }}
+                   >I</button>
+                   <button 
+                     className={`caption-select ${selectedElement.textDecoration === 'underline' ? 'active' : ''}`}
+                     onClick={() => onUpdate({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}
+                     style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'underline', background: selectedElement.textDecoration === 'underline' ? '#e0e0e0' : '#fff' }}
+                   >U</button>
+                </div>
+              </div>
+
+              <div className="caption-align-wrapper" style={{ marginTop: '12px' }}>
+                <label className="caption-label">Alignment</label>
+                <div className="caption-align">
+                  {['left', 'center', 'right'].map(align => (
+                    <button
+                      key={align}
+                      onClick={() => onUpdate({ textAlign: align })}
+                      className={`caption-select ${selectedElement.textAlign === align ? 'active' : ''}`}
+                      style={{ 
+                        flex: 1, 
+                        background: selectedElement.textAlign === align ? '#e0e0e0' : '#fff',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center'
+                      }}
+                    >
+                      {align.charAt(0).toUpperCase() + align.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+               <div className="control-group" style={{ marginTop: '16px' }}>
+                <label className="caption-label">Line Spacing</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input 
+                    type="range" 
+                    min="0.5" 
+                    max="3.0" 
+                    step="0.1"
+                    value={selectedElement.lineHeight || 1.2} 
+                    onChange={(e) => onUpdate({ lineHeight: Number(e.target.value) })}
+                    style={{ flex: 1 }}
+                  />
+                  <span style={{ fontSize: '12px', width: '24px' }}>{selectedElement.lineHeight || 1.2}</span>
+                </div>
+              </div>
+
+              <div className="control-group">
+                <label className="caption-label">Letter Spacing</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input 
+                    type="range" 
+                    min="-0.1" 
+                    max="1.0" 
+                    step="0.01"
+                    value={parseFloat(selectedElement.letterSpacing) || 0} 
+                    onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
+                    style={{ flex: 1 }}
+                  />
+                  <span style={{ fontSize: '12px', width: '24px' }}>{parseFloat(selectedElement.letterSpacing) || 0}</span>
+                </div>
+              </div>
+            </div>
+          </ToolbarSection>
+        )}
 
         {/* Layering Controls */}
         <ToolbarSection title="Layering">
@@ -597,126 +672,6 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
             </button>
           </div>
         </ToolbarSection>
-
-        {/* Text Properties */}
-        {selectedElement.type === 'text' && (
-          <ToolbarSection title="Text Style" defaultOpen={true}>
-            <div className="control-group">
-              <label className="control-label">Font Family</label>
-              <SearchableFontSelect 
-                fonts={FONT_FAMILIES}
-                selectedFont={selectedElement.fontFamily}
-                onChange={(font) => onUpdate({ fontFamily: font })}
-              />
-            </div>
-            
-            <div className="control-group">
-              <label className="control-label">Font Size</label>
-              <input 
-                type="number" 
-                className="toolbar-input" 
-                value={selectedElement.fontSize} 
-                onChange={(e) => onUpdate({ fontSize: Number(e.target.value) })}
-              />
-            </div>
-
-            <div className="control-group">
-              <label className="control-label">Line Spacing</label>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input 
-                  type="range" 
-                  min="0.5" 
-                  max="3.0" 
-                  step="0.1"
-                  value={selectedElement.lineHeight || 1.2} 
-                  onChange={(e) => onUpdate({ lineHeight: Number(e.target.value) })}
-                  style={{ flex: 1 }}
-                />
-                <span style={{ fontSize: '12px', width: '24px' }}>{selectedElement.lineHeight || 1.2}</span>
-              </div>
-            </div>
-
-            <div className="control-group">
-              <label className="control-label">Letter Spacing</label>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input 
-                  type="range" 
-                  min="-0.1" 
-                  max="1.0" 
-                  step="0.01"
-                  value={parseFloat(selectedElement.letterSpacing) || 0} 
-                  onChange={(e) => onUpdate({ letterSpacing: `${e.target.value}em` })}
-                  style={{ flex: 1 }}
-                />
-                <span style={{ fontSize: '12px', width: '24px' }}>{parseFloat(selectedElement.letterSpacing) || 0}</span>
-              </div>
-            </div>
-
-            <div className="control-group">
-              <label className="control-label">Color</label>
-              <div className="color-picker-wrapper">
-                <input 
-                  type="color" 
-                  value={selectedElement.color} 
-                  onChange={(e) => onUpdate({ color: e.target.value })} 
-                />
-                <div className="color-preview" style={{ backgroundColor: selectedElement.color }} />
-              </div>
-            </div>
-
-            <div className="toolbar-row grid-3">
-              <button 
-                className={`toolbar-btn ${selectedElement.fontWeight === 'bold' ? 'active' : ''}`}
-                onClick={() => onUpdate({ fontWeight: selectedElement.fontWeight === 'bold' ? 'normal' : 'bold' })}
-              >
-                B
-              </button>
-              <button 
-                className={`toolbar-btn ${selectedElement.fontStyle === 'italic' ? 'active' : ''}`}
-                onClick={() => onUpdate({ fontStyle: selectedElement.fontStyle === 'italic' ? 'normal' : 'italic' })}
-              >
-                I
-              </button>
-              <button 
-                className={`toolbar-btn ${selectedElement.textDecoration === 'underline' ? 'active' : ''}`}
-                onClick={() => onUpdate({ textDecoration: selectedElement.textDecoration === 'underline' ? 'none' : 'underline' })}
-              >
-                U
-              </button>
-            </div>
-
-            <div className="toolbar-row grid-3">
-              <button 
-                className={`toolbar-btn ${selectedElement.textAlign === 'left' ? 'active' : ''}`}
-                onClick={() => onUpdate({ textAlign: 'left' })}
-              >
-                Left
-              </button>
-              <button 
-                className={`toolbar-btn ${selectedElement.textAlign === 'center' ? 'active' : ''}`}
-                onClick={() => onUpdate({ textAlign: 'center' })}
-              >
-                Center
-              </button>
-              <button 
-                className={`toolbar-btn ${selectedElement.textAlign === 'right' ? 'active' : ''}`}
-                onClick={() => onUpdate({ textAlign: 'right' })}
-              >
-                Right
-              </button>
-            </div>
-            
-            <div className="control-group">
-              <label className="control-label">Content</label>
-              <textarea 
-                className="toolbar-textarea" 
-                rows={3}
-                value={selectedElement.content} 
-                onChange={(e) => onUpdate({ content: e.target.value })}
-              />
-            </div>
-          </ToolbarSection>
-        )}
 
         {/* Image Properties */}
         {selectedElement.type === 'image' && (

@@ -80,8 +80,9 @@ export default function DraggableElement({
   const handleResizeStart = (e, handle) => {
     e.stopPropagation()
     setIsResizing(true)
+    if (onDragStart) onDragStart()
     setResizeHandle(handle)
-    
+     
     // Initialize local transform
     setLocalTransform({ x: element.x, y: element.y, width: element.width, height: element.height })
     
@@ -142,7 +143,8 @@ export default function DraggableElement({
     }
 
     const handleEnd = () => {
-      if (isDragging && onDragEnd) onDragEnd()
+      // Trigger drag end callback if we were dragging OR resizing
+      if ((isDragging || isResizing) && onDragEnd) onDragEnd()
       
       // Commit final change to history
       if (latestTransformRef.current) {

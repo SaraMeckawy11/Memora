@@ -303,6 +303,8 @@ function CoverEditorContent() {
                   onZoomChange={handleManualZoomChange}
                   onDrawingStart={() => setIsInteractingWithCanvas(true)}
                   onDrawingEnd={() => setIsInteractingWithCanvas(false)}
+                  onDragStart={() => setIsInteractingWithCanvas(true)}
+                  onDragEnd={() => setIsInteractingWithCanvas(false)}
                 />
               </div>
             ) : (
@@ -322,6 +324,8 @@ function CoverEditorContent() {
                   onZoomChange={handleManualZoomChange}
                   onDrawingStart={() => setIsInteractingWithCanvas(true)}
                   onDrawingEnd={() => setIsInteractingWithCanvas(false)}
+                  onDragStart={() => setIsInteractingWithCanvas(true)}
+                  onDragEnd={() => setIsInteractingWithCanvas(false)}
                 />
               </div>
             )}
@@ -347,6 +351,7 @@ function CoverEditorContent() {
           onUpdate={(updates, action) => updateElement(selectedId, updates, action)} 
           onReorder={handleReorderElement}
           onClose={() => setSelectedId(null)}
+          isInteractingWithCanvas={isInteractingWithCanvas}
         />
       )}
       </>

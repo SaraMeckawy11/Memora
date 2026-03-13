@@ -136,7 +136,7 @@ export default function EditorSidebar({
 
       {/* Asset Panel */}
       <div 
-        className={`asset-panel ${activeTab && !isInteractingWithCanvas ? '' : 'collapsed'}`}
+        className={`asset-panel ${activeTab ? '' : 'collapsed'} ${isInteractingWithCanvas ? 'interaction-active' : ''}`}
         ref={panelRef}
       >
         <div className="panel-header">

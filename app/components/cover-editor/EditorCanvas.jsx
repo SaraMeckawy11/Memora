@@ -16,7 +16,9 @@ export default function EditorCanvas({
   zoomLevel = 1,
   onZoomChange,
   onDrawingStart,
-  onDrawingEnd
+  onDrawingEnd,
+  onDragStart,
+  onDragEnd
 }) {
   const canvasRef = useRef(null)
   const [currentPath, setCurrentPath] = useState([])
@@ -427,9 +429,12 @@ export default function EditorCanvas({
             }}
             onDelete={() => onUpdate(el.id, null, 'delete')}
             onDragStart={() => {
-                // Drag start logic if needed
+                if (onDragStart) onDragStart()
             }}
-            onDragEnd={() => setDragEnd()}
+            onDragEnd={() => {
+                setDragEnd()
+                if (onDragEnd) onDragEnd()
+            }}
             isLocked={isDrawMode && drawingTool.type !== 'eraser'} // Lock elements while drawing (except eraser)
             isEraserActive={isDrawMode && drawingTool.type === 'eraser'}
             canvasScale={zoomLevel}

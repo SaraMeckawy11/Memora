@@ -1092,3 +1092,11 @@ input[type=range]::-moz-range-thumb {
   font-family: monospace;
 }
 
+@media (max-width: 768px) {
+  .editor-toolbar.interaction-active {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.2s ease-out;
+  }
+}
+
