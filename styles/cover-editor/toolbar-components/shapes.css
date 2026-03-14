@@ -1,0 +1,245 @@
+/* ===========================================
+   SHAPE TOOLS & COLOR PICKER
+=========================================== */
+
+.shape-tool-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.shape-type-grid {
+  display: flex;
+  justify-content: space-around;
+  background: #f8fafc;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.shape-type-btn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shape-type-btn:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.shape-type-btn.active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transform: translateY(-1px);
+}
+
+.shape-properties-grid {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 24px;
+  padding: 4px 0;
+}
+
+.shape-property-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.shape-property-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Shape Specific Color Picker */
+.shape-properties-stacked .color-picker-wrapper {
+  position: relative;
+  width: 52px;
+  height: 52px;
+}
+
+.shape-properties-stacked .color-picker-wrapper input[type="color"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.color-preview-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid #f1f5f9; /* Soft border */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  background-clip: padding-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.shape-properties-stacked .color-picker-wrapper:active .color-preview-circle {
+  transform: scale(0.92);
+}
+
+.slash-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 120%;
+  background: #ef4444;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.shape-sliders-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.mobile-action-btn.with-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+/* ===========================================
+   PREMIUM COLOR PICKER UPGRADE
+=========================================== */
+
+/* Horizontal Color Scroller */
+.color-scroll-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px;
+  padding-bottom: 8px; /* space for scrollbar/shadow */
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  align-items: center;
+  mask-image: linear-gradient(to right, black 90%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 90%, transparent 100%);
+}
+
+.color-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Color Swatch (Preset) */
+.color-swatch-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid transparent; 
+  flex-shrink: 0;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08); 
+}
+
+.color-swatch-btn[style*="background-color: #ffffff"],
+.color-swatch-btn[style*="background-color: transparent"] {
+  border-color: #e2e8f0;
+}
+
+.color-swatch-btn:active {
+  transform: scale(0.9);
+}
+
+.color-swatch-btn.active {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6; /* Focus ring */
+  z-index: 2;
+}
+
+/* Custom "Rainbow" Button */
+.color-custom-btn {
+  background: conic-gradient(from 180deg at 50% 50%, #FF0000 0deg, #FFFF00 60deg, #00FF00 120deg, #00FFFF 180deg, #0000FF 240deg, #FF00FF 300deg, #FF0000 360deg);
+  border: 2px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.color-custom-btn input[type="color"] {
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* Color Sections Layout */
+.shape-properties-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.shape-color-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shape-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.transparent-swatch {
+  background: 
+    linear-gradient(45deg, #ccc 25%, transparent 25%),
+    linear-gradient(-45deg, #ccc 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #ccc 75%),
+    linear-gradient(-45deg, transparent 75%, #ccc 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+  background-color: #fff;
+  position: relative;
+}
+
+.transparent-swatch::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%; /* Center the line */
+  width: 2px;
+  height: 24px;
+  background: #ef4444; /* Red line to indicate NONE */
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-radius: 2px;
+}
