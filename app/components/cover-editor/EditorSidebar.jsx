@@ -103,7 +103,7 @@ export default function EditorSidebar({
           <span className="sidebar-icon">
              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
           </span>
-          <span className="sidebar-label">Add Text</span>
+          <span className="sidebar-label">Text</span>
         </button>
 
         <button 

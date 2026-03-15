@@ -1103,3 +1103,19 @@
  40% { content: '..'; }
  60%, 100% { content: '...'; }
 }
+
+/* Ensure labels are visible on small screens */
+@media (max-width: 480px) {
+  .sidebar-label {
+    width: 100%;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 2px;
+  }
+  .sidebar-icon svg {
+    max-width: 20px;
+    max-height: 20px;
+  }
+}
