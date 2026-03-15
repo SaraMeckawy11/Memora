@@ -2,31 +2,40 @@ export function useElementOperations(elements, setElements, setSelectedId) {
   
   const addElement = (type, customProps = null) => {
     const newId = Date.now();
-    const baseElement = {
-      id: newId,
-      type,
-      x: 100, y: 100, width: 200, height: 100,
-      rotation: 0,
-      zIndex: elements.length + 1,
-      color: '#000000', fontSize: 24, fontFamily: 'Arial', fontWeight: 'normal',
-      textAlign: 'center', lineHeight: 1.2, fill: '#3b82f6', stroke: '#000000', strokeWidth: 0,
-      brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, opacity: 100, sepia: 0, grayscale: 0, vignette: 0
-    };
+    
+    setElements(prev => {
+        // Calculate offset based on current element count
+        const offset = (prev.length % 15) * 20;
 
-    let newElement;
-    if (type === 'drawing') {
-      newElement = { ...baseElement, ...(customProps || {}), type: 'drawing' };
-    } else if (type === 'text') {
-      newElement = { ...baseElement, content: 'New Text', x: 50, y: 50, width: 300, height: 100, ...(customProps || {}) };
-    } else if (type === 'image') {
-      newElement = { ...baseElement, src: 'https://via.placeholder.com/150', x: 50, y: 50, width: 150, height: 150, ...(customProps || {}) };
-    } else if (type === 'shape') {
-      newElement = { ...baseElement, width: 100, height: 100, ...(customProps || {}) };
-    } else {
-      newElement = { ...baseElement, ...(customProps || {}) };
-    }
+        const baseElement = {
+          id: newId,
+          type,
+          x: 100 + offset, 
+          y: 100 + offset, 
+          width: 200, height: 100,
+          rotation: 0,
+          zIndex: prev.length + 1,
+          color: '#000000', fontSize: 24, fontFamily: 'Arial', fontWeight: 'normal',
+          textAlign: 'center', lineHeight: 1.2, fill: '#3b82f6', stroke: '#000000', strokeWidth: 0,
+          brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, opacity: 100, sepia: 0, grayscale: 0, vignette: 0
+        };
 
-    setElements(prev => [...prev, newElement]);
+        let newElement;
+        if (type === 'drawing') {
+          newElement = { ...baseElement, ...(customProps || {}), type: 'drawing' };
+        } else if (type === 'text') {
+          newElement = { ...baseElement, content: 'New Text', x: 50 + offset, y: 50 + offset, width: 300, height: 100, ...(customProps || {}) };
+        } else if (type === 'image') {
+          newElement = { ...baseElement, src: 'https://via.placeholder.com/150', x: 50 + offset, y: 50 + offset, width: 150, height: 150, ...(customProps || {}) };
+        } else if (type === 'shape') {
+          newElement = { ...baseElement, width: 100, height: 100, ...(customProps || {}) };
+        } else {
+          newElement = { ...baseElement, ...(customProps || {}) };
+        }
+        
+        return [...prev, newElement];
+    });
+
     setSelectedId(newId);
   };
 

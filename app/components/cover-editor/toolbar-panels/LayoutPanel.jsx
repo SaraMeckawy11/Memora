@@ -4,7 +4,7 @@ import { ToolbarSection } from './ToolbarSection'
 
 export const MobileLayoutPanel = ({ selectedElement, onReorder, onUpdate }) => {
   return (
-    <div className="mobile-compact-container">
+    <div className="mobile-compact-container" style={{ padding: 0 }}>
       {/* Rotation */}
       <div className="mobile-slider-group">
         <div className="mobile-label-sm">

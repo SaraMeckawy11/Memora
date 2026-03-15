@@ -43,10 +43,6 @@ export const MobileDrawingPanel = ({ selectedElement, onUpdate }) => {
             onChange={(e) => onUpdate({ opacity: Number(e.target.value) })}
           />
        </div>
-        
-        <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')}>
-          Delete Drawing
-        </button>
     </div>
   )
 }

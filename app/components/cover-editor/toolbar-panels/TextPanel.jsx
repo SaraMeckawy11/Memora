@@ -15,10 +15,10 @@ export const MobileTextPanel = ({ selectedElement, onUpdate }) => {
         value={selectedElement.content}
         onChange={(e) => onUpdate({ content: e.target.value })}
         placeholder="Type here..."
-        style={{ marginBottom: '16px', height: 'auto', minHeight: '60px' }}
+        style={{ height: 'auto', minHeight: '60px' }}
       />
 
-      <div className="caption-controls">
+      <div className="caption-controls" style={{ padding: 0 }}>
         <div className="caption-row">
           <div>
             <label className="caption-label">Font</label>
@@ -132,10 +132,7 @@ export const MobileTextPanel = ({ selectedElement, onUpdate }) => {
         </div>
       </div>
       
-      {/* Delete Button */}
-      <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ marginTop: '24px' }}>
-        Delete Element
-      </button>
+      
     </div>
   )
 }

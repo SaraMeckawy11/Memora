@@ -144,12 +144,6 @@ export const ShapePropertiesPanel = ({ selectedElement, onUpdate, isMobile = fal
             />
          </div>
       </div>
-
-      {isMobile && (
-        <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ marginTop: '12px' }}>
-          Delete Shape
-        </button>
-      )}
     </div>
   )
 }

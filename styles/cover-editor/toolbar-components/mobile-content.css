@@ -120,8 +120,7 @@
 
 .mobile-compact-container {
   gap: 16px; /* slightly more spacing */
-  padding: 20px 16px;
-  padding-bottom: 15vh; /* Safe area for scrolling */
+  padding: 16px; 
   background: #ffffff;
   display: flex;
   flex-direction: column;

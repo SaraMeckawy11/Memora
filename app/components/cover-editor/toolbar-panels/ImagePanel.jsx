@@ -26,7 +26,7 @@ export const MobileImagePanel = ({ selectedElement, onUpdate, activeTab }) => {
     <div className="mobile-compact-container">
       {/* Active Tool Slider */}
       {activeMobileTool && (
-        <div className="mobile-slider-group" style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #F3F4F6' }}>
+        <div className="mobile-slider-group" style={{ paddingBottom: '16px', borderBottom: '1px solid #F3F4F6' }}>
           <div className="mobile-label-sm">
             <span>{activeMobileTool.label}</span>
             <span>{selectedElement[activeMobileTool.prop] || activeMobileTool.default}</span>
@@ -56,7 +56,7 @@ export const MobileImagePanel = ({ selectedElement, onUpdate, activeTab }) => {
         ))}
       </div>
 
-      <div className="mobile-control-row" style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #F3F4F6' }}>
+      <div className="mobile-control-row" style={{ paddingTop: '16px', borderTop: '1px solid #F3F4F6' }}>
          <label className="mobile-action-btn secondary" style={{ cursor: 'pointer', flex: 1 }}>
           <input 
             type="file" 
@@ -75,10 +75,6 @@ export const MobileImagePanel = ({ selectedElement, onUpdate, activeTab }) => {
           />
           <span>📷 Replace</span>
         </label>
-        
-        <button className="mobile-action-btn delete" onClick={() => onUpdate(null, 'delete')} style={{ flex: 1 }}>
-          Delete
-        </button>
       </div>
     </div>
   )

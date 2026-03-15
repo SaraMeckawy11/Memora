@@ -28,12 +28,6 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
           >
             Adjust
           </button>
-          <button 
-            className={`mobile-tab-btn ${activeTab === 'layout' ? 'active' : ''}`}
-            onClick={() => setActiveTab('layout')}
-          >
-            Layout
-          </button>
           {selectedElement.type === 'image' && (
             <button 
               className={`mobile-tab-btn ${activeTab === 'filters' ? 'active' : ''}`}
@@ -89,10 +83,7 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
 
       {/* Mobile Content Render */}
       <div className="mobile-toolbar-content">
-        {activeTab === 'layout' ? (
-          <MobileLayoutPanel selectedElement={selectedElement} onReorder={onReorder} onUpdate={onUpdate} />
-        ) : (
-          <>
+        <>
             {selectedElement.type === 'image' && (
               <MobileImagePanel selectedElement={selectedElement} onUpdate={onUpdate} activeTab={activeTab} />
             )}
@@ -105,8 +96,26 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
             {selectedElement.type === 'drawing' && (
                <MobileDrawingPanel selectedElement={selectedElement} onUpdate={onUpdate} />
             )}
-          </>
-        )}
+
+            {/* Always show Layout controls at the bottom of Adjust tab */}
+            {(selectedElement.type !== 'image' || activeTab === 'adjust') && (
+               <>
+                 <div className="mobile-layout-section">
+                    <h4 className="mobile-layout-header">Layout</h4>
+                    <MobileLayoutPanel selectedElement={selectedElement} onReorder={onReorder} onUpdate={onUpdate} />
+                 </div>
+                 
+                 <div className="mobile-delete-section">
+                    <button 
+                      className="mobile-action-btn delete mobile-delete-btn" 
+                      onClick={() => onUpdate(null, 'delete')}
+                    >
+                      Delete Element
+                    </button>
+                 </div>
+               </>
+            )}
+        </>
       </div>
     </div>
   )

@@ -83,7 +83,8 @@ export default function EditorSidebar({
   }
 
   const handleAddElementAndClose = (type, props) => {
-    onAddElement(type, props)
+    // We pass a unique trigger so useEffect in hook knows it's a new add even if props are identical
+    onAddElement(type, { ...props, _trigger: Date.now() })
     setActiveTab(null) // Close the sidebar so the toolbar can be seen
   }
 
@@ -189,7 +190,10 @@ export default function EditorSidebar({
                   <button 
                     key={i} 
                     className="compact-shape-btn"
-                    onClick={() => handleAddElementAndClose('shape', { ...shape })}
+                    onClick={() => {
+                      const { id, ...shapeWithoutId } = shape;
+                      handleAddElementAndClose('shape', shapeWithoutId);
+                    }}
                     title={`Add ${shape.name}`}
                   >
                     {shape.shapeType === 'rect' && (
