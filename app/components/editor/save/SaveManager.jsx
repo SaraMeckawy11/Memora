@@ -101,6 +101,12 @@ export function useSaveManager({
 
     try {
       const imagesToSave = await Promise.all(uploadedImages.map(async (img) => {
+        // If it's a Cloudinary URL (starts with http/https), save it as is.
+        // Also check explicitly for our flag 'isCloudinary' just in case.
+        if (img.src && (img.src.startsWith('http') || img.isCloudinary)) {
+           return img;
+        }
+
         if (img.src && img.src.startsWith('blob:')) {
           try {
             const response = await fetch(img.src)
@@ -118,6 +124,11 @@ export function useSaveManager({
       const pagesToSave = await Promise.all(pages.map(async (p) => {
         if (!p.overlays?.length) return { ...p }
         const savedOverlays = await Promise.all(p.overlays.map(async (ov) => {
+          // Same logic for overlays: if it's a remote URL, keep it.
+          if (ov.type === 'photo' && ov.src && (ov.src.startsWith('http') || ov.isCloudinary)) {
+             return { ...ov }
+          }
+
           if (ov.type === 'photo' && ov.src && ov.src.startsWith('blob:')) {
             try {
               const response = await fetch(ov.src)
@@ -207,17 +218,41 @@ export function useSaveManager({
       if (!d) return
 
       const restoredImages = (d.uploadedImages || []).map(img => {
+        // If it's a Cloudinary URL, it's already a valid string, just use it.
+        // We verify src exists because older saves might not have it.
+        if (img.src && (img.src.startsWith('http') || img.isCloudinary)) {
+           return img;
+        }
+
         if (img.blob instanceof Blob) {
           return { ...img, src: URL.createObjectURL(img.blob) }
         }
         return img
       })
 
+      // Build a map of reconstructed images for fast lookup
+      const imageMap = new Map();
+      restoredImages.forEach(img => {
+         // Handle both string and number IDs
+         if (img.id) imageMap.set(String(img.id), img.src);
+      });
+
       // Restore overlay photo blobs back to blob URLs
+      // AND ensure page images point to Valid URLs if they need refreshing
       const restoredPages = (Array.isArray(d.pages) ? d.pages : []).map(p => {
         const page = { ...p, pageMargin: 16, pageGutter: 16 }
+        
+        // Ensure regular images on pages are valid
+        // NOTE: We don't change the IDs, but this loop could be used to validation
+        // In the canvas rendering, it looks up images by ID from `uploadedImages`.
+        // So as long as `restoredImages` has the correct blob URLs, it should work.
+        
         if (page.overlays?.length) {
           page.overlays = page.overlays.map(ov => {
+            if (ov.type === 'photo' && ov.src && (ov.src.startsWith('http') || ov.isCloudinary)) {
+               return { ...ov }
+            }
+
             if (ov.type === 'photo' && ov.blob instanceof Blob) {
               return { ...ov, src: URL.createObjectURL(ov.blob) }
             }

@@ -21,10 +21,13 @@ export default function ImageGrid({
   const splitX = currentPage?.layoutSplitX ?? 50
   const splitY = currentPage?.layoutSplitY ?? 50
 
-  const slot = (id, idx) => (
+  const slot = (id, idx) => {
+    // Ensure we handle both string/number ID mismatch
+    const foundImg = id ? uploadedImages.find(i => String(i.id) === String(id)) : null
+    return (
     <ImageSlot
       key={idx}
-      img={id ? uploadedImages.find(i => i.id === id) : null}
+      img={foundImg}
       idx={idx}
       selected={selectedSlotIdx === idx}
       imageFitMode={imageFitMode}
@@ -33,7 +36,7 @@ export default function ImageGrid({
       onRemove={onRemoveImage}
       onSwap={onSwapSlots}
     />
-  )
+  )}
 
   if (t === '1-top-2-bottom') {
     return (

@@ -228,7 +228,8 @@ export default function StepEditor({
   const getImageObjectForSlot = (slotIdx) => {
     const imageId = currentPage?.images?.[slotIdx]
     if (!imageId) return null
-    return uploadedImages.find(img => img.id === imageId) || null
+    // Type coercion here is critical: imageId might be string from JSON, but image.id number
+    return uploadedImages.find(img => String(img.id) === String(imageId)) || null
   }
 
   const goToPrevPage = () => {

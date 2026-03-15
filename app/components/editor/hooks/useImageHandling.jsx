@@ -14,70 +14,69 @@ export function useImageHandling(
     const MAX_FILE_MB = 50
     const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
 
-    const createThumbnail = (file, maxSize = 256) =>
-      new Promise((resolve) => {
-        const img = new Image()
-        const tmpUrl = URL.createObjectURL(file)
-
-        img.onload = () => {
-          const w = img.naturalWidth || 0
-          const h = img.naturalHeight || 0
-          const scale = Math.min(1, maxSize / Math.max(w || 1, h || 1))
-          const tw = Math.max(1, Math.round(w * scale))
-          const th = Math.max(1, Math.round(h * scale))
-
-          const canvas = document.createElement('canvas')
-          canvas.width = tw
-          canvas.height = th
-          const ctx = canvas.getContext('2d')
-          if (ctx) ctx.drawImage(img, 0, 0, tw, th)
-
-          URL.revokeObjectURL(tmpUrl)
-          resolve({
-            thumbSrc: ctx ? canvas.toDataURL('image/jpeg', 0.72) : null,
-            width: w,
-            height: h,
-          })
-        }
-
-        img.onerror = () => {
-          URL.revokeObjectURL(tmpUrl)
-          resolve({ thumbSrc: null, width: null, height: null })
-        }
-
-        img.src = tmpUrl
-      })
-
-    const BATCH_SIZE = 10
+    // Use smaller batches for upload
+    const BATCH_SIZE = 3 
 
     for (let i = 0; i < files.length; i += BATCH_SIZE) {
       const batch = files.slice(i, i + BATCH_SIZE)
 
-      const prepared = await Promise.all(
+      // Create placeholder entries first for optimistic UI (optional, but good UX)
+      // For now, we wait for upload to complete to avoid complexity with replacing IDs
+      // but in a real-world app you'd add a "loading" state.
+
+      const uploaded = await Promise.all(
         batch.map(async (file) => {
           if (file.size > MAX_FILE_BYTES) return null
           if (!file.type.startsWith('image/')) return null
 
-          const src = URL.createObjectURL(file)
-          const { thumbSrc, width, height } = await createThumbnail(file, 256)
+          try {
+            const formData = new FormData()
+            formData.append('file', file)
 
-          return {
-            id: Date.now() + Math.random(),
-            src,
-            thumbSrc,
-            width,
-            height,
-            name: file.name,
+            const res = await fetch('/api/cloudinary/upload', {
+              method: 'POST',
+              body: formData
+            })
+
+            if (!res.ok) throw new Error('Upload failed')
+            const data = await res.json()
+
+            if (!data.success) throw new Error(data.error)
+
+            // Construct secure URLs with transformations if needed
+            // Cloudinary supports on-the-fly transformations
+            // Add f_auto,q_auto for optimization
+            const secureUrl = data.secure_url;
+            
+            // Create a small thumbnail URL
+            // replace /upload/ with /upload/w_256,h_256,c_limit/ to save bandwidth in the sidebar
+            const thumbUrl = secureUrl.replace('/upload/', '/upload/w_256,h_256,c_limit,q_auto,f_auto/')
+            
+            // Generate a robust ID, prefer public_id if available
+            // Ensure ID is a string to avoid type coercion issues later
+            const id = data.public_id || String(Date.now() + Math.random())
+
+            return {
+              id: id,
+              src: secureUrl, // Use the full resolution URL for the canvas
+              thumbSrc: thumbUrl, // Use optimized URL for sidebar
+              width: data.width,
+              height: data.height,
+              name: file.name,
+              isCloudinary: true // Flag to help SaveManager know not to blob-ify this
+            }
+          } catch (err) {
+            console.error(`Failed to upload ${file.name}:`, err)
+            // Could return an error placeholder here
+            return null
           }
         })
       )
 
-      const cleaned = prepared.filter(Boolean)
+      const cleaned = uploaded.filter(Boolean)
       if (cleaned.length) {
         setUploadedImages(prev => [...prev, ...cleaned])
       }
-
-      await new Promise(r => setTimeout(r, 0))
     }
 
     e.target.value = ''
