@@ -22,7 +22,12 @@ export default function EditorSidebar({
   onSetBackgroundColor,
   drawingTool,
   onUpdateDrawingTool,
-  isInteractingWithCanvas
+  isInteractingWithCanvas,
+  // NEW PROPS FOR PERSISTENCE
+  onSave,
+  onReset,
+  lastSaved,
+  isAutoSaving
 }) {
   const [activeTab, setActiveTab] = useState(null)
   const sidebarRef = useRef(null)
@@ -133,6 +138,24 @@ export default function EditorSidebar({
           </span>
           <span className="sidebar-label">Upload</span>
         </label>
+        
+        {/* Persistence Button - Moved to bottom via flex layout or margin */}
+        {onSave && (
+          <button 
+            className={`sidebar-btn ${activeTab === 'project' ? 'active' : ''}`}
+            onClick={() => handleTabClick('project')}
+            style={{ marginTop: 'auto' }}
+          >
+           <span className="sidebar-icon">
+              {isAutoSaving ? (
+                <svg className="spin" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              ) : (
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              )}
+           </span>
+           <span className="sidebar-label">Project</span>
+          </button>
+        )}
       </div>
 
       {/* Asset Panel */}
@@ -145,6 +168,7 @@ export default function EditorSidebar({
             {activeTab === 'shapes' && 'Elements'}
             {activeTab === 'text' && 'Text Options'}
             {activeTab === 'background' && 'Background'}
+            {activeTab === 'project' && 'Project Options'}
           </div>
           
           <button 
@@ -162,6 +186,69 @@ export default function EditorSidebar({
           </button>
         </div>
         <div className="panel-content">
+          {activeTab === 'project' && (
+            <div className="panel-section">
+               <h4 className="section-title">Save & Restore</h4>
+               <div style={{ padding: '0 8px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  
+                  <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '8px' }}>
+                     {lastSaved ? (
+                       <>Last saved: <b>{new Date(lastSaved).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</b></>
+                     ) : (
+                       <>Autosave is active</>
+                     )}
+                  </div>
+
+                  <button 
+                    className="full-width-btn primary"
+                    onClick={onSave}
+                    disabled={isAutoSaving}
+                    style={{ 
+                       padding: '10px', 
+                       backgroundColor: '#0f172a', 
+                       color: 'white', 
+                       border: 'none', 
+                       borderRadius: '6px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       gap: '8px',
+                       cursor: isAutoSaving ? 'wait' : 'pointer'
+                    }}
+                  >
+                    <span>Save Now</span>
+                    {isAutoSaving && <span className="loader-dots">...</span>}
+                  </button>
+                  
+                  <div style={{ height: '1px', background: '#e2e8f0', margin: '8px 0' }} />
+                  
+                  <button 
+                    className="full-width-btn destructive"
+                    onClick={onReset}
+                    style={{ 
+                       padding: '10px', 
+                       backgroundColor: '#fff1f2', 
+                       color: '#e11d48', 
+                       border: '1px solid #fda4af', 
+                       borderRadius: '6px',
+                       display: 'flex',
+                       alignItems: 'center',
+                       justifyContent: 'center',
+                       gap: '8px',
+                       cursor: 'pointer'
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>Reset Canvas</span>
+                  </button>
+                  
+                  <p style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px', lineHeight: 1.4 }}>
+                    Resetting will clear all elements and cannot be undone.
+                  </p>
+               </div>
+            </div>
+          )}
+
           {activeTab === 'background' && (
             <div className="panel-section">
                <h4 className="section-title">Background Color</h4>

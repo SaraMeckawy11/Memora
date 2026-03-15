@@ -44,42 +44,51 @@ function CoverEditorContent() {
   useEffect(() => {
     const initLayout = async () => {
       try {
-        const project = await loadProject()
-        console.log('Cover Editor: Loaded project from DB:', project)
+        setLoading(true);
+        // First try to load from local storage persistence
+        const hasSavedProject = handleLoadProject();
         
-        let sizeData = project?.selectedSize
-        
-        // If stored as ID (number/string), find the full object from SIZES constant
-        if (typeof sizeData === 'number' || typeof sizeData === 'string') {
-           const found = SIZES.find(s => s.id == sizeData)
-           if (found) sizeData = found
-        }
-        
-        if (sizeData && sizeData.width && sizeData.height) {
-          console.log('Cover Editor: specific size data:', sizeData)
-          const { width, height, name } = sizeData
-          // Match standard web DPI (96) used in StepEditor
-          const pxScale = 96
-          
-          setCanvasSettings({
-            width: Math.round(width * pxScale),
-            height: Math.round(height * pxScale),
-            sizeName: name || 'Custom',
-            orientation: width > height ? 'landscape' : 'portrait'
-          })
+        if (hasSavedProject) {
+           console.log('Cover Editor: Loaded project from local persistence');
+           // handleLoadProject inside useProjectPersistence takes care of state update
         } else {
-             console.log('Cover Editor: No valid selectedSize in project, using defaults (A4 Portrait)')
+           // Fallback to DB/Create flow defaults if no local save exists
+           const project = await loadProject()
+           console.log('Cover Editor: Loaded project from DB:', project)
+           
+           let sizeData = project?.selectedSize
+           
+           if (typeof sizeData === 'number' || typeof sizeData === 'string') {
+              const found = SIZES.find(s => s.id == sizeData)
+              if (found) sizeData = found
+           }
+           
+           if (sizeData && sizeData.width && sizeData.height) {
+             const { width, height, name } = sizeData
+             const pxScale = 96
+             setCanvasSettings({
+               width: Math.round(width * pxScale),
+               height: Math.round(height * pxScale),
+               sizeName: name || 'Custom',
+               orientation: width > height ? 'landscape' : 'portrait'
+             })
+           } else {
+                setCanvasSettings({
+                   width: 794, height: 1123, sizeName: 'A4', orientation: 'portrait'
+                })
+           }
+        }
+      } catch (err) {
+        console.error('Failed to load project layout:', err)
+        if (!canvasSettings) {
              setCanvasSettings({
                 width: 794, height: 1123, sizeName: 'A4', orientation: 'portrait'
              })
         }
-      } catch (err) {
-        console.error('Failed to load project layout:', err)
-        setCanvasSettings({
-            width: 794, height: 1123, sizeName: 'A4', orientation: 'portrait'
-         })
       } finally {
-        setLoading(false)
+        setLoading(false);
+        // Only enable auto-save after initial project loading is complete
+        setIsAutoSaveEnabled(true);
       }
     }
     initLayout()
@@ -116,13 +125,14 @@ function CoverEditorContent() {
   } = useElementOperations(elements, setElements, setSelectedId);
 
   const { 
-    handleSaveProject, handleLoadProject 
+    handleSaveProject, handleLoadProject, handleResetProject,
+    lastSaved, isAutoSaving, setIsAutoSaveEnabled 
   } = useProjectPersistence(currentState, effectiveCanvasSettings, updateState, setCanvasSettings);
 
 
   // -- HANDLERS --
   const handleBack = () => router.back();
-  const handleSave = () => router.push('/create?step=3');
+  const handleDone = () => router.push('/create?step=3'); // Renamed to handleDone to act as "Next Step"
 
   const handleReorderElement = (direction) => {
     if (selectedId) reorder(selectedId, direction);
@@ -205,6 +215,10 @@ function CoverEditorContent() {
         onUpdateDrawingTool={setDrawingTool}
         selectedElement={selectedElement}
         isInteractingWithCanvas={isInteractingWithCanvas}
+        onSave={handleSaveProject}
+        onReset={handleResetProject}
+        lastSaved={lastSaved}
+        isAutoSaving={isAutoSaving}
       />
       
       <div className="editor-main">
@@ -272,7 +286,7 @@ function CoverEditorContent() {
               <span className="hide-mobile">Close</span>
               <span className="show-mobile"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></span>
             </button>
-            <button className="header-btn primary" onClick={handleSave}>Done</button>
+            <button className="header-btn primary" onClick={handleDone}>Done</button>
           </div>
         </div>
         

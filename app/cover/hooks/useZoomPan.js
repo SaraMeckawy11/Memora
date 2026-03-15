@@ -65,7 +65,17 @@ export function useZoomPan(wrapperRef, canvasSettings, searchParams) {
     setIsAutoFitMode(true);
     const timer = setTimeout(() => handleZoomToFit(true), 150);
     return () => clearTimeout(timer);
-  }, [canvasSettings.width, canvasSettings.height, searchParams.get('preset')]);
+  }, [canvasSettings.width, canvasSettings.height]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if(isAutoFitMode) {
+        handleZoomToFit(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isAutoFitMode, canvasSettings]);
 
   useEffect(() => {
     const handleResize = () => {

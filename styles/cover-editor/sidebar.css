@@ -1080,3 +1080,26 @@
   }
 }
 
+
+.full-width-btn {
+  width: 100%;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 13px;
+}
+.full-width-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.full-width-btn:active {
+  transform: translateY(0);
+}
+.loader-dots {
+ display: inline-block;
+ animation: dots 1.5s infinite;
+}
+@keyframes dots {
+ 0%, 20% { content: '.'; }
+ 40% { content: '..'; }
+ 60%, 100% { content: '...'; }
+}
