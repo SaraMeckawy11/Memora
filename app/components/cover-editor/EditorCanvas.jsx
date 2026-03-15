@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import DraggableElement from './DraggableElement'
 import '@/styles/cover-editor/canvas.css'
 
@@ -130,10 +130,13 @@ export default function EditorCanvas({
     setCurrentPath([])
   }
 
+  const setDragEnd = () => {
+    setActiveGuides([])
+  }
+
   // Snapping Logic
-  const handleSnap = (id, updates) => {
+  const handleSnap = useCallback((id, updates, updateGuides = true) => {
     if (!updates || (updates.x === undefined && updates.y === undefined)) {
-      // Not a position update
       setDragEnd()
       return updates
     }
@@ -148,7 +151,7 @@ export default function EditorCanvas({
     const w = updates.width !== undefined ? updates.width : startWidth
     const h = updates.height !== undefined ? updates.height : startHeight
 
-    const SNAP_THRESHOLD = 10
+    const SNAP_THRESHOLD = 5
     const guides = []
     
     let newX = x
@@ -157,6 +160,8 @@ export default function EditorCanvas({
     // Centers
     const centerX = x + w / 2
     const centerY = y + h / 2
+    const rightX = x + w
+    const bottomY = y + h
     
     // Canvas Centers
     const canvasW = canvasSettings?.width || 800
@@ -165,61 +170,136 @@ export default function EditorCanvas({
     const canvasCenterX = canvasW / 2
     const canvasCenterY = canvasH / 2
 
-    // Snap Horizontal (Vertical Line)
-    if (Math.abs(centerX - canvasCenterX) < SNAP_THRESHOLD) {
-      newX = canvasCenterX - w / 2
-      guides.push({ type: 'vertical', pos: canvasCenterX })
-    } else if (Math.abs(x - 0) < SNAP_THRESHOLD) {
+    // --- Horizontal Snapping (Vertical Lines) ---
+    let snappedX = false;
+
+    // Default snap to edges of canvas
+    if (Math.abs(x - 0) < SNAP_THRESHOLD) {
          newX = 0
          guides.push({ type: 'vertical', pos: 0 })
+         snappedX = true
     } else if (Math.abs(x + w - canvasW) < SNAP_THRESHOLD) {
          newX = canvasW - w
          guides.push({ type: 'vertical', pos: canvasW })
-    } else {
+         snappedX = true
+    }
+
+    // Snap Horizontal (Vertical Line)
+    if (!snappedX) {
+      if (Math.abs(centerX - canvasCenterX) < SNAP_THRESHOLD) {
+        newX = canvasCenterX - w / 2
+        guides.push({ type: 'vertical', pos: canvasCenterX })
+        snappedX = true
+      }
+    }
+
+    if (!snappedX) {
         // Snap to other elements
         for (const el of elements) {
             if (el.id === id) continue
             const elCenterX = el.x + el.width / 2
+            const elRightX = el.x + el.width
+
             // Center to Center
             if (Math.abs(centerX - elCenterX) < SNAP_THRESHOLD) {
                 newX = elCenterX - w / 2
                 guides.push({ type: 'vertical', pos: elCenterX })
-                break
+                snappedX = true; break;
             }
-            // Edges logic could be added here
+             // Left - Left
+             if (Math.abs(x - el.x) < SNAP_THRESHOLD) {
+                newX = el.x
+                guides.push({ type: 'vertical', pos: el.x })
+                snappedX = true; break;
+            }
+            // Right - Right
+            if (Math.abs(rightX - elRightX) < SNAP_THRESHOLD) {
+                newX = elRightX - w
+                guides.push({ type: 'vertical', pos: elRightX })
+                snappedX = true; break;
+            }
+             // Left - Right
+             if (Math.abs(x - elRightX) < SNAP_THRESHOLD) {
+                newX = elRightX
+                guides.push({ type: 'vertical', pos: elRightX })
+                snappedX = true; break;
+            }
+             // Right - Left
+             if (Math.abs(rightX - el.x) < SNAP_THRESHOLD) {
+                newX = el.x - w
+                guides.push({ type: 'vertical', pos: el.x })
+                snappedX = true; break;
+            }
         }
     }
 
-    // Snap Vertical (Horizontal Line)
-    if (Math.abs(centerY - canvasCenterY) < SNAP_THRESHOLD) {
-      newY = canvasCenterY - h / 2
-      guides.push({ type: 'horizontal', pos: canvasCenterY })
-    } else if (Math.abs(y - 0) < SNAP_THRESHOLD) {
+    // --- Vertical Snapping (Horizontal Lines) ---
+    let snappedY = false;
+
+    // Default snap to edges of canvas
+    if (Math.abs(y - 0) < SNAP_THRESHOLD) {
          newY = 0
          guides.push({ type: 'horizontal', pos: 0 })
+         snappedY = true
     } else if (Math.abs(y + h - canvasH) < SNAP_THRESHOLD) {
          newY = canvasH - h
          guides.push({ type: 'horizontal', pos: canvasH })
-    } else {
+         snappedY = true
+    }
+
+    // Snap Vertical (Horizontal Line)
+    if (!snappedY) {
+      if (Math.abs(centerY - canvasCenterY) < SNAP_THRESHOLD) {
+        newY = canvasCenterY - h / 2
+        guides.push({ type: 'horizontal', pos: canvasCenterY })
+        snappedY = true
+      }
+    }
+    
+    if (!snappedY) {
         // Snap to other elements
         for (const el of elements) {
             if (el.id === id) continue
             const elCenterY = el.y + el.height / 2
+            const elBottomY = el.y + el.height
+
             if (Math.abs(centerY - elCenterY) < SNAP_THRESHOLD) {
                 newY = elCenterY - h / 2
                 guides.push({ type: 'horizontal', pos: elCenterY })
-                break
+                snappedY = true; break;
+            }
+            // Top - Top
+            if (Math.abs(y - el.y) < SNAP_THRESHOLD) {
+                newY = el.y
+                guides.push({ type: 'horizontal', pos: el.y })
+                snappedY = true; break;
+            }
+            // Bottom - Bottom
+            if (Math.abs(bottomY - elBottomY) < SNAP_THRESHOLD) {
+                newY = elBottomY - h
+                guides.push({ type: 'horizontal', pos: elBottomY })
+                snappedY = true; break;
+            }
+             // Top - Bottom
+            if (Math.abs(y - elBottomY) < SNAP_THRESHOLD) {
+                newY = elBottomY
+                guides.push({ type: 'horizontal', pos: elBottomY })
+                snappedY = true; break;
+            }
+             // Bottom - Top
+            if (Math.abs(bottomY - el.y) < SNAP_THRESHOLD) {
+                newY = el.y - h
+                guides.push({ type: 'horizontal', pos: el.y })
+                snappedY = true; break;
             }
         }
     }
     
-    setActiveGuides(guides)
+    if (updateGuides) {
+      setActiveGuides(guides)
+    }
     return { ...updates, x: newX, y: newY }
-  }
-
-  const setDragEnd = () => {
-    setActiveGuides([])
-  }
+  }, [elements, canvasSettings])
 
   // --- Touch & Wheel Handlers (Attached via Ref for non-passive control) ---
   useEffect(() => {
@@ -422,10 +502,14 @@ export default function EditorCanvas({
             element={el}
             isSelected={selectedId === el.id}
             onSelect={onSelect}
+            // Add real-time snapping
+            onDragMove={(id, updates) => handleSnap(id, updates, true)}
             onChange={(id, updates) => {
-               // Intercept updates for snapping
-               const snappedUpdates = handleSnap(id, updates)
+               // Intercept updates for snapping but DON'T update visual guides for the final commit
+               // This ensures guides disappear on drop
+               const snappedUpdates = handleSnap(id, updates, false)
                onUpdate(id, snappedUpdates)
+               setDragEnd() 
             }}
             onDelete={() => onUpdate(el.id, null, 'delete')}
             onDragStart={() => {

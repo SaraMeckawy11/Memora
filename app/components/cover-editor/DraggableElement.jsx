@@ -15,6 +15,7 @@ export default function DraggableElement({
   onDelete,
   onDragStart,
   onDragEnd,
+  onDragMove,
   canvasScale = 1,
   isLocked = false,
   isEraserActive = false
@@ -110,13 +111,15 @@ export default function DraggableElement({
       const dx = (clientX - dragStart.x) / canvasScale
       const dy = (clientY - dragStart.y) / canvasScale
 
+      let nextTransform = null
+
       if (isDragging) {
-        setLocalTransform({
+        nextTransform = {
           x: initialDims.x + dx,
           y: initialDims.y + dy,
           width: initialDims.w,
           height: initialDims.h
-        })
+        }
       } else if (isResizing) {
         let newX = initialDims.x
         let newY = initialDims.y
@@ -136,7 +139,16 @@ export default function DraggableElement({
           newH = initialDims.h - deltaH
         }
 
-        setLocalTransform({ x: newX, y: newY, width: newW, height: newH })
+        nextTransform = { x: newX, y: newY, width: newW, height: newH }
+      }
+
+      if (nextTransform) {
+        if (onDragMove) {
+          const snapped = onDragMove(element.id, nextTransform)
+          setLocalTransform(snapped || nextTransform)
+        } else {
+          setLocalTransform(nextTransform)
+        }
       }
     }
 
@@ -176,7 +188,7 @@ export default function DraggableElement({
       window.removeEventListener('touchmove', handleTouchMove)
       window.removeEventListener('touchend', handleEnd)
     }
-  }, [isDragging, isResizing, dragStart, initialDims, canvasScale, element.id, onChange, resizeHandle, onDragEnd, localTransform])
+  }, [isDragging, isResizing, dragStart, initialDims, canvasScale, element.id, onChange, resizeHandle, onDragEnd, localTransform, onDragMove])
 
   const effectiveElement = localTransform ? { ...element, ...localTransform } : element
 
