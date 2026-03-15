@@ -92,13 +92,13 @@ export default function EditorSidebar({
     <>
       <div className="editor-sidebar" ref={sidebarRef}>
         <button 
-          className={`sidebar-btn ${activeTab === 'text' ? 'active' : ''}`}
-          onClick={() => handleTabClick('text')}
+          className="sidebar-btn"
+          onClick={() => handleAddElementAndClose('text', { content: 'Add text', fontSize: 24, fontFamily: 'Inter, sans-serif' })}
         >
           <span className="sidebar-icon">
              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
           </span>
-          <span className="sidebar-label">Text</span>
+          <span className="sidebar-label">Add Text</span>
         </button>
 
         <button 
@@ -223,34 +223,7 @@ export default function EditorSidebar({
             </div>
           )}
 
-          {activeTab === 'text' && (
-            <div className="panel-section">
-              <h4 className="section-title">Typography</h4>
-              <div className="text-presets-list">
-                <button className="text-preset-card heading" onClick={() => handleAddElementAndClose('text', { content: 'Add Heading', fontSize: 32, fontWeight: 'bold', fontFamily: 'Inter, sans-serif' })}>
-                  <span className="preset-preview" style={{ fontSize: '24px', fontWeight: '800' }}>Ag</span>
-                  <div className="preset-info">
-                    <span className="preset-name">Add Heading</span>
-                    <span className="preset-desc">Large, bold title</span>
-                  </div>
-                </button>
-                <button className="text-preset-card subheading" onClick={() => handleAddElementAndClose('text', { content: 'Add Subheading', fontSize: 24, fontWeight: '600', fontFamily: 'Inter, sans-serif' })}>
-                  <span className="preset-preview" style={{ fontSize: '18px', fontWeight: '600' }}>Ag</span>
-                  <div className="preset-info">
-                    <span className="preset-name">Add Subheading</span>
-                    <span className="preset-desc">Medium section title</span>
-                  </div>
-                </button>
-                <button className="text-preset-card body" onClick={() => handleAddElementAndClose('text', { content: 'Add body text', fontSize: 16, fontFamily: 'Inter, sans-serif' })}>
-                  <span className="preset-preview" style={{ fontSize: '14px', fontWeight: '400' }}>Ag</span>
-                  <div className="preset-info">
-                    <span className="preset-name">Add Body Text</span>
-                    <span className="preset-desc">Regular paragraph text</span>
-                  </div>
-                </button>
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
     </>

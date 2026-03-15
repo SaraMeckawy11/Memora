@@ -50,9 +50,6 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
           <DesktopTextPanel selectedElement={selectedElement} onUpdate={onUpdate} />
         )}
 
-        {/* Layering Controls */}
-        <DesktopLayeringPanel onReorder={onReorder} />
-
         {/* Image Properties */}
         {selectedElement.type === 'image' && (
           <DesktopImagePanel selectedElement={selectedElement} onUpdate={onUpdate} />
@@ -69,6 +66,9 @@ export default function EditorToolbar({ selectedElement, onUpdate, onReorder, on
         {selectedElement.type === 'drawing' && (
           <DesktopDrawingPanel selectedElement={selectedElement} onUpdate={onUpdate} />
         )}
+
+        {/* Layering Controls */}
+        <DesktopLayeringPanel onReorder={onReorder} />
 
         {/* Actions */}
         <div className="toolbar-group" style={{ border: 'none', marginTop: 'auto' }}>
