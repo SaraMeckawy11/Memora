@@ -366,10 +366,6 @@
     gap: 0.4rem;
   }
 
-  .editor-topbar-center > div:last-child {
-    display: none;
-  }
-
   .select-page-btn {
     min-width: 60px;
     padding: 0.25rem 0.4rem;
