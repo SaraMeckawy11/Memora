@@ -14,72 +14,127 @@ export function useImageHandling(
     const MAX_FILE_MB = 50
     const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
 
-    // Use smaller batches for upload
-    const BATCH_SIZE = 3 
+    // 1. Prepare optimistic entries
+    const optimisticImages = []
+    const filesToUpload = []
 
-    for (let i = 0; i < files.length; i += BATCH_SIZE) {
-      const batch = files.slice(i, i + BATCH_SIZE)
-
-      // Create placeholder entries first for optimistic UI (optional, but good UX)
-      // For now, we wait for upload to complete to avoid complexity with replacing IDs
-      // but in a real-world app you'd add a "loading" state.
-
-      const uploaded = await Promise.all(
-        batch.map(async (file) => {
-          if (file.size > MAX_FILE_BYTES) return null
-          if (!file.type.startsWith('image/')) return null
-
-          try {
-            const formData = new FormData()
-            formData.append('file', file)
-
-            const res = await fetch('/api/cloudinary/upload', {
-              method: 'POST',
-              body: formData
-            })
-
-            if (!res.ok) throw new Error('Upload failed')
-            const data = await res.json()
-
-            if (!data.success) throw new Error(data.error)
-
-            // Construct secure URLs with transformations if needed
-            // Cloudinary supports on-the-fly transformations
-            // Add f_auto,q_auto for optimization
-            const secureUrl = data.secure_url;
-            
-            // Create a small thumbnail URL
-            // replace /upload/ with /upload/w_256,h_256,c_limit/ to save bandwidth in the sidebar
-            const thumbUrl = secureUrl.replace('/upload/', '/upload/w_256,h_256,c_limit,q_auto,f_auto/')
-            
-            // Generate a robust ID, prefer public_id if available
-            // Ensure ID is a string to avoid type coercion issues later
-            const id = data.public_id || String(Date.now() + Math.random())
-
-            return {
-              id: id,
-              src: secureUrl, // Use the full resolution URL for the canvas
-              thumbSrc: thumbUrl, // Use optimized URL for sidebar
-              width: data.width,
-              height: data.height,
-              name: file.name,
-              isCloudinary: true // Flag to help SaveManager know not to blob-ify this
-            }
-          } catch (err) {
-            console.error(`Failed to upload ${file.name}:`, err)
-            // Could return an error placeholder here
-            return null
-          }
-        })
-      )
-
-      const cleaned = uploaded.filter(Boolean)
-      if (cleaned.length) {
-        setUploadedImages(prev => [...prev, ...cleaned])
+    files.forEach((file) => {
+      // Validate file
+      if (file.size > MAX_FILE_BYTES) {
+        console.warn(`File ${file.name} too large`)
+        return
       }
+      if (!file.type.startsWith('image/')) {
+        console.warn(`File ${file.name} is not an image`)
+        return
+      }
+
+      // Generate temp ID and Blob URL
+      const tempId = `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      const objectUrl = URL.createObjectURL(file)
+
+      const imgObj = {
+        id: tempId,
+        src: objectUrl,
+        thumbSrc: objectUrl,
+        width: 1000, 
+        height: 1000,
+        name: file.name,
+        isCloudinary: false,
+        isUploading: true, 
+      }
+
+      optimisticImages.push(imgObj)
+      filesToUpload.push({ file, tempId })
+    })
+
+    if (!optimisticImages.length) {
+      e.target.value = ''
+      return
     }
 
+    // 2. Show immediately
+    setUploadedImages((prev) => [...prev, ...optimisticImages])
     e.target.value = ''
+
+    // 3. Background upload
+    // We process these in parallel without blocking the UI
+    // First, fetch a signature to upload directly to Cloudinary
+    let signatureData = null;
+    try {
+      const signRes = await fetch('/api/cloudinary/sign');
+      if (!signRes.ok) throw new Error('Failed to get upload signature');
+      signatureData = await signRes.json();
+    } catch (err) {
+      console.error('Signature fetch error:', err);
+      // Mark all as error
+      setUploadedImages((prev) =>
+        prev.map((img) => optimisticImages.some(o => o.id === img.id) ? { ...img, isError: true, isUploading: false } : img)
+      );
+      return;
+    }
+
+    filesToUpload.forEach(async ({ file, tempId }) => {
+      try {
+        const formData = new FormData()
+        formData.append('file', file)
+        formData.append('api_key', signatureData.api_key);
+        formData.append('timestamp', signatureData.timestamp);
+        formData.append('signature', signatureData.signature);
+        formData.append('folder', signatureData.folder);
+
+        const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloud_name}/image/upload`;
+
+        const res = await fetch(uploadUrl, {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!res.ok) {
+           const errData = await res.json();
+           throw new Error(errData.error?.message || 'Upload failed');
+        }
+        
+        const data = await res.json()
+
+        const secureUrl = data.secure_url
+        // Optimized thumbnail for sidebar
+        const thumbUrl = secureUrl.replace(
+          '/upload/',
+          '/upload/w_256,h_256,c_limit,q_auto,f_auto/'
+        )
+
+        // 4. Update the state with real URL (keep the tempId as the stable ID)
+        setUploadedImages((prev) =>
+          prev.map((img) => {
+            if (img.id === tempId) {
+              return {
+                ...img,
+                src: secureUrl,
+                thumbSrc: thumbUrl,
+                width: data.width,
+                height: data.height,
+                isCloudinary: true,
+                isUploading: false,
+                cloudinaryPublicId: data.public_id,
+              }
+            }
+            return img
+          })
+        )
+      } catch (err) {
+        console.error(`Failed to upload ${file.name}:`, err)
+        // Mark as error in UI
+        setUploadedImages((prev) =>
+          prev.map((img) => {
+            if (img.id === tempId) {
+              return { ...img, isError: true, isUploading: false }
+            }
+            return img
+          })
+        )
+      }
+    })
   }
 
   const addImageToPage = (imageId, selectedSlotIdx) => {

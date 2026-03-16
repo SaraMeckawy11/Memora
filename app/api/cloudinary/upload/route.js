@@ -3,6 +3,14 @@ import cloudinary from '../../../../backend/lib/cloudinary';
 
 export async function POST(req) {
   try {
+    // --- DEBUGGING CREDENTIALS ---
+    // This log helps confirm if the .env file is loaded correctly.
+    // We mask the secret for security.
+    console.log('Cloudinary Upload Request:', {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY ? '***' + process.env.CLOUDINARY_API_KEY.slice(-4) : 'MISSING',
+    });
+
     const formData = await req.formData();
     const file = formData.get('file');
 
