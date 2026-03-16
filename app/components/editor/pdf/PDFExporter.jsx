@@ -270,10 +270,11 @@ export function usePDFExporter({
             const slotH = rect.height
 
             const imgElement = new Image()
-            imgElement.src = imgData.src
+            imgElement.crossOrigin = 'anonymous' // Enable CORS for canvas export
             await new Promise((resolve) => {
               imgElement.onload = () => { console.log(`[PDF] Image loaded OK: ${imgElement.naturalWidth}x${imgElement.naturalHeight}`); resolve() }
               imgElement.onerror = (err) => { console.error(`[PDF] Image FAILED to load:`, imgData.src?.substring(0, 60), err); resolve() }
+              imgElement.src = imgData.src
             })
 
             const imgW = imgElement.naturalWidth || 1000

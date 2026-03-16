@@ -302,7 +302,7 @@ export default function StepEditor({
           canUndo={canUndo}
           canRedo={canRedo}
           uploadedImages={uploadedImages}
-          selectedSize={selectedSize}
+          selectedSize={selectedSizeObj?.id}
           sizes={sizes}
         />
 
@@ -492,7 +492,7 @@ export default function StepEditor({
           setAutoSave={setAutoSave}
           clearProgress={clearProgress}
           saveProgress={saveProgress}
-          selectedSize={selectedSize}
+          selectedSize={selectedSizeObj?.id}
           getMaxImages={getMaxImages}
           layoutSplitX={currentPage?.layoutSplitX ?? 50}
           layoutSplitY={currentPage?.layoutSplitY ?? 50}
