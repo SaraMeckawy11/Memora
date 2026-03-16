@@ -14,39 +14,48 @@ export function useImageHandling(
     const MAX_FILE_MB = 50
     const MAX_FILE_BYTES = MAX_FILE_MB * 1024 * 1024
 
-    // 1. Prepare optimistic entries
+      // 1. Prepare optimistic entries
     const optimisticImages = []
     const filesToUpload = []
 
-    files.forEach((file) => {
-      // Validate file
-      if (file.size > MAX_FILE_BYTES) {
-        console.warn(`File ${file.name} too large`)
-        return
-      }
-      if (!file.type.startsWith('image/')) {
-        console.warn(`File ${file.name} is not an image`)
-        return
-      }
+    await Promise.all(
+        files.map(async (file) => {
+            // Validate file
+            if (file.size > MAX_FILE_BYTES) {
+                console.warn(`File ${file.name} too large`)
+                return
+            }
+            if (!file.type.startsWith('image/')) {
+                console.warn(`File ${file.name} is not an image`)
+                return
+            }
 
-      // Generate temp ID and Blob URL
-      const tempId = `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      const objectUrl = URL.createObjectURL(file)
+            const tempId = `img_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            const objectUrl = URL.createObjectURL(file)
 
-      const imgObj = {
-        id: tempId,
-        src: objectUrl,
-        thumbSrc: objectUrl,
-        width: 1000, 
-        height: 1000,
-        name: file.name,
-        isCloudinary: false,
-        isUploading: true, 
-      }
+            // OPTIMIZED: Get dimensions immediately using a Promise
+            const dimensions = await new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+                img.onerror = () => resolve({ width: 1000, height: 1000 }); // Fallback
+                img.src = objectUrl;
+            });
 
-      optimisticImages.push(imgObj)
-      filesToUpload.push({ file, tempId })
-    })
+            const imgObj = {
+                id: tempId,
+                src: objectUrl,
+                thumbSrc: objectUrl,
+                width: dimensions.width,
+                height: dimensions.height,
+                name: file.name,
+                isCloudinary: false,
+                isUploading: true,
+            }
+
+            optimisticImages.push(imgObj)
+            filesToUpload.push({ file, tempId })
+        })
+    )
 
     if (!optimisticImages.length) {
       e.target.value = ''
