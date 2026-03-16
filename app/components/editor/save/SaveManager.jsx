@@ -225,7 +225,9 @@ export function useSaveManager({
         }
 
         if (img.blob instanceof Blob) {
-          return { ...img, src: URL.createObjectURL(img.blob) }
+          const newUrl = URL.createObjectURL(img.blob)
+          // Also update thumbSrc since the old blob URL is invalid
+          return { ...img, src: newUrl, thumbSrc: newUrl }
         }
         return img
       })

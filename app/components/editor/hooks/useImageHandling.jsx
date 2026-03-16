@@ -82,6 +82,10 @@ export function useImageHandling(
         formData.append('timestamp', signatureData.timestamp);
         formData.append('signature', signatureData.signature);
         formData.append('folder', signatureData.folder);
+        // Append tags for automated cleanup
+        if (signatureData.tags) {
+            formData.append('tags', signatureData.tags);
+        }
 
         const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloud_name}/image/upload`;
 

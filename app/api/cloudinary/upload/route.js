@@ -28,6 +28,8 @@ export async function POST(req) {
             { 
               resource_type: 'auto', 
               folder: 'user_uploads',
+              // Add tag for cleanup job (expires in 7 days)
+              tags: ['auto_cleanup'],
               // Optimize for quality and size automatically
               fetch_format: 'auto',
               quality: 'auto'
