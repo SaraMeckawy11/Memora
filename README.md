@@ -2,6 +2,10 @@
 
 A modern photo book creation app built with Next.js.
 
+> [!TIP]
+> **New to the project?** Read the [Comprehensive Project Overview](./PROJECT_OVERVIEW.md) for a deep dive into the tech stack, architecture, and features.
+
+
 ## Features
 
 - **Step 1: Setup** - Choose product type, size, and page count

@@ -7,3 +7,4 @@ out/
 .env.development
 .vercel
 .DS_Store
+.zip

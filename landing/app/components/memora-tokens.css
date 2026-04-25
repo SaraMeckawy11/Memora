@@ -1,0 +1,46 @@
+:root {
+  --memora-bg: #F7F5F2;
+  --memora-surface: #EDEAE5;
+  --memora-border: #1A1A1A;
+  --memora-text: #0F0F0F;
+  --memora-muted: #6B6560;
+  --memora-accent: #C8A882;
+  --memora-accent-dark: #8B6F4E;
+  --memora-ink: #1A1A1A;
+}
+
+.font-display { font-family: "Cormorant Garamond", serif; }
+.font-body { font-family: "Syne", sans-serif; letter-spacing: -0.01em; }
+.font-mono { font-family: "Azeret Mono", monospace; }
+
+.brutal-card {
+  background: var(--memora-bg);
+  border: 1.5px solid var(--memora-border);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--memora-border);
+}
+.brutal-btn {
+  border: 1.5px solid var(--memora-border);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--memora-border);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.brutal-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--memora-border);
+}
+.brutal-btn:active {
+  transform: translate(4px, 4px);
+  box-shadow: 0 0 0 var(--memora-border);
+}
+
+.memora-root {
+  background: var(--memora-bg);
+  color: var(--memora-text);
+}
+.memora-root h1, .memora-root h2, .memora-root h3,
+.memora-root h4, .memora-root h5, .memora-root h6, .memora-root p {
+  margin: 0;
+}
+
+.tracking-label { letter-spacing: 0.25em; }
