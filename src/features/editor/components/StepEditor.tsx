@@ -3,15 +3,13 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { useProjectStore } from '@/store/useProjectStore'
 import { LAYOUTS } from './settings/LayoutSection'
 import { getSlotRects } from '@/app/utils/layoutCalculations'
-import LayoutSection from './settings/LayoutSection'
 import PagesSidebar from './pages/PagesSidebar'
 import EditorCanvas from './canvas/EditorCanvas'
 import EditorBar from './bar/EditorBar'
 import PhotoLibrary from './settings/PhotoLibrary'
 import EditorSettings from './settings/EditorSettings'
-import TextPageSection from './settings/TextPageSection'
 import ImageEditorModal from './settings/ImageEditorModal'
-import '@/styles/editor/EditorStep.css'
+import '@/styles/editor/editor.css'
 import { ProjectImage, PhotoBookPage } from '@/types/project'
 
 const SIZES = [
@@ -148,8 +146,8 @@ export default function StepEditor() {
   }
 
   return (
-    <div className="editor-step-container">
-      <div className="editor-main-layout">
+    <div className="step-editor">
+      <div className="step-editor-grid">
         <PagesSidebar
           pages={store.pages}
           currentPageIdx={store.currentPageIdx}
@@ -170,7 +168,7 @@ export default function StepEditor() {
           sizes={SIZES}
         />
 
-        <div className="editor-center-canvas">
+        <div className="editor-main-column">
           <EditorBar
             currentPageIdx={store.currentPageIdx}
             totalPages={store.pages.length}
@@ -222,10 +220,8 @@ export default function StepEditor() {
           />
         </div>
 
-        <div className="editor-right-settings">
+        <div>
           <EditorSettings />
-          <LayoutSection />
-          <TextPageSection />
         </div>
       </div>
 

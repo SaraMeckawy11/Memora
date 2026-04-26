@@ -10,7 +10,7 @@ export function useExport(selectedId, setSelectedId, backgroundColor, activeSide
     setIsExporting(true);
     try {
       const containerSelector = activeSide ? `#canvas-${activeSide}` : '.canvas-container';
-      const element = document.querySelector(`${containerSelector} .editor-canvas`);
+      const element = document.querySelector<HTMLElement>(`${containerSelector} .editor-canvas`);
       if (!element) throw new Error('Canvas element not found');
 
       // Deselect any selected element before capturing

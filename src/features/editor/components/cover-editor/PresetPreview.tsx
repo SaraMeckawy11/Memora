@@ -1,7 +1,7 @@
 'use client'
 import React, { useRef, useState, useEffect } from 'react'
 
-export default function PresetPreview({ preset, width, height }) {
+export default function PresetPreview({ preset, width, height }: { preset: any; width?: number; height?: number }) {
   const containerRef = useRef(null)
   const [scale, setScale] = useState(0.1) // Lower default to prevent large flash before mount
 

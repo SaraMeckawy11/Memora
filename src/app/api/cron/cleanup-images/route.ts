@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req) {
   // Optional: Check for CRON_SECRET if you set it up in Vercel/environment
   // const authHeader = req.headers.get('authorization');
@@ -9,6 +11,21 @@ export async function GET(req) {
   // }
 
   try {
+    const hasCloudinaryConfig =
+      Boolean(process.env.CLOUDINARY_URL) ||
+      Boolean(
+        process.env.CLOUDINARY_CLOUD_NAME &&
+          process.env.CLOUDINARY_API_KEY &&
+          process.env.CLOUDINARY_API_SECRET,
+      );
+
+    if (!hasCloudinaryConfig) {
+      return NextResponse.json(
+        { message: 'Cloudinary cleanup skipped because Cloudinary credentials are not configured.' },
+        { status: 200 },
+      );
+    }
+
     // 1. Calculate the date 7 days ago
     // Actually, Cloudinary search supports relative dates like '7d'.
     // Expression: created_at < 7d AND tags:auto_cleanup

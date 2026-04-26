@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { getPaymobToken, registerPaymobOrder, getPaymentKey, getIframeUrl } from '@/lib/paymob';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req) {
   try {
     const { orderId } = await req.json();

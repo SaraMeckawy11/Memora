@@ -22,6 +22,7 @@ export default function EditorSidebar({
   onSetBackgroundColor,
   drawingTool,
   onUpdateDrawingTool,
+  selectedElement,
   isInteractingWithCanvas,
   // NEW PROPS FOR PERSISTENCE
   onSave,
