@@ -6,22 +6,30 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import heroImage from "@/assets/memora-hero.jpg";
+import "@/styles/memora.css";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
+// Cool-toned, turquoise/sage/ocean aligned photography (no pink/warm tones)
 const MARQUEE_IMAGES = [
-  "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=600&q=80&auto=format",
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80&auto=format", // ocean beach
+  "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&q=80&auto=format", // foggy forest
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80&auto=format",
+  "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=600&q=80&auto=format", // wave
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80&auto=format", // lake mountain
+  "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?w=600&q=80&auto=format", // misty mountain
+  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=600&q=80&auto=format", // alpine lake
+  "https://images.unsplash.com/photo-1476610182048-b716b8518aae?w=600&q=80&auto=format", // coastal cliffs
+  "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&q=80&auto=format", // ocean aerial
+  "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=600&q=80&auto=format", // foggy pines
+];
+
+const POLAROIDS = [
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&q=80&auto=format",
+  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=400&q=80&auto=format",
+  "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80&auto=format",
 ];
 
 const LandingPage = () => {
@@ -29,17 +37,39 @@ const LandingPage = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // ---- NAV ----
+      // ---- NAV reveal + scroll state ----
       gsap.from(".m-nav", { y: -80, opacity: 0, duration: 1, ease: "power4.out" });
+      const nav = rootRef.current?.querySelector<HTMLElement>(".m-nav");
+      const onScroll = () => {
+        if (!nav) return;
+        if (window.scrollY > 24) nav.classList.add("is-scrolled");
+        else nav.classList.remove("is-scrolled");
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
 
-      // ---- HERO ----
-      gsap.from(".pill-tag", { y: 30, opacity: 0, rotation: -5, duration: 0.8, delay: 0.2, ease: "back.out(2)" });
-      gsap.from(".h1-line span", { y: 100, opacity: 0, duration: 1, stagger: 0.12, delay: 0.4, ease: "power4.out" });
+      // ---- HERO entrance ----
+      gsap.from(".pill-tag", { y: 30, opacity: 0, duration: 0.8, delay: 0.2, ease: "back.out(2)" });
+      gsap.from(".h1-line span", { yPercent: 110, opacity: 0, duration: 1.1, stagger: 0.11, delay: 0.35, ease: "power4.out" });
       gsap.from(".hero-sub", { y: 30, opacity: 0, duration: 0.9, delay: 0.78, ease: "power3.out" });
       gsap.from(".hero-cta", { y: 20, opacity: 0, duration: 0.8, delay: 0.95, ease: "power3.out", stagger: 0.08 });
       gsap.from(".hero-proof", { y: 16, opacity: 0, duration: 0.7, delay: 1.15, ease: "power3.out" });
-      gsap.from(".hero-right", { x: 50, opacity: 0, duration: 1.1, delay: 0.5, ease: "power3.out" });
-      gsap.from(".sticker", { rotation: 15, opacity: 0, scale: 0.7, duration: 0.9, delay: 1.1, ease: "elastic.out(1, 0.5)" });
+      gsap.from(".hero-stat", { y: 20, opacity: 0, duration: 0.7, delay: 1.1, ease: "power3.out", stagger: 0.1 });
+      gsap.from(".hero-right", { y: 60, opacity: 0, duration: 1.2, delay: 0.45, ease: "power3.out" });
+      gsap.from(".hero-polaroid", {
+        y: 40, opacity: 0, rotation: (i: number) => (i % 2 ? 12 : -12),
+        scale: 0.85, duration: 1, delay: 0.9, ease: "back.out(1.6)", stagger: 0.15,
+      });
+      gsap.from(".hero-blob", { scale: 0.4, opacity: 0, duration: 1.6, ease: "power3.out", stagger: 0.2 });
+
+      // ---- HERO parallax (scroll-linked) ----
+      gsap.to(".hero-blob.b1", { yPercent: 30, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
+      gsap.to(".hero-blob.b2", { yPercent: -25, xPercent: 10, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
+      gsap.to(".m-hero__visual img", { yPercent: 12, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
+      gsap.to(".hero-polaroid.p1", { y: -80, rotate: -18, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
+      gsap.to(".hero-polaroid.p2", { y: -140, rotate: 14, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
+      gsap.to(".hero-polaroid.p3", { y: -100, rotate: -8, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
+      gsap.to(".m-hero__left", { y: -40, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
 
       // ---- MARQUEE ----
       const track = rootRef.current?.querySelector<HTMLDivElement>(".m-marquee__track");
@@ -109,6 +139,17 @@ const LandingPage = () => {
         scrollTrigger: { trigger: ".m-pricing", start: "top 75%", once: true },
         y: 24, opacity: 0, duration: 0.8, ease: "power3.out", stagger: 0.08, delay: 0.2,
       });
+
+      // ---- FINALE ----
+      gsap.from(".m-finale__eyebrow, .m-finale h2, .m-finale__sub, .m-finale__cta, .m-finale__trust, .m-finale__sig", {
+        scrollTrigger: { trigger: ".m-finale", start: "top 78%", once: true },
+        y: 40, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.1,
+      });
+
+      const scrollHandler = () => onScroll();
+      return () => {
+        window.removeEventListener("scroll", scrollHandler);
+      };
     }, rootRef);
 
     return () => ctx.revert();
@@ -118,49 +159,102 @@ const LandingPage = () => {
     <div ref={rootRef} className="memora-root">
       {/* ============= NAV ============= */}
       <nav className="m-nav">
-        <div className="m-nav__logo">Memora</div>
-        <div className="m-nav__links">
-          <Link href="#how">how it works</Link>
-          <Link href="#themes">themes</Link>
-          <Link href="#pricing">pricing</Link>
+        <div className="m-nav__inner">
+          <Link href="#" className="m-nav__logo">
+            <span className="m-nav__logo-dot" aria-hidden="true" />
+            Memora
+          </Link>
+          <div className="m-nav__links">
+            <Link href="#how">how it works</Link>
+            <Link href="#themes">themes</Link>
+            <Link href="#pricing">pricing</Link>
+          </div>
+          <Link href="#pricing" className="m-nav__cta">
+            <span>Start free</span>
+            <span className="m-nav__cta-arrow">→</span>
+          </Link>
         </div>
-        <Link href="#pricing" className="m-nav__cta">Start for free →</Link>
       </nav>
 
       {/* ============= HERO ============= */}
       <header className="m-hero">
-        <div className="m-hero__left">
-          <span className="m-pill pill-tag">[ your memories, printed ]</span>
-          <h1>
-            <span className="h1-line"><span>Every photo</span></span>
-            <span className="h1-line"><span>deserves a</span></span>
-            <span className="h1-line"><span className="home">home.</span></span>
-          </h1>
-          <p className="m-hero__sub hero-sub">
-            From weekend trips to wedding days — Memora turns your camera roll
-            into something you can actually hold.
-          </p>
-          <div className="m-hero__ctas">
-            <Link href="/create" className="m-btn-primary hero-cta">Create your book</Link>
-            <Link href="#themes" className="m-btn-secondary hero-cta">See examples →</Link>
+        <div className="hero-blob b1" aria-hidden="true" />
+        <div className="hero-blob b2" aria-hidden="true" />
+        <div className="hero-blob b3" aria-hidden="true" />
+        <div className="m-hero__grid" aria-hidden="true" />
+
+        <div className="m-hero__inner">
+          <div className="m-hero__left">
+            <span className="m-pill pill-tag">
+              <span className="m-pill__dot" aria-hidden="true" />
+              now printing · winter '26
+            </span>
+            <h1>
+              <span className="h1-line"><span>Every photo</span></span>
+              <span className="h1-line"><span>deserves a </span><span className="home">home.</span></span>
+            </h1>
+            <p className="m-hero__sub hero-sub">
+              From weekend trips to wedding days — Memora turns your
+              camera roll into something you can actually hold.
+            </p>
+            <div className="m-hero__ctas">
+              <Link href="/create" className="m-btn-primary hero-cta">
+                Create your book
+                <span className="m-btn-primary__arrow">→</span>
+              </Link>
+              <Link href="#themes" className="m-btn-secondary hero-cta">See examples</Link>
+            </div>
+            <div className="m-hero__stats">
+              <div className="hero-stat">
+                <div className="hero-stat__num">2,400+</div>
+                <div className="hero-stat__label">books printed</div>
+              </div>
+              <div className="hero-stat__sep" aria-hidden="true" />
+              <div className="hero-stat">
+                <div className="hero-stat__num">4.9<span>★</span></div>
+                <div className="hero-stat__label">avg. rating</div>
+              </div>
+              <div className="hero-stat__sep" aria-hidden="true" />
+              <div className="hero-stat">
+                <div className="hero-stat__num">5–7d</div>
+                <div className="hero-stat__label">to your door</div>
+              </div>
+            </div>
           </div>
-          <div className="m-hero__proof hero-proof">
-            ✦ 2,400+ books printed  ·  ships to egypt &amp; gcc
+
+          <div className="m-hero__right hero-right">
+            <div className="m-hero__visual">
+              <Image
+                src={heroImage}
+                alt="An open Memora photo book on a marble surface with a film camera, eucalyptus, matcha, and coastal polaroids"
+                width={1024}
+                height={1024}
+                priority
+              />
+              <div className="m-hero__badge">
+                <span className="m-hero__badge-k">✦</span>
+                <span>premium paper · hand-stitched</span>
+              </div>
+            </div>
+
+            <div className="hero-polaroid p1">
+              <img src={POLAROIDS[0]} alt="" loading="lazy" />
+              <span>lake · 07.24</span>
+            </div>
+            <div className="hero-polaroid p2">
+              <img src={POLAROIDS[1]} alt="" loading="lazy" />
+              <span>alps · 06.24</span>
+            </div>
+            <div className="hero-polaroid p3">
+              <img src={POLAROIDS[2]} alt="" loading="lazy" />
+              <span>coast · 05.24</span>
+            </div>
           </div>
         </div>
 
-        <div className="m-hero__right hero-right">
-          <div className="m-hero__visual">
-            <Image
-              src={heroImage}
-              alt="An open Memora photo book on a cream linen surface, surrounded by polaroid prints, a film camera, and dried flowers"
-              width={1024}
-              height={1280}
-              priority
-            />
-          </div>
-          <div className="m-hero__sticker sticker">✦ film · romance · travel</div>
-          <div className="m-hero__est">EST. 2024</div>
+        <div className="m-hero__scroll" aria-hidden="true">
+          <span>scroll</span>
+          <span className="m-hero__scroll-line" />
         </div>
       </header>
 
@@ -180,7 +274,7 @@ const LandingPage = () => {
         <div className="why-left">
           <div className="m-section-label">[ why memora ]</div>
           <h2 className="m-why__head">
-            Because some moments are too good to live only on a screen.
+            Because some moments are too good to <span className="hl">live only on a screen.</span>
           </h2>
           <span className="m-pill m-why__pill">✦ printed with love</span>
         </div>
@@ -236,13 +330,13 @@ const LandingPage = () => {
       <section id="themes" className="m-themes">
         <div className="m-themes__head">
           <div className="m-section-label">[ made for every memory ]</div>
-          <h2>A theme for every chapter.</h2>
+          <h2>A theme for <span className="hl">every chapter.</span></h2>
         </div>
         <div className="m-themes__grid">
           {[
-            { cls: "is-1", label: "Wedding", img: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=600&q=80&auto=format" },
-            { cls: "is-2", label: "Travel", img: "https://images.unsplash.com/photo-1500835556837-99ac94a94552?w=600&q=80&auto=format" },
-            { cls: "is-3", label: "Friends", img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80&auto=format" },
+            { cls: "is-1", label: "Coastal",   img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=80&auto=format" },
+            { cls: "is-2", label: "Travel",    img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=700&q=80&auto=format" },
+            { cls: "is-3", label: "Adventure", img: "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?w=700&q=80&auto=format" },
           ].map((t) => (
             <article key={t.label} className={`m-theme-card ${t.cls}`}>
               <img src={t.img} alt={`${t.label} theme preview`} loading="lazy" />
@@ -282,18 +376,45 @@ const LandingPage = () => {
 
       {/* ============= PRICING ============= */}
       <section id="pricing" className="m-pricing">
-        <div className="m-section-label">[ start creating ]</div>
-        <h2>
-          {["From", "EGP", "299."].map((w, i) => (
-            <span key={i} className="word">{w}{i < 2 ? "\u00A0" : ""}</span>
-          ))}
-        </h2>
-        <p className="m-pricing__sub">
-          Design is always free. Pay only when you're ready to print.
-        </p>
-        <Link href="/create" className="m-pricing__btn">Start your book →</Link>
-        <div className="m-pricing__fine">
-          ✦ free design  ·  no account needed  ·  ships in 5–7 days
+        <div className="m-pricing__inner">
+          <div className="m-section-label">[ start creating ]</div>
+          <h2>
+            <span className="word">From&nbsp;</span>
+            <span className="word price">EGP&nbsp;299.</span>
+          </h2>
+          <p className="m-pricing__sub">
+            Design is always free. Pay only when you're ready to print.
+          </p>
+          <Link href="/create" className="m-pricing__btn">Start your book →</Link>
+          <div className="m-pricing__fine">
+            ✦ free design  ·  no account needed  ·  ships in 5–7 days
+          </div>
+        </div>
+      </section>
+
+      {/* ============= FINALE ============= */}
+      <section className="m-finale">
+        <div className="m-finale__inner">
+          <div className="m-finale__eyebrow">
+            <span className="dot" />
+            <span>your story, bound in print</span>
+          </div>
+          <h2>
+            One last page.<br />
+            <span className="hl">Then it's yours forever.</span>
+          </h2>
+          <p className="m-finale__sub">
+            Start with a single photo. End with a book you'll still open in ten years —
+            printed on archival paper, stitched by hand, made just for you.
+          </p>
+          <Link href="/create" className="m-finale__cta">Begin your Memora →</Link>
+          <div className="m-finale__trust">
+            <span>archival paper</span>
+            <span>hand-stitched binding</span>
+            <span>ships worldwide</span>
+            <span>30-day love guarantee</span>
+          </div>
+          <div className="m-finale__sig">— made in cairo, for the moments worth keeping.</div>
         </div>
       </section>
 
@@ -317,10 +438,17 @@ const LandingPage = () => {
             <Link href="https://tiktok.com">tiktok</Link>
             <Link href="mailto:hello@memora.app">hello@memora.app</Link>
           </div>
+          <div className="m-footer__col">
+            <h4>studio</h4>
+            <Link href="#">about</Link>
+            <Link href="#">journal</Link>
+            <Link href="#">press kit</Link>
+          </div>
         </div>
         <div className="m-footer__bar">
           <span>© 2024 MEMORA</span>
-          <span>CAIRO, EGYPT</span>
+          <span className="brand-line" aria-hidden="true" />
+          <span>CAIRO · EGYPT</span>
         </div>
       </footer>
     </div>
