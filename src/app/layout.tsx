@@ -3,7 +3,7 @@ import '../styles/memora.css'
 import { Toaster } from "@/components/ui/sonner"
 
 export const metadata = {
-	title: 'Memora – Your memories, beautifully bound.',
+	title: 'Memora - Your memories, beautifully bound.',
 	description: 'Turn your camera roll into something you can hold. High-quality photo books for weddings, travel, and every chapter in between.',
 }
 
