@@ -141,9 +141,14 @@ const LandingPage = () => {
       });
       gsap.to(".m-hero__left", { y: -40, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
 
+      // On mobile the why section is a centered single column, so slide the
+      // steps up (not in from the side) — a horizontal offset would read as the
+      // steps being shifted right.
+      const whyNarrow = window.matchMedia("(max-width: 960px)").matches;
       gsap.from(".why-left > *", {
         scrollTrigger: { trigger: ".m-why", start: "top 80%", once: true },
-        x: -40,
+        x: whyNarrow ? 0 : -40,
+        y: whyNarrow ? 24 : 0,
         opacity: 0,
         duration: 0.9,
         ease: "power3.out",
@@ -151,7 +156,8 @@ const LandingPage = () => {
       });
       gsap.from(".why-right .m-feature", {
         scrollTrigger: { trigger: ".m-why", start: "top 80%", once: true },
-        x: 40,
+        x: whyNarrow ? 0 : 40,
+        y: whyNarrow ? 28 : 0,
         opacity: 0,
         duration: 0.9,
         ease: "power3.out",
