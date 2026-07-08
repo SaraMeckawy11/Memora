@@ -13,19 +13,6 @@ if (typeof window !== "undefined") {
 }
 
 // Cool-toned, turquoise/sage/ocean aligned photography (no pink/warm tones)
-const MARQUEE_IMAGES = [
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80&auto=format", // ocean beach
-  "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=600&q=80&auto=format", // foggy forest
-  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80&auto=format",
-  "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?w=600&q=80&auto=format", // wave
-  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=600&q=80&auto=format", // lake mountain
-  "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?w=600&q=80&auto=format", // misty mountain
-  "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=600&q=80&auto=format", // alpine lake
-  "https://images.unsplash.com/photo-1476610182048-b716b8518aae?w=600&q=80&auto=format", // coastal cliffs
-  "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&q=80&auto=format", // ocean aerial
-  "https://images.unsplash.com/photo-1444080748397-f442aa95c3e5?w=600&q=80&auto=format", // foggy pines
-];
-
 const POLAROIDS = [
   "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&q=80&auto=format",
   "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=400&q=80&auto=format",
@@ -79,8 +66,6 @@ const LandingPage = () => {
     const ctx = gsap.context(() => {
       if (reduce) {
         // Skip entrance/scroll animations; keep everything visible & static.
-        const track = rootRef.current?.querySelector<HTMLDivElement>(".m-marquee__track");
-        if (track) gsap.to(track, { x: () => -(track.scrollWidth / 2), duration: 45, ease: "none", repeat: -1 });
         const nav = rootRef.current?.querySelector<HTMLElement>(".m-nav");
         const onScrollR = () => {
           if (!nav) return;
@@ -123,17 +108,6 @@ const LandingPage = () => {
       gsap.to(".hero-polaroid.p2", { y: -140, rotate: 14, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
       gsap.to(".hero-polaroid.p3", { y: -100, rotate: -8, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
       gsap.to(".m-hero__left", { y: -40, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
-
-      // ---- MARQUEE ----
-      const track = rootRef.current?.querySelector<HTMLDivElement>(".m-marquee__track");
-      if (track) {
-        gsap.to(track, {
-          x: () => -(track.scrollWidth / 2),
-          duration: 35,
-          ease: "none",
-          repeat: -1,
-        });
-      }
 
       // ---- WHY ----
       gsap.from(".why-left > *", {
@@ -199,12 +173,6 @@ const LandingPage = () => {
       gsap.from(".m-pricing__list li", {
         scrollTrigger: { trigger: ".m-pricing__list", start: "top 90%", once: true },
         x: -16, opacity: 0, duration: 0.6, ease: "power2.out", stagger: 0.08, delay: 0.15,
-      });
-
-      // ---- FINALE ----
-      gsap.from(".m-finale__eyebrow, .m-finale h2, .m-finale__sub, .m-finale__cta, .m-finale__trust, .m-finale__sig", {
-        scrollTrigger: { trigger: ".m-finale", start: "top 78%", once: true },
-        y: 40, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.1,
       });
 
       const scrollHandler = () => onScroll();
@@ -387,17 +355,6 @@ const LandingPage = () => {
         </div>
       </header>
 
-      {/* ============= MARQUEE ============= */}
-      <section className="m-marquee" aria-hidden="true">
-        <div className="m-marquee__track">
-          {[...MARQUEE_IMAGES, ...MARQUEE_IMAGES].map((src, i) => (
-            <div key={i} className="m-marquee__item">
-              <img src={src} alt="" loading="lazy" />
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ============= WHY MEMORA ============= */}
       <section id="how" className="m-why">
         <div className="why-left">
@@ -564,32 +521,6 @@ const LandingPage = () => {
           <div className="m-pricing__fine">
             + EGP 15 / extra page · free shipping over EGP 800 · 30-day love guarantee
           </div>
-        </div>
-      </section>
-
-      {/* ============= FINALE ============= */}
-      <section className="m-finale">
-        <div className="m-finale__inner">
-          <div className="m-finale__eyebrow">
-            <span className="dot" />
-            <span>your story, bound in print</span>
-          </div>
-          <h2>
-            One last page.<br />
-            <span className="hl">Then it's yours forever.</span>
-          </h2>
-          <p className="m-finale__sub">
-            Start with a single photo. End with a book you'll still open in ten years —
-            printed on archival paper, stitched by hand, made just for you.
-          </p>
-          <Link href="/create" className="m-finale__cta">Begin your Memora →</Link>
-          <div className="m-finale__trust">
-            <span>archival paper</span>
-            <span>hand-stitched binding</span>
-            <span>ships worldwide</span>
-            <span>30-day love guarantee</span>
-          </div>
-          <div className="m-finale__sig">— made in cairo, for the moments worth keeping.</div>
         </div>
       </section>
 

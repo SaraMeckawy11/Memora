@@ -486,32 +486,6 @@ html { scroll-behavior: smooth; }
 }
 
 
-/* ===================== MARQUEE ===================== */
-.m-marquee {
-  height: 280px; overflow: hidden; position: relative;
-  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  background: var(--white);
-}
-.m-marquee::before {
-  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 120px;
-  background: linear-gradient(90deg, var(--white), rgba(255,255,255,0));
-  z-index: 3; pointer-events: none;
-}
-.m-marquee::after {
-  content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 120px;
-  background: linear-gradient(270deg, var(--white), rgba(255,255,255,0));
-  z-index: 3; pointer-events: none;
-}
-.m-marquee__track { display: flex; height: 100%; will-change: transform; gap: 14px; padding: 14px; }
-.m-marquee__item {
-  width: 230px; height: 100%; flex: 0 0 230px;
-  border-radius: 6px; overflow: hidden;
-  border: 1px solid var(--line);
-  box-shadow: 0 10px 24px -18px rgba(14,94,87,0.35);
-  position: relative;
-}
-.m-marquee__item img { width: 100%; height: 100%; object-fit: cover; }
-
 /* ===================== WHY MEMORA ===================== */
 .m-why {
   background: var(--white);
@@ -906,89 +880,6 @@ html { scroll-behavior: smooth; }
   letter-spacing: 0.06em; line-height: 1.7;
 }
 
-/* ===================== FINALE (closing section) ===================== */
-.m-finale {
-  position: relative;
-  padding: 160px 48px 140px;
-  background: var(--grad-finale);
-  text-align: center;
-  overflow: hidden;
-  border-bottom: 1px solid var(--turq-100);
-}
-.m-finale::before {
-  content: ""; position: absolute; inset: 0;
-  background:
-    radial-gradient(circle at 10% 20%, rgba(63,191,178,0.18), rgba(255,255,255,0) 40%),
-    radial-gradient(circle at 90% 80%, rgba(111,214,203,0.25), rgba(255,255,255,0) 45%);
-  pointer-events: none;
-}
-.m-finale::after {
-  content: ""; position: absolute; inset: 0;
-  background-image: var(--grain-url); pointer-events: none; opacity: 0.7;
-}
-.m-finale__inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
-.m-finale__eyebrow {
-  display: inline-flex; gap: 8px; align-items: center;
-  font-family: "DM Mono", monospace; font-size: 11px; letter-spacing: 0.24em;
-  color: var(--turq-ink); text-transform: lowercase;
-  padding: 8px 16px; border-radius: 100px;
-  background: rgba(255,255,255,0.7); border: 1px solid var(--turq-200);
-  backdrop-filter: blur(6px);
-  margin-bottom: 32px;
-}
-.m-finale__eyebrow .dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--turq-500); box-shadow: 0 0 0 4px rgba(31,168,154,0.2);
-}
-.m-finale h2 {
-  font-family: "Clash Display", sans-serif; font-weight: 500;
-  font-size: clamp(48px, 6vw, 88px); color: var(--ink);
-  letter-spacing: -0.035em; line-height: 1.02;
-  margin: 0 0 24px;
-}
-.m-finale h2 .hl {
-  font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400;
-  background: linear-gradient(135deg, var(--turq-600) 0%, var(--turq-400) 60%, var(--turq-300) 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.m-finale__sub {
-  font-family: "Instrument Serif", serif; font-style: italic;
-  font-size: 20px; color: #4A4642; max-width: 560px;
-  margin: 0 auto 44px; line-height: 1.55;
-}
-.m-finale__cta {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: "Clash Display", sans-serif; font-weight: 600; font-size: 16px;
-  background: var(--ink); color: var(--white);
-  padding: 20px 48px; border-radius: 6px;
-  text-decoration: none;
-  box-shadow: 0 14px 30px -10px rgba(20,20,20,0.45);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
-.m-finale__cta:hover {
-  transform: translateY(-3px);
-  background: var(--turq-ink);
-  box-shadow: 0 22px 40px -14px rgba(14,94,87,0.55);
-}
-.m-finale__trust {
-  display: flex; flex-wrap: wrap; gap: 28px; justify-content: center;
-  margin-top: 56px;
-  font-family: "DM Mono", monospace; font-size: 11px; letter-spacing: 0.12em;
-  color: var(--muted);
-}
-.m-finale__trust span {
-  display: inline-flex; align-items: center; gap: 8px;
-}
-.m-finale__trust span::before {
-  content: "✦"; color: var(--turq-500);
-}
-.m-finale__sig {
-  margin-top: 72px;
-  font-family: "Instrument Serif", serif; font-style: italic;
-  font-size: 14px; color: var(--muted);
-  letter-spacing: 0.04em;
-}
-
 /* ===================== FOOTER ===================== */
 .m-footer {
   background:
@@ -1095,7 +986,7 @@ html { scroll-behavior: smooth; }
   .m-hero__stats { flex-wrap: wrap; gap: 16px; padding: 16px; }
   .m-hero__scroll { display: none; }
   .m-why { grid-template-columns: 1fr; padding: 80px 20px; gap: 40px; }
-  .m-editor, .m-themes, .m-quotes, .m-pricing, .m-finale { padding: 80px 20px; }
+  .m-editor, .m-themes, .m-quotes { padding: 80px 20px; }
   .m-themes__grid { grid-template-columns: 1fr; }
   .m-theme-card { height: 420px; transform: none !important; margin: 0 !important; }
   .m-quotes__grid { grid-template-columns: 1fr; }
