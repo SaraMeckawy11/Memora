@@ -165,13 +165,37 @@ const LandingPage = () => {
         ease: "power3.out",
         stagger: 0.08,
       });
-      gsap.from(".m-themes__head > *, .m-theme-card", {
+      gsap.from(".m-themes__head > *", {
         scrollTrigger: { trigger: ".m-themes", start: "top 76%", once: true },
         y: 34,
         opacity: 0,
         duration: 0.75,
         ease: "power3.out",
         stagger: 0.08,
+      });
+      // Animate each theme card toward its resting tilt/scale, then hand the
+      // transform back to CSS so the signature tilt + hover effects survive.
+      const themeCards: Array<{ sel: string; rot: number; scale: number }> = [
+        { sel: ".m-theme-card.is-1", rot: -2, scale: 1 },
+        { sel: ".m-theme-card.is-2", rot: 0, scale: 1.02 },
+        { sel: ".m-theme-card.is-3", rot: 2, scale: 1 },
+      ];
+      themeCards.forEach(({ sel, rot, scale }, i) => {
+        gsap.fromTo(
+          sel,
+          { y: 52, opacity: 0, rotate: rot, scale: scale * 0.94 },
+          {
+            y: 0,
+            opacity: 1,
+            rotate: rot,
+            scale,
+            duration: 0.85,
+            delay: i * 0.12,
+            ease: "power3.out",
+            scrollTrigger: { trigger: ".m-themes__grid", start: "top 85%", once: true },
+            onComplete: () => gsap.set(sel, { clearProps: "transform,opacity" }),
+          },
+        );
       });
       gsap.from(".m-quotes__head > *, .m-quote", {
         scrollTrigger: { trigger: ".m-quotes", start: "top 76%", once: true },

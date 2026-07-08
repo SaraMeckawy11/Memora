@@ -996,8 +996,16 @@ html { scroll-behavior: smooth; }
   .m-hero__scroll { display: none; }
   .m-why { grid-template-columns: 1fr; padding: 80px 20px; gap: 40px; }
   .m-editor, .m-themes, .m-quotes { padding: 56px 20px; }
-  .m-themes__grid { grid-template-columns: 1fr; }
-  .m-theme-card { height: 320px; transform: none !important; margin: 0 !important; }
+  .m-themes__grid { grid-template-columns: 1fr; gap: 20px; max-width: 460px; margin: 0 auto; }
+  .m-theme-card { height: 300px; transform: none !important; margin: 0 !important; border-radius: 14px; }
+  /* No hover on touch, so keep the theme label + a readable scrim always visible. */
+  .m-theme-card::after { background: linear-gradient(180deg, rgba(0,0,0,0) 42%, rgba(14,94,87,0.62) 100%); }
+  .m-theme-card__label {
+    transform: translateY(0);
+    font-size: 15px;
+    padding: 14px 18px;
+    background: linear-gradient(180deg, rgba(14,94,87,0) 0%, rgba(14,94,87,0.55) 55%, rgba(14,94,87,0.85) 100%);
+  }
   .m-quotes__grid { grid-template-columns: 1fr; }
   .m-pricing { padding: 58px 20px 68px; }
   .m-pricing__card { padding: 26px 22px 24px; border-radius: 20px; }
@@ -1015,13 +1023,18 @@ html { scroll-behavior: smooth; }
 
 @media (max-width: 560px) {
   .m-hero { padding-top: 92px; padding-bottom: 40px; }
+  .m-hero__inner { gap: 40px; }
   .pill-tag { margin-bottom: 20px; }
-  .m-hero h1 { font-size: 44px; }
+  .m-hero h1 { font-size: 40px; }
+  .m-hero__sub { font-size: 16px; margin-bottom: 28px; }
   .m-hero__ctas {
-    gap: 14px;
-    margin-bottom: 22px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin-bottom: 26px;
   }
   .m-btn-primary { width: 100%; justify-content: center; }
+  .m-hero__ctas .m-btn-secondary { align-self: center; }
   .m-hero__stats {
     display: grid;
     width: 100%;
@@ -1033,7 +1046,7 @@ html { scroll-behavior: smooth; }
   .hero-stat__label { font-size: 9px; letter-spacing: 0.06em; }
   .hero-stat__sep { width: 1px; height: 34px; }
   .hero-polaroid { display: none; }
-  .m-hero__visual { max-height: 230px; }
+  .m-hero__visual { max-height: none; aspect-ratio: 4 / 3; border-radius: 16px; }
   .m-why, .m-editor, .m-themes, .m-quotes { padding: 54px 20px; }
   .m-pricing { padding: 48px 20px 56px; }
   .m-why__head,
@@ -1044,7 +1057,7 @@ html { scroll-behavior: smooth; }
     font-size: 28px;
   }
   .m-section-label { margin-bottom: 18px; }
-  .m-theme-card { height: 260px; }
+  .m-theme-card { height: 240px; }
   .m-editor__canvas, .m-pricing__card, .m-quote { padding: 20px; }
   .m-editor__photo { min-height: 120px; }
   .m-footer__bar { align-items: flex-start; }
