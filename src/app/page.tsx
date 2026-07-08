@@ -76,43 +76,86 @@ const LandingPage = () => {
       gsap.from(".m-nav", { y: -32, opacity: 0, duration: 0.7, ease: "power3.out" });
       gsap.from(".pill-tag", { y: 18, opacity: 0, duration: 0.55, delay: 0.1, ease: "power3.out" });
       gsap.from(".h1-line span", { yPercent: 105, opacity: 0, duration: 0.85, stagger: 0.08, delay: 0.2, ease: "power4.out" });
-      gsap.from(".hero-sub, .hero-cta, .hero-stat", { y: 20, opacity: 0, duration: 0.65, delay: 0.45, stagger: 0.06, ease: "power3.out" });
-      gsap.from(".hero-right", { y: 36, opacity: 0, duration: 0.85, delay: 0.35, ease: "power3.out" });
-      gsap.from(".hero-polaroid", {
-        y: 28,
+      gsap.from(".hero-sub, .hero-cta", { y: 20, opacity: 0, duration: 0.7, delay: 0.8, ease: "power3.out", stagger: 0.08 });
+      gsap.from(".hero-stat", { y: 20, opacity: 0, duration: 0.7, delay: 1.1, ease: "power3.out", stagger: 0.1 });
+      gsap.from(".hero-right", { y: 60, opacity: 0, duration: 1.2, delay: 0.45, ease: "power3.out" });
+      gsap.from(".m-hero__visual", {
+        y: 44,
         opacity: 0,
-        rotation: (i: number) => (i % 2 ? 6 : -6),
-        scale: 0.92,
-        duration: 0.75,
-        delay: 0.65,
-        ease: "back.out(1.4)",
-        stagger: 0.1,
+        scale: 0.94,
+        rotate: 2,
+        duration: 1.05,
+        delay: 0.55,
+        ease: "power3.out",
       });
+      gsap.fromTo(
+        ".hero-polaroid.p1",
+        { y: 40, opacity: 0, rotate: -21, scale: 0.85 },
+        {
+          y: 0,
+          opacity: 1,
+          rotate: -9,
+          scale: 1,
+          duration: 1,
+          delay: 0.9,
+          ease: "back.out(1.6)",
+          onComplete: () => gsap.set(".hero-polaroid.p1", { clearProps: "transform" }),
+        },
+      );
+      gsap.fromTo(
+        ".hero-polaroid.p2",
+        { y: 40, opacity: 0, rotate: 20, scale: 0.85 },
+        {
+          y: 0,
+          opacity: 1,
+          rotate: 8,
+          scale: 1,
+          duration: 1,
+          delay: 1.05,
+          ease: "back.out(1.6)",
+          onComplete: () => gsap.set(".hero-polaroid.p2", { clearProps: "transform" }),
+        },
+      );
+      gsap.fromTo(
+        ".hero-polaroid.p3",
+        { y: 40, opacity: 0, rotate: -16, scale: 0.85 },
+        {
+          y: 0,
+          opacity: 1,
+          rotate: -4,
+          scale: 1,
+          duration: 1,
+          delay: 1.2,
+          ease: "back.out(1.6)",
+          onComplete: () => gsap.set(".hero-polaroid.p3", { clearProps: "transform" }),
+        },
+      );
+      gsap.from(".hero-blob", { scale: 0.4, opacity: 0, duration: 1.6, ease: "power3.out", stagger: 0.2 });
 
+      gsap.to(".hero-blob.b1", { yPercent: 30, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
+      gsap.to(".hero-blob.b2", { yPercent: -25, xPercent: 10, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
       gsap.to(".m-hero__visual img", {
-        yPercent: 8,
+        yPercent: 12,
         ease: "none",
         scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true },
       });
-      gsap.to(".hero-polaroid.p1", { y: -54, rotate: -8, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
-      gsap.to(".hero-polaroid.p2", { y: -76, rotate: 6, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
-      gsap.to(".hero-polaroid.p3", { y: -58, rotate: -4, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: 0.5 } });
+      gsap.to(".m-hero__left", { y: -40, ease: "none", scrollTrigger: { trigger: ".m-hero", start: "top top", end: "bottom top", scrub: true } });
 
       gsap.from(".why-left > *", {
-        scrollTrigger: { trigger: ".m-why", start: "top 78%", once: true },
-        x: -28,
+        scrollTrigger: { trigger: ".m-why", start: "top 80%", once: true },
+        x: -40,
         opacity: 0,
-        duration: 0.7,
+        duration: 0.9,
         ease: "power3.out",
-        stagger: 0.1,
+        stagger: 0.12,
       });
       gsap.from(".why-right .m-feature", {
-        scrollTrigger: { trigger: ".m-why", start: "top 78%", once: true },
-        y: 24,
+        scrollTrigger: { trigger: ".m-why", start: "top 80%", once: true },
+        x: 40,
         opacity: 0,
-        duration: 0.7,
+        duration: 0.9,
         ease: "power3.out",
-        stagger: 0.1,
+        stagger: 0.15,
       });
       gsap.from(".m-editor h2, .m-editor .m-section-label, .m-editor__mockup, .m-editor__pills > *", {
         scrollTrigger: { trigger: ".m-editor", start: "top 76%", once: true },
@@ -246,6 +289,9 @@ const LandingPage = () => {
       </div>
 
       <header className="m-hero">
+        <div className="hero-blob b1" aria-hidden="true" />
+        <div className="hero-blob b2" aria-hidden="true" />
+        <div className="hero-blob b3" aria-hidden="true" />
         <div className="m-hero__grid" aria-hidden="true" />
 
         <div className="m-hero__inner">
@@ -320,6 +366,11 @@ const LandingPage = () => {
               <span>coast / 05.24</span>
             </div>
           </div>
+        </div>
+
+        <div className="m-hero__scroll" aria-hidden="true">
+          <span>scroll</span>
+          <span className="m-hero__scroll-line" />
         </div>
       </header>
 
@@ -508,6 +559,8 @@ const LandingPage = () => {
             <Link href="/create">create</Link>
           </nav>
         </div>
+
+        <div className="m-footer__wordmark" aria-hidden="true">Memora</div>
 
         <div className="m-footer__bar">
           <span>Copyright 2026 Memora</span>
