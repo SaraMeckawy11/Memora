@@ -330,106 +330,79 @@
 }
 
 @media (max-width: 480px) {
-
-
-
-
-
-  .editor-topbar-center {
-    gap: 0.3rem;
-  }
-
-  .editor-page-indicator {
-    font-size: 0.75rem;
-
-
-  }
-
-  .nav-button {
-    width: 28px;
-    height: 28px;
-  }
-}
-
-@media (max-width: 640px) {
-  .header-controls-row {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .header-saved-status {
-    display: none;
-  }
-
-  .header-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-}
-
-@media (max-width: 480px) {
   .editor-topbar {
     padding: 0.3rem 0.5rem;
     gap: 0.5rem;
   }
-  
+
   .editor-topbar-center {
     gap: 0.3rem;
   }
 
   .editor-page-indicator {
     font-size: 0.75rem;
-    padding: 0.3rem 0.6rem;
+    padding: 0.3rem 0.5rem;
   }
 
   .nav-button {
     width: 28px;
     height: 28px;
   }
-}
 
-@media (max-width: 400px) {
-  /* Compact layout on narrow screens, keeping text visible */
-  .select-page-btn,
-  .upload-photos-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: unset;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.7rem; 
-    gap: 0.25rem;
-  }
-
-  .select-page-btn span,
-  .upload-photos-btn span {
-    white-space: nowrap;
-    line-height: 1;
-  }
-
-  .select-page-btn svg,
-  .upload-photos-btn svg {
-    width: 14px;
-    height: 14px;
-    margin-right: 0 !important;
-    display: block;
-  }
-
-  .editor-page-indicator {
-    margin: 0 0.25rem;
+  .select-page-btn {
+    min-width: 70px;
+    padding: 0.3rem 0.5rem;
     font-size: 0.7rem;
-    padding: 0.25rem 0.5rem;
+  }
+
+  .upload-photos-btn {
+    font-size: 0.7rem;
   }
 }
 
 @media (max-width: 360px) {
   .editor-topbar {
     padding: 0.25rem 0.4rem;
-    gap: 0.3rem;
+    gap: 0.4rem;
+  }
+
+  .editor-topbar-center > div:last-child {
+    display: none;
+  }
+  
+  .select-page-btn {
+    min-width: 60px;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.65rem;
+  }
+
+  .editor-page-indicator {
+    padding: 0.25rem 0.4rem;
+    font-size: 0.7rem;
   }
 
   .nav-button {
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .upload-photos-btn {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-controls-row {
+    flex-wrap: wrap; /* Allow wrapping */
+    gap: 0.5rem;
+  }
+
+  .header-saved-status {
+    display: none; /* Hide 'Saved...' text on very small screens to save space */
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

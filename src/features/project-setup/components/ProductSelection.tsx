@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { useProjectStore } from '@/store/useProjectStore'
 import '@/styles/setup/step-setup.css'
 
@@ -10,6 +11,13 @@ const PRODUCTS = [
 export default function ProductSelection() {
   const selectedProduct = useProjectStore(s => s.selectedProduct)
   const setSelectedProduct = useProjectStore(s => s.setSelectedProduct)
+
+  useEffect(() => {
+    if (!PRODUCTS.some(product => product.id === selectedProduct)) {
+      setSelectedProduct(PRODUCTS[0].id)
+    }
+  }, [selectedProduct, setSelectedProduct])
+
   return (
     <div className="section-container">
       <h3 className="section-title">Book Type</h3>

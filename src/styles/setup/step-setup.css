@@ -5,6 +5,12 @@
 }
 
 .setup-container {
+  --setup-accent: #111827;
+  --setup-accent-soft: #f3f4f6;
+  --setup-border: #d8dce3;
+  --setup-text: #0f172a;
+  --setup-muted: #7b8390;
+  --setup-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
   animation: fadeIn 0.3s ease;
   max-width: 1200px;
   margin: 0 auto;
@@ -55,7 +61,7 @@
   padding: 1.5rem;
   background-color: #fff;
   border-radius: var(--radius);
-  border: 2px solid var(--border-light);
+  border: 1px solid var(--setup-border);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -64,15 +70,21 @@
 }
 
 .product-card:hover {
-  border-color: var(--accent-solid);
+  border-color: var(--setup-accent);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--setup-shadow);
 }
 
 .product-card.selected {
-  background-color: #f0f9ff;
-  border-color: var(--accent-solid);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #ffffff 0%, #eef7ff 48%, #f3fbfa 100%);
+  border-color: var(--setup-accent);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
+}
+
+.product-card.selected .product-name,
+.product-card.selected .product-desc,
+.product-card.selected .product-price {
+  color: var(--setup-text);
 }
 
 .product-icon {
@@ -85,13 +97,13 @@
   margin: 0 0 0.25rem 0;
   text-align: center;
   font-size: 1.1rem;
-  color: var(--text-dark);
+  color: var(--setup-text);
   font-weight: 600;
 }
 
 .product-desc {
   margin: 0.25rem 0 0.75rem 0;
-  color: var(--text-muted);
+  color: var(--setup-muted);
   font-size: 0.85rem;
   text-align: center;
   line-height: 1.4;
@@ -100,7 +112,7 @@
 .product-price {
   text-align: center;
   font-weight: 600;
-  color: var(--accent-solid);
+  color: var(--setup-accent);
   margin: 0;
   font-size: 1.1rem;
 }
@@ -110,13 +122,14 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 1rem;
+  padding-top: 0.35rem;
 }
 
 .size-card {
-  padding: 1.25rem;
+  padding: 1.55rem 1.25rem 1.25rem;
   background-color: #fff;
   border-radius: var(--radius);
-  border: 2px solid var(--border-light);
+  border: 1px solid var(--setup-border);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
@@ -126,29 +139,38 @@
 }
 
 .size-card:hover {
-  border-color: var(--accent-solid);
+  border-color: var(--setup-accent);
   transform: translateY(-2px);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--setup-shadow);
 }
 
 .size-card.selected {
-  background-color: #f0f9ff;
-  border-color: var(--accent-solid);
+  background: linear-gradient(135deg, #ffffff 0%, #eef7ff 48%, #f3fbfa 100%);
+  border-color: var(--setup-accent);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.10);
 }
 
 .popular-tag {
   position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--accent-solid);
+  top: 10px;
+  right: 10px;
+  left: auto;
+  transform: none;
+  background-color: var(--setup-accent);
   color: #fff;
-  padding: 0.2rem 0.6rem;
+  padding: 0.18rem 0.55rem;
   border-radius: 20px;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1.2;
+  z-index: 2;
+}
+
+.size-card.selected .popular-tag {
+  background-color: var(--setup-accent);
+  color: #fff;
 }
 
 .size-visual-container {
@@ -161,9 +183,9 @@
 }
 
 .size-visual-shape {
-  background-color: #f1f5f9;
+  background-color: #eef2f6;
   border-radius: 4px;
-  box-shadow: 2px 2px 0 var(--border-light);
+  box-shadow: 2px 2px 0 #d8dee6;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -172,33 +194,38 @@
 }
 
 .size-card.selected .size-visual-shape {
-  background-color: var(--accent-solid);
-  box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+  background: #ffffff;
+  box-shadow: 4px 4px 0 rgba(17, 24, 39, 0.12);
 }
 
 .size-dimensions {
   font-size: 0.65rem;
-  color: var(--text-muted);
+  color: var(--setup-muted);
   font-weight: 500;
 }
 
 .size-card.selected .size-dimensions {
-  color: #fff;
+  color: var(--setup-accent);
 }
 
 .size-name {
   margin: 0 0 0.25rem 0;
   text-align: center;
   font-size: 0.9rem;
-  color: var(--text-dark);
+  color: var(--setup-text);
   font-weight: 600;
 }
 
 .size-label {
   margin: 0;
-  color: var(--text-muted);
+  color: var(--setup-muted);
   font-size: 0.75rem;
   text-align: center;
+}
+
+.size-card.selected .size-name,
+.size-card.selected .size-label {
+  color: var(--setup-text);
 }
 
 /* Cover Theme Selection */

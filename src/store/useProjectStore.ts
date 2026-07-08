@@ -44,8 +44,8 @@ type BoundStore = ProjectState & ProjectActions;
 const initialState: ProjectState = {
   projectId: null,
   step: 1,
-  selectedProduct: null,
-  selectedSize: null,
+  selectedProduct: 1,
+  selectedSize: 3,
   pageCount: 10,
   pages: [],
   currentPageIdx: 0,
@@ -60,7 +60,7 @@ const initialState: ProjectState = {
   imageBorderRadius: 0,
   showPageNumbers: false,
   selectedLayout: 'single',
-  selectedFontSize: 12,
+  selectedFontSize: 9,
   selectedFontColor: '#000000',
   selectedFontFamily: 'Inter',
   captionPosition: 'bottom',
@@ -108,14 +108,11 @@ export const useProjectStore = create<BoundStore>()(
         updateImageInSlot: (slotIdx, updatedImage) => set((state) => {
           const page = state.pages[state.currentPageIdx];
           if (page) {
-            // If it's a layout slot (within images array)
             if (slotIdx < page.images.length) {
-              // Usually images array stores IDs. But if the modal returns a full image object...
-              // Actually we should store the image in state and just keep the ID here.
-              // For simplicity now assume we match the store's pattern.
-              page.images[slotIdx] = String(updatedImage.id);
+              state.uploadedImages = state.uploadedImages.map((img) =>
+                String(img.id) === String(updatedImage.id) ? { ...img, ...updatedImage } : img
+              );
             } else {
-              // It's an overlay photo
               const overlayIdx = slotIdx - page.images.length;
               if (page.overlays && page.overlays[overlayIdx]) {
                 page.overlays[overlayIdx] = { ...page.overlays[overlayIdx], ...updatedImage };

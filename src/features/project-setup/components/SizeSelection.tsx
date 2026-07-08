@@ -1,4 +1,5 @@
 'use client'
+import { useEffect } from 'react'
 import { useProjectStore } from '@/store/useProjectStore'
 import '@/styles/setup/step-setup.css'
 
@@ -12,14 +13,6 @@ const SIZES = [
     height: 11.69,
   },
   {
-    id: 2,
-    name: 'A4 Landscape',
-    label: '297 × 210 mm',
-    aspect: (11.69 / 8.27).toFixed(2),
-    width: 11.69,
-    height: 8.27,
-  },
-  {
     id: 3,
     name: 'B5 Portrait',
     label: '176 × 250 mm',
@@ -28,19 +21,17 @@ const SIZES = [
     height: 9.84,
     popular: true,
   },
-  {
-    id: 4,
-    name: 'B5 Landscape',
-    label: '250 × 176 mm',
-    aspect: (9.84 / 6.93).toFixed(2),
-    width: 9.84,
-    height: 6.93,
-  },
 ]
 
 export default function SizeSelection() {
   const selectedSize = useProjectStore(s => s.selectedSize)
   const setSelectedSize = useProjectStore(s => s.setSelectedSize)
+
+  useEffect(() => {
+    if (!SIZES.some(size => size.id === selectedSize)) {
+      setSelectedSize(3)
+    }
+  }, [selectedSize, setSelectedSize])
   
   const getBookShapeStyle = (size) => {
     const baseSize = 80;

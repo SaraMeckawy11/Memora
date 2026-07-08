@@ -3,6 +3,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { useProjectStore } from '@/store/useProjectStore'
 import { LAYOUTS } from './settings/LayoutSection'
 import { getSlotRects } from '@/app/utils/layoutCalculations'
+import { SIZES } from '@/features/project-setup/components/SizeSelection'
 import PagesSidebar from './pages/PagesSidebar'
 import EditorCanvas from './canvas/EditorCanvas'
 import EditorBar from './bar/EditorBar'
@@ -11,13 +12,6 @@ import EditorSettings from './settings/EditorSettings'
 import ImageEditorModal from './settings/ImageEditorModal'
 import '@/styles/editor/editor.css'
 import { ProjectImage, PhotoBookPage } from '@/types/project'
-
-const SIZES = [
-  { id: 1, name: '8x8', label: '8" x 8" Square', aspect: '1/1', width: 8, height: 8, popular: true },
-  { id: 2, name: '10x10', label: '10" x 10" Square', aspect: '1/1', width: 10, height: 10 },
-  { id: 3, name: '8x11', label: '8.5" x 11" Portrait', aspect: '8.5/11', width: 8.5, height: 11 },
-  { id: 4, name: '11x8', label: '11" x 8.5" Landscape', aspect: '11/8.5', width: 11, height: 8.5 },
-]
 
 export default function StepEditor() {
   const store = useProjectStore()
@@ -32,10 +26,59 @@ export default function StepEditor() {
   const selectedSizeObj = SIZES.find(s => s.id === store.selectedSize) || SIZES[0]
   const maxSlots = currentLayoutObj.slots
   
-  const layoutSplitX = currentPage?.layoutSplitX ?? 0.5
-  const layoutSplitY = currentPage?.layoutSplitY ?? 0.5
+  const layoutSplitX = currentPage?.layoutSplitX ?? 50
+  const layoutSplitY = currentPage?.layoutSplitY ?? 50
   const effectivePageMargin = currentPage?.pageMargin ?? store.pageMargin
   const effectivePageGutter = currentPage?.pageGutter ?? store.pageGutter
+
+  useEffect(() => {
+    if (store.step !== 2 || store.pages.length > 0) return
+
+    const createdAt = Date.now()
+    const initialPages: PhotoBookPage[] = Array.from({ length: store.pageCount || 10 }, (_, idx) => ({
+      id: `page-${createdAt}-${idx}`,
+      type: 'photo',
+      images: [],
+      textContent: '',
+      textStyle: {
+        fontSize: store.selectedFontSize,
+        color: store.selectedFontColor,
+        fontFamily: store.selectedFontFamily,
+        position: store.captionPosition,
+        alignment: store.captionAlignment,
+      },
+      layout: store.selectedLayout || 'single',
+      overlays: [],
+      textBoxHidden: false,
+      pageBgColor: store.pageBgColor,
+      pageMargin: store.pageMargin,
+      pageGutter: store.pageGutter,
+      layoutSplitX: 50,
+      layoutSplitY: 50,
+    }))
+
+    store.updateGlobalSettings({ pages: initialPages, currentPageIdx: 0 })
+  }, [
+    store.step,
+    store.pages.length,
+    store.pageCount,
+    store.selectedFontSize,
+    store.selectedFontColor,
+    store.selectedFontFamily,
+    store.captionPosition,
+    store.captionAlignment,
+    store.selectedLayout,
+    store.pageBgColor,
+    store.pageMargin,
+    store.pageGutter,
+    store.updateGlobalSettings,
+  ])
+
+  useEffect(() => {
+    if (store.pages.length > 0 && store.currentPageIdx >= store.pages.length) {
+      store.setCurrentPageIdx(0)
+    }
+  }, [store.pages.length, store.currentPageIdx, store.setCurrentPageIdx])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -139,6 +182,7 @@ export default function StepEditor() {
     imageBorderRadius: store.imageBorderRadius,
     onSelectSlot: (idx: number, rect: any) => {
       setSelectedSlotIdx(idx)
+      store.setSelectedSlotIdx(idx)
       if (rect?.width && rect?.height) setEditingSlotRect(rect)
     },
     onRemoveImage: store.removeImageFromPage,
@@ -169,19 +213,6 @@ export default function StepEditor() {
         />
 
         <div className="editor-main-column">
-          <EditorBar
-            currentPageIdx={store.currentPageIdx}
-            totalPages={store.pages.length}
-            onPrevPage={() => store.setCurrentPageIdx(Math.max(0, store.currentPageIdx - 1))}
-            onNextPage={() => store.setCurrentPageIdx(Math.min(store.pages.length - 1, store.currentPageIdx + 1))}
-            setIsSidebarOpen={store.setIsSidebarOpen}
-            onUpload={handleUpload}
-            onAddPage={() => store.addPage()}
-            onUndo={store.undo}
-            onRedo={store.redo}
-            onPreview={() => {}}
-          />
-
           {currentPage && (
             <EditorCanvas
               canvasRef={canvasRef}
@@ -210,6 +241,19 @@ export default function StepEditor() {
               onUpdateTextContent={(content) => store.updateCurrentPageSettings({ textContent: content })}
             />
           )}
+
+          <EditorBar
+            currentPageIdx={store.currentPageIdx}
+            totalPages={store.pages.length}
+            onPrevPage={() => store.setCurrentPageIdx(Math.max(0, store.currentPageIdx - 1))}
+            onNextPage={() => store.setCurrentPageIdx(Math.min(store.pages.length - 1, store.currentPageIdx + 1))}
+            setIsSidebarOpen={store.setIsSidebarOpen}
+            onUpload={handleUpload}
+            onAddPage={() => store.addPage()}
+            onUndo={store.undo}
+            onRedo={store.redo}
+            onPreview={() => {}}
+          />
           
           <PhotoLibrary
             uploadedImages={store.uploadedImages}

@@ -1,18 +1,21 @@
 'use client'
-import React from 'react';
-import { useProjectStore } from '@/store/useProjectStore';
-import { LayoutConfig } from '@/types/layout';
-import '@/styles/editor/common.css';
-import '@/styles/editor/LayoutSection.css';
+import React from 'react'
+import { useProjectStore } from '@/store/useProjectStore'
+import { LayoutConfig } from '@/types/layout'
+import '@/styles/editor/common.css'
+import '@/styles/editor/LayoutSection.css'
 
 export const LAYOUTS: LayoutConfig[] = [
   { id: 'single', name: 'Full Page', cols: 1, rows: 1, slots: 1, template: 'single' },
   { id: '2-horizontal', name: 'Side by Side', cols: 2, rows: 1, slots: 2, template: '2-horizontal' },
+  { id: '3-horizontal', name: '3x1 (3 Columns)', cols: 3, rows: 1, slots: 3, template: '3-horizontal' },
   { id: '2-vertical', name: 'Stacked', cols: 1, rows: 2, slots: 2, template: '2-vertical' },
+  { id: '3-vertical', name: '1x3 (3 Rows)', cols: 1, rows: 3, slots: 3, template: '3-vertical' },
   { id: '1-top-2-bottom', name: '1 Top + 2 Bottom', cols: 2, rows: 2, slots: 3, template: '1-top-2-bottom' },
   { id: '2-top-1-bottom', name: '2 Top + 1 Bottom', cols: 2, rows: 2, slots: 3, template: '2-top-1-bottom' },
-  { id: '4-grid', name: '2×2 Grid', cols: 2, rows: 2, slots: 4, template: '4-grid' },
-  { id: '6-grid', name: '3×2 Grid', cols: 3, rows: 2, slots: 6, template: '6-grid' },
+  { id: '4-grid', name: '2x2 Grid', cols: 2, rows: 2, slots: 4, template: '4-grid' },
+  { id: '6-grid', name: '3x2 Grid', cols: 3, rows: 2, slots: 6, template: '6-grid' },
+  { id: '2-3-grid', name: '2x3 Grid', cols: 2, rows: 3, slots: 6, template: '2-3-grid' },
 ]
 
 interface LayoutIconProps {
@@ -25,7 +28,9 @@ function LayoutIcon({ template, isSelected }: LayoutIconProps) {
   const icons: Record<string, React.ReactElement> = {
     single: <div className="layout-icon single"><div className={boxClass} /></div>,
     '2-horizontal': <div className="layout-icon cols-2"><div className={boxClass} /><div className={boxClass} /></div>,
+    '3-horizontal': <div className="layout-icon cols-3"><div className={boxClass} /><div className={boxClass} /><div className={boxClass} /></div>,
     '2-vertical': <div className="layout-icon rows-2"><div className={boxClass} /><div className={boxClass} /></div>,
+    '3-vertical': <div className="layout-icon rows-3"><div className={boxClass} /><div className={boxClass} /><div className={boxClass} /></div>,
     '1-top-2-bottom': (
       <div className="layout-icon rows-2"><div className={boxClass} /><div className="layout-icon cols-2"><div className={boxClass} /><div className={boxClass} /></div></div>
     ),
@@ -34,14 +39,15 @@ function LayoutIcon({ template, isSelected }: LayoutIconProps) {
     ),
     '4-grid': <div className="layout-icon grid-4">{Array.from({ length: 4 }).map((_, i) => <div key={i} className={boxClass} />)}</div>,
     '6-grid': <div className="layout-icon grid-6">{Array.from({ length: 6 }).map((_, i) => <div key={i} className={boxClass} />)}</div>,
+    '2-3-grid': <div className="layout-icon grid-2-3">{Array.from({ length: 6 }).map((_, i) => <div key={i} className={boxClass} />)}</div>,
   }
   return icons[template] || icons.single
 }
 
 export default function LayoutSection() {
-  const store = useProjectStore();
-  const currentPage = store.pages[store.currentPageIdx];
-  const selectedLayoutId = currentPage?.layout || store.selectedLayout;
+  const store = useProjectStore()
+  const currentPage = store.pages[store.currentPageIdx]
+  const selectedLayoutId = currentPage?.layout || store.selectedLayout
 
   return (
     <div className="editor-card">
@@ -52,12 +58,13 @@ export default function LayoutSection() {
             key={layout.id}
             onClick={() => store.updateCurrentPageSettings({ layout: layout.id as any })}
             className={`layout-btn ${selectedLayoutId === layout.id ? 'active' : 'inactive'}`}
-            title={layout.id}
+            title={layout.name}
           >
             <LayoutIcon template={layout.template} isSelected={selectedLayoutId === layout.id} />
+            <span className="layout-name">{layout.name}</span>
           </button>
         ))}
       </div>
     </div>
-  );
+  )
 }

@@ -1,7 +1,7 @@
 export interface LayoutConfig {
   id: string;
   name?: string;
-  template: 'single' | '2-horizontal' | '2-vertical' | '1-top-2-bottom' | '2-top-1-bottom' | '4-grid' | '6-grid';
+  template: 'single' | '2-horizontal' | '3-horizontal' | '2-vertical' | '3-vertical' | '1-top-2-bottom' | '2-top-1-bottom' | '4-grid' | '6-grid' | '2-3-grid';
   cols: number;
   rows: number;
   slots: number;

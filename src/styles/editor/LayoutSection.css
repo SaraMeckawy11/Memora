@@ -1,4 +1,11 @@
 /* ================= Layout ================= */
+.editor-card {
+  --layout-accent: #111827;
+  --layout-accent-soft: #f3f4f6;
+  --layout-border: #d8dce3;
+  --layout-text: #1f2937;
+}
+
 .layout-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -8,7 +15,8 @@
 
 .layout-btn {
   padding: 0.5rem;
-  border-radius: 6px;
+  min-height: 60px;
+  border-radius: 7px;
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 500;
@@ -22,15 +30,22 @@
 }
 
 .layout-btn.active {
-  background-color: var(--accent-solid);
-  color: #fff;
-  border: 2px solid var(--accent-solid);
+  background: linear-gradient(135deg, #ffffff 0%, #eef7ff 48%, #f3fbfa 100%);
+  color: var(--layout-text);
+  border: 1px solid var(--layout-accent);
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
 }
 
 .layout-btn.inactive {
-  background-color: #f5f5f5;
-  color: #333;
-  border: 2px solid transparent;
+  background-color: var(--layout-accent-soft);
+  color: var(--layout-text);
+  border: 1px solid transparent;
+}
+
+.layout-btn.inactive:hover {
+  border-color: var(--layout-border);
+  background-color: #fff;
+  transform: translateY(-1px);
 }
 
 .layout-name {
@@ -103,9 +118,13 @@
 }
 
 .layout-icon-box.active {
-  background-color: #fff;
+  background-color: var(--layout-accent);
 }
 
 .layout-icon-box.inactive {
   background-color: #666;
+}
+
+.layout-btn.inactive:hover .layout-icon-box.inactive {
+  background-color: #4b5563;
 }

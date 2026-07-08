@@ -30,12 +30,30 @@ export function getSlotRects(
       ]
     }
 
+    case '3-horizontal': {
+      const w = (innerW - pageGutter * 2) / 3
+      return [
+        { x: 0, y: 0, width: w, height: innerH },
+        { x: w + pageGutter, y: 0, width: w, height: innerH },
+        { x: (w + pageGutter) * 2, y: 0, width: w, height: innerH },
+      ]
+    }
+
     case '2-vertical': {
       const h1 = (innerH - pageGutter) * splitY
       const h2 = (innerH - pageGutter) * (1 - splitY)
       return [
         { x: 0, y: 0, width: innerW, height: h1 },
         { x: 0, y: h1 + pageGutter, width: innerW, height: h2 },
+      ]
+    }
+
+    case '3-vertical': {
+      const h = (innerH - pageGutter * 2) / 3
+      return [
+        { x: 0, y: 0, width: innerW, height: h },
+        { x: 0, y: h + pageGutter, width: innerW, height: h },
+        { x: 0, y: (h + pageGutter) * 2, width: innerW, height: h },
       ]
     }
 
@@ -82,6 +100,19 @@ export function getSlotRects(
         { x: 0, y: h + pageGutter, width: w, height: h },
         { x: w + pageGutter, y: h + pageGutter, width: w, height: h },
         { x: (w + pageGutter) * 2, y: h + pageGutter, width: w, height: h },
+      ]
+    }
+
+    case '2-3-grid': {
+      const w = (innerW - pageGutter) / 2
+      const h = (innerH - pageGutter * 2) / 3
+      return [
+        { x: 0, y: 0, width: w, height: h },
+        { x: w + pageGutter, y: 0, width: w, height: h },
+        { x: 0, y: h + pageGutter, width: w, height: h },
+        { x: w + pageGutter, y: h + pageGutter, width: w, height: h },
+        { x: 0, y: (h + pageGutter) * 2, width: w, height: h },
+        { x: w + pageGutter, y: (h + pageGutter) * 2, width: w, height: h },
       ]
     }
 
