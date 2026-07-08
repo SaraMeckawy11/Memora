@@ -12,6 +12,11 @@ export const updateSession = async (request) => {
     },
   });
 
+  if (!supabaseUrl || !supabaseKey) {
+    console.warn('Supabase middleware skipped: missing Supabase URL or publishable key');
+    return supabaseResponse;
+  }
+
   const supabase = createServerClient(
     supabaseUrl,
     supabaseKey,
@@ -33,8 +38,12 @@ export const updateSession = async (request) => {
     },
   );
 
-  // refreshing the auth token
-  await supabase.auth.getUser()
+  try {
+    // Refreshing the auth token should not be able to take down the whole site.
+    await supabase.auth.getUser()
+  } catch (error) {
+    console.error('Supabase middleware auth refresh failed:', error)
+  }
 
   return supabaseResponse
 };

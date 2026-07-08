@@ -3,8 +3,19 @@ import { updateSession } from '@/utils/supabase/middleware';
 import { jwtVerify } from 'jose';
 
 export async function middleware(request) {
-  // Update the Supabase session (refreshes the token if needed)
-  const supabaseResponse = await updateSession(request);
+  // Update the Supabase session (refreshes the token if needed).
+  // If auth refresh is misconfigured in a deployment, keep the public site alive.
+  let supabaseResponse = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  try {
+    supabaseResponse = await updateSession(request);
+  } catch (error) {
+    console.error('Supabase middleware failed:', error);
+  }
 
   // Existing Admin Protection Logic
   if (request.nextUrl.pathname.startsWith('/admin') && !request.nextUrl.pathname.startsWith('/admin/login')) {
