@@ -276,6 +276,9 @@
 
 /* Smooth in-page scrolling + offset so the fixed nav doesn't cover headings */
 html { scroll-behavior: smooth; }
+/* The off-canvas mobile drawer sits just past the right edge; clip horizontal
+   overflow so it can never push the page sideways on touch devices. */
+html, body { overflow-x: hidden; }
 #how, #themes, #pricing { scroll-margin-top: 96px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
@@ -997,7 +1000,10 @@ html { scroll-behavior: smooth; }
   .m-why { grid-template-columns: 1fr; padding: 80px 20px; gap: 40px; }
   .m-editor, .m-themes, .m-quotes { padding: 56px 20px; }
   .m-themes__grid { grid-template-columns: 1fr; gap: 20px; max-width: 460px; margin: 0 auto; }
-  .m-theme-card { height: 300px; transform: none !important; margin: 0 !important; border-radius: 14px; }
+  .m-theme-card { height: 300px; border-radius: 14px; }
+  /* Keep the desktop tilt/scale (and the entrance animation that drives it) on
+     mobile; just zero the stagger margins so the single-column stack is even. */
+  .m-theme-card.is-1, .m-theme-card.is-2, .m-theme-card.is-3 { margin: 0; }
   /* No hover on touch, so keep the theme label + a readable scrim always visible. */
   .m-theme-card::after { background: linear-gradient(180deg, rgba(0,0,0,0) 42%, rgba(14,94,87,0.62) 100%); }
   .m-theme-card__label {
@@ -1030,11 +1036,28 @@ html { scroll-behavior: smooth; }
   .m-hero__ctas {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
-    margin-bottom: 26px;
+    gap: 12px;
+    margin-bottom: 30px;
   }
   .m-btn-primary { width: 100%; justify-content: center; }
-  .m-hero__ctas .m-btn-secondary { align-self: center; }
+  /* Match "See examples" to the primary as a full-width outlined pill so the
+     two read as a cohesive pair instead of a big button + a tiny text link. */
+  .m-hero__ctas .m-btn-secondary {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Clash Display", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink);
+    border-radius: 999px;
+    padding: 16px 32px;
+  }
   .m-hero__stats {
     display: grid;
     width: 100%;
@@ -1045,8 +1068,14 @@ html { scroll-behavior: smooth; }
   .hero-stat__num { font-size: 18px; }
   .hero-stat__label { font-size: 9px; letter-spacing: 0.06em; }
   .hero-stat__sep { width: 1px; height: 34px; }
-  .hero-polaroid { display: none; }
   .m-hero__visual { max-height: none; aspect-ratio: 4 / 3; border-radius: 16px; }
+  /* Keep the floating polaroid cards (and their entrance/float animation) on
+     mobile, re-anchored to the corners of the smaller landscape visual. */
+  .hero-polaroid { display: block; }
+  .hero-polaroid span { font-size: 11px; bottom: 8px; }
+  .hero-polaroid.p1 { width: 82px; top: -16px; left: -6px; }
+  .hero-polaroid.p2 { width: 86px; top: auto; bottom: -14px; right: -6px; }
+  .hero-polaroid.p3 { display: none; }
   .m-why, .m-editor, .m-themes, .m-quotes { padding: 54px 20px; }
   .m-pricing { padding: 48px 20px 56px; }
   .m-why__head,
