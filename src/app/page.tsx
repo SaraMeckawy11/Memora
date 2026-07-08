@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
@@ -32,11 +32,64 @@ const POLAROIDS = [
   "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&q=80&auto=format",
 ];
 
+const NAV_LINKS = [
+  { href: "#how", label: "how it works" },
+  { href: "#themes", label: "themes" },
+  { href: "#pricing", label: "pricing" },
+  { href: "/my-books", label: "my books" },
+];
+
 const LandingPage = () => {
   const rootRef = useRef<HTMLDivElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Lock body scroll while the mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  // Close the mobile menu on Escape
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  // Smooth-scroll for in-page anchor links (respects reduced-motion)
+  const handleAnchor = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (!href.startsWith("#")) return;
+    const target = document.querySelector(href);
+    if (!target) return;
+    e.preventDefault();
+    setMenuOpen(false);
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
 
   useEffect(() => {
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const ctx = gsap.context(() => {
+      if (reduce) {
+        // Skip entrance/scroll animations; keep everything visible & static.
+        const track = rootRef.current?.querySelector<HTMLDivElement>(".m-marquee__track");
+        if (track) gsap.to(track, { x: () => -(track.scrollWidth / 2), duration: 45, ease: "none", repeat: -1 });
+        const nav = rootRef.current?.querySelector<HTMLElement>(".m-nav");
+        const onScrollR = () => {
+          if (!nav) return;
+          nav.classList.toggle("is-scrolled", window.scrollY > 24);
+        };
+        window.addEventListener("scroll", onScrollR, { passive: true });
+        onScrollR();
+        return;
+      }
       // ---- NAV reveal + scroll state ----
       gsap.from(".m-nav", { y: -80, opacity: 0, duration: 1, ease: "power4.out" });
       const nav = rootRef.current?.querySelector<HTMLElement>(".m-nav");
@@ -160,21 +213,73 @@ const LandingPage = () => {
       {/* ============= NAV ============= */}
       <nav className="m-nav">
         <div className="m-nav__inner">
-          <Link href="#" className="m-nav__logo">
+          <Link href="/" className="m-nav__logo">
             <span className="m-nav__logo-dot" aria-hidden="true" />
             Memora
           </Link>
           <div className="m-nav__links">
-            <Link href="#how">how it works</Link>
-            <Link href="#themes">themes</Link>
-            <Link href="#pricing">pricing</Link>
+            {NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} onClick={(e) => handleAnchor(e, l.href)}>
+                {l.label}
+              </Link>
+            ))}
           </div>
-          <Link href="#pricing" className="m-nav__cta">
-            <span>Start free</span>
-            <span className="m-nav__cta-arrow">→</span>
-          </Link>
+          <div className="m-nav__actions">
+            <Link href="/create" className="m-nav__cta">
+              <span>Start free</span>
+              <span className="m-nav__cta-arrow">→</span>
+            </Link>
+            <button
+              type="button"
+              className={`m-nav__burger ${menuOpen ? "is-open" : ""}`}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </nav>
+
+      {/* ============= MOBILE MENU ============= */}
+      <div className={`m-drawer ${menuOpen ? "is-open" : ""}`} role="dialog" aria-modal="true">
+        <button
+          type="button"
+          className="m-drawer__scrim"
+          aria-label="Close menu"
+          onClick={() => setMenuOpen(false)}
+        />
+        <aside className="m-drawer__panel">
+          <div className="m-drawer__head">
+            <span className="m-nav__logo">
+              <span className="m-nav__logo-dot" aria-hidden="true" />
+              Memora
+            </span>
+            <button
+              type="button"
+              className="m-drawer__close"
+              aria-label="Close menu"
+              onClick={() => setMenuOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <nav className="m-drawer__links">
+            {NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} onClick={(e) => handleAnchor(e, l.href)}>
+                {l.label}
+                <span aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </nav>
+          <Link href="/create" className="m-btn-primary m-drawer__cta" onClick={() => setMenuOpen(false)}>
+            Create your book
+            <span className="m-btn-primary__arrow">→</span>
+          </Link>
+        </aside>
+      </div>
 
       {/* ============= HERO ============= */}
       <header className="m-hero">
@@ -202,7 +307,7 @@ const LandingPage = () => {
                 Create your book
                 <span className="m-btn-primary__arrow">→</span>
               </Link>
-              <Link href="#themes" className="m-btn-secondary hero-cta">See examples</Link>
+              <Link href="#themes" className="m-btn-secondary hero-cta" onClick={(e) => handleAnchor(e, "#themes")}>See examples</Link>
             </div>
             <div className="m-hero__stats">
               <div className="hero-stat">
@@ -427,9 +532,10 @@ const LandingPage = () => {
           </div>
           <div className="m-footer__col">
             <h4>explore</h4>
-            <Link href="#how">how it works</Link>
-            <Link href="#themes">themes</Link>
-            <Link href="#pricing">pricing</Link>
+            <Link href="#how" onClick={(e) => handleAnchor(e, "#how")}>how it works</Link>
+            <Link href="#themes" onClick={(e) => handleAnchor(e, "#themes")}>themes</Link>
+            <Link href="#pricing" onClick={(e) => handleAnchor(e, "#pricing")}>pricing</Link>
+            <Link href="/my-books">my books</Link>
             <Link href="/admin">admin</Link>
           </div>
           <div className="m-footer__col">
