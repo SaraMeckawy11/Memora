@@ -8,13 +8,23 @@ import '@/styles/setup/step-setup.css'
 export default function StepSetup() {
   return (
     <div className="setup-container">
-      {/* <SetupHeader /> */}
-      
+      <div className="setup-intro">
+        <span className="setup-eyebrow">
+          <span className="setup-eyebrow__dot" aria-hidden="true" />
+          step 1 · the basics
+        </span>
+        <h2 className="setup-title">Let's set up your book.</h2>
+        <p className="setup-subtitle">
+          Pick a cover style and a size to start with — you can change
+          everything later in the editor.
+        </p>
+      </div>
+
       <ProductSelection />
-      
+
       <SizeSelection />
-{/*       
-      <CoverThemeSelection 
+{/*
+      <CoverThemeSelection
         coverTheme={coverTheme}
         setCoverTheme={setCoverTheme}
         coverImage={coverImage}

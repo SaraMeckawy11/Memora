@@ -178,19 +178,27 @@ const LandingPage = () => {
       });
 
       // ---- QUOTES ----
-      gsap.from(".m-quote", {
+      gsap.from(".m-quotes__head > *", {
         scrollTrigger: { trigger: ".m-quotes", start: "top 80%", once: true },
+        y: 36, opacity: 0, duration: 0.8, ease: "power3.out", stagger: 0.1,
+      });
+      gsap.from(".m-quote", {
+        scrollTrigger: { trigger: ".m-quotes__grid", start: "top 82%", once: true },
         y: 50, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.12,
       });
 
       // ---- PRICING ----
-      gsap.from(".m-pricing .word", {
+      gsap.from(".m-pricing__head > *", {
         scrollTrigger: { trigger: ".m-pricing", start: "top 80%", once: true },
-        y: 60, opacity: 0, duration: 0.9, ease: "power4.out", stagger: 0.1,
+        y: 40, opacity: 0, duration: 0.9, ease: "power3.out", stagger: 0.1,
       });
-      gsap.from(".m-pricing__sub, .m-pricing__btn, .m-pricing__fine", {
-        scrollTrigger: { trigger: ".m-pricing", start: "top 75%", once: true },
-        y: 24, opacity: 0, duration: 0.8, ease: "power3.out", stagger: 0.08, delay: 0.2,
+      gsap.from(".m-pricing__card", {
+        scrollTrigger: { trigger: ".m-pricing__card", start: "top 85%", once: true },
+        y: 50, opacity: 0, scale: 0.96, duration: 1, ease: "power3.out",
+      });
+      gsap.from(".m-pricing__list li", {
+        scrollTrigger: { trigger: ".m-pricing__list", start: "top 90%", once: true },
+        x: -16, opacity: 0, duration: 0.6, ease: "power2.out", stagger: 0.08, delay: 0.15,
       });
 
       // ---- FINALE ----
@@ -226,7 +234,7 @@ const LandingPage = () => {
           </div>
           <div className="m-nav__actions">
             <Link href="/create" className="m-nav__cta">
-              <span>Start free</span>
+              <span>Get started</span>
               <span className="m-nav__cta-arrow">→</span>
             </Link>
             <button
@@ -266,18 +274,34 @@ const LandingPage = () => {
               ✕
             </button>
           </div>
+          <span className="m-pill m-drawer__pill">
+            <span className="m-pill__dot" aria-hidden="true" />
+            your memories, beautifully bound
+          </span>
           <nav className="m-drawer__links">
-            {NAV_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} onClick={(e) => handleAnchor(e, l.href)}>
+            {NAV_LINKS.map((l, i) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={(e) => handleAnchor(e, l.href)}
+                style={{ ["--i" as string]: String(i) }}
+              >
+                <span className="m-drawer__idx">0{i + 1}</span>
                 {l.label}
-                <span aria-hidden="true">→</span>
+                <span className="m-drawer__arrow" aria-hidden="true">→</span>
               </Link>
             ))}
           </nav>
-          <Link href="/create" className="m-btn-primary m-drawer__cta" onClick={() => setMenuOpen(false)}>
-            Create your book
-            <span className="m-btn-primary__arrow">→</span>
-          </Link>
+          <div className="m-drawer__foot">
+            <Link href="/create" className="m-btn-primary m-drawer__cta" onClick={() => setMenuOpen(false)}>
+              Create your book
+              <span className="m-btn-primary__arrow">→</span>
+            </Link>
+            <div className="m-drawer__meta">
+              <a href="mailto:hello@memora.app">hello@memora.app</a>
+              <span>cairo · egypt</span>
+            </div>
+          </div>
         </aside>
       </div>
 
@@ -454,26 +478,35 @@ const LandingPage = () => {
 
       {/* ============= TESTIMONIALS ============= */}
       <section className="m-quotes">
-        <h2>What people are saying.</h2>
+        <div className="m-quotes__head">
+          <div className="m-section-label">[ loved by makers ]</div>
+          <h2>Kept on coffee tables <span className="hl">everywhere.</span></h2>
+        </div>
         <div className="m-quotes__grid">
           {[
             {
               q: "I cried opening it. My whole summer in Greece, sitting on my coffee table. Worth every pound.",
-              n: "Layla H.", l: "Cairo, EG · ✦ verified order",
+              n: "Layla H.", l: "Cairo, EG",
             },
             {
               q: "Way nicer than I expected. Paper feels expensive, the binding is real. My mom thinks I bought it from a shop.",
-              n: "Omar K.", l: "Riyadh, SA · ✦ verified order",
+              n: "Omar K.", l: "Riyadh, SA",
             },
             {
               q: "Made one for my best friend's birthday and now everyone in the group chat wants one. The editor is so fun.",
-              n: "Yasmin R.", l: "Dubai, UAE · ✦ verified order",
+              n: "Yasmin R.", l: "Dubai, UAE",
             },
           ].map((t) => (
             <article key={t.n} className="m-quote">
-              <span className="m-quote__rating">✦ ✦ ✦ ✦ ✦</span>
+              <span className="m-quote__rating">★ ★ ★ ★ ★</span>
               <p className="m-quote__text">"{t.q}"</p>
-              <div className="m-quote__meta">{t.n} · {t.l}</div>
+              <div className="m-quote__author">
+                <span className="m-quote__avatar" aria-hidden="true">{t.n.charAt(0)}</span>
+                <div>
+                  <div className="m-quote__name">{t.n}</div>
+                  <div className="m-quote__loc">{t.l} · verified order</div>
+                </div>
+              </div>
             </article>
           ))}
         </div>
@@ -481,18 +514,55 @@ const LandingPage = () => {
 
       {/* ============= PRICING ============= */}
       <section id="pricing" className="m-pricing">
-        <div className="m-pricing__inner">
+        <div className="m-pricing__head">
           <div className="m-section-label">[ start creating ]</div>
-          <h2>
-            <span className="word">From&nbsp;</span>
-            <span className="word price">EGP&nbsp;299.</span>
+          <h2 className="m-pricing__title">
+            Simple, <span className="hl">honest pricing.</span>
           </h2>
-          <p className="m-pricing__sub">
-            Design is always free. Pay only when you're ready to print.
+          <p className="m-pricing__lede">
+            Design your entire book for free. You only pay when you're
+            ready to hold it in your hands.
           </p>
-          <Link href="/create" className="m-pricing__btn">Start your book →</Link>
+        </div>
+
+        <div className="m-pricing__card">
+          <div className="m-pricing__ribbon">most loved</div>
+
+          <div className="m-pricing__top">
+            <div>
+              <div className="m-pricing__plan">The Memora Book</div>
+              <div className="m-pricing__plan-sub">hardcover · 20 pages · lay-flat binding</div>
+            </div>
+            <div className="m-pricing__price">
+              <span className="m-pricing__currency">EGP</span>
+              <span className="m-pricing__amount">299</span>
+              <span className="m-pricing__per">/ book</span>
+            </div>
+          </div>
+
+          <div className="m-pricing__divider" aria-hidden="true" />
+
+          <ul className="m-pricing__list">
+            {[
+              "20 premium lay-flat pages included",
+              "Hardcover or softcover, your choice",
+              "Drag & drop editor with auto-layout",
+              "Design free — no account needed",
+              "Ships to your door in 5–7 days",
+            ].map((item) => (
+              <li key={item}>
+                <span className="m-pricing__check" aria-hidden="true">✓</span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <Link href="/create" className="m-pricing__btn">
+            Start your book
+            <span className="m-btn-primary__arrow">→</span>
+          </Link>
           <div className="m-pricing__fine">
-            ✦ free design  ·  no account needed  ·  ships in 5–7 days
+            + EGP 15 / extra page · free shipping over EGP 800 · 30-day love guarantee
           </div>
         </div>
       </section>
@@ -526,9 +596,20 @@ const LandingPage = () => {
       {/* ============= FOOTER ============= */}
       <footer className="m-footer">
         <div className="m-footer__grid">
-          <div>
-            <div className="m-footer__logo">Memora</div>
-            <div className="m-footer__tag">Your memories, beautifully bound.</div>
+          <div className="m-footer__brand">
+            <div className="m-footer__logo">
+              <span className="m-nav__logo-dot" aria-hidden="true" />
+              Memora
+            </div>
+            <div className="m-footer__tag">
+              Your memories, beautifully bound — printed on archival
+              paper and stitched by hand in Cairo.
+            </div>
+            <div className="m-footer__social">
+              <a href="https://instagram.com" aria-label="Instagram">Instagram</a>
+              <a href="https://tiktok.com" aria-label="TikTok">TikTok</a>
+              <a href="mailto:hello@memora.app" aria-label="Email">Email</a>
+            </div>
           </div>
           <div className="m-footer__col">
             <h4>explore</h4>
@@ -536,25 +617,30 @@ const LandingPage = () => {
             <Link href="#themes" onClick={(e) => handleAnchor(e, "#themes")}>themes</Link>
             <Link href="#pricing" onClick={(e) => handleAnchor(e, "#pricing")}>pricing</Link>
             <Link href="/my-books">my books</Link>
-            <Link href="/admin">admin</Link>
-          </div>
-          <div className="m-footer__col">
-            <h4>contact</h4>
-            <Link href="https://instagram.com">instagram</Link>
-            <Link href="https://tiktok.com">tiktok</Link>
-            <Link href="mailto:hello@memora.app">hello@memora.app</Link>
           </div>
           <div className="m-footer__col">
             <h4>studio</h4>
             <Link href="#">about</Link>
             <Link href="#">journal</Link>
             <Link href="#">press kit</Link>
+            <Link href="/admin">admin</Link>
+          </div>
+          <div className="m-footer__col m-footer__col--cta">
+            <h4>start today</h4>
+            <p className="m-footer__cta-copy">Turn your camera roll into a book you'll keep forever.</p>
+            <Link href="/create" className="m-footer__cta-btn">
+              Create your book
+              <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </div>
+
+        <div className="m-footer__wordmark" aria-hidden="true">Memora</div>
+
         <div className="m-footer__bar">
-          <span>© 2024 MEMORA</span>
+          <span>© 2026 Memora</span>
           <span className="brand-line" aria-hidden="true" />
-          <span>CAIRO · EGYPT</span>
+          <span>made in cairo · egypt</span>
         </div>
       </footer>
     </div>

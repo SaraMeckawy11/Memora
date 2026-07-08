@@ -47,12 +47,15 @@ export default function SizeSelection() {
 
   return (
     <div className="section-container">
-      <h3 className="section-title">Book Size</h3>
+      <h3 className="section-title">
+        <span className="section-num">02</span>
+        Book size
+      </h3>
       <div className="size-grid">
         {SIZES.map((size) => {
           const shapeStyle = getBookShapeStyle(size)
           const isSelected = selectedSize === size.id
-          
+
           return (
             <div
               key={size.id}
@@ -67,19 +70,18 @@ export default function SizeSelection() {
               className={`size-card ${isSelected ? 'selected' : ''}`}
             >
               {size.popular && <span className="popular-tag">Popular</span>}
-              
+              <span className="select-check" aria-hidden="true">✓</span>
+
               {/* Visual Book Shape */}
               <div className="size-visual-container">
-                <div 
+                <div
                   className="size-visual-shape"
                   style={shapeStyle}
                 >
-                  <span className="size-dimensions">
-                    {size.width}×{size.height}
-                  </span>
+                  <span className="size-visual-spine" aria-hidden="true" />
                 </div>
               </div>
-              
+
               <h4 className="size-name">{size.name}</h4>
               <p className="size-label">{size.label}</p>
             </div>

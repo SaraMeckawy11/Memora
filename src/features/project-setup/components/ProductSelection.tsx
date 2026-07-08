@@ -20,7 +20,10 @@ export default function ProductSelection() {
 
   return (
     <div className="section-container">
-      <h3 className="section-title">Book Type</h3>
+      <h3 className="section-title">
+        <span className="section-num">01</span>
+        Book type
+      </h3>
       <div className="product-grid">
         {PRODUCTS.map((product) => (
           <div
@@ -35,10 +38,13 @@ export default function ProductSelection() {
             }}
             className={`product-card ${selectedProduct === product.id ? 'selected' : ''}`}
           >
+            <span className="select-check" aria-hidden="true">✓</span>
             <div className="product-icon">{product.icon}</div>
             <h4 className="product-name">{product.name}</h4>
             <p className="product-desc">{product.description}</p>
-            <p className="product-price">{product.price} EGP</p>
+            <p className="product-price">
+              {product.price === 0 ? 'Included' : `${product.price} EGP`}
+            </p>
           </div>
         ))}
       </div>
