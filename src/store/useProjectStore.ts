@@ -4,7 +4,12 @@ import { immer } from 'zustand/middleware/immer';
 import { createClient } from '@/utils/supabase/client';
 import { ProjectState, PhotoBookPage, ProjectImage, EditorStep } from '@/types/project';
 
-const supabase = createClient();
+// Lazily create the Supabase client on first use. Creating it at module
+// scope runs during Next's build-time prerender (every page that imports this
+// store evaluates this module), where NEXT_PUBLIC_SUPABASE_* env vars aren't
+// applied yet — which threw "URL and API key are required" and failed the build.
+let _supabase: ReturnType<typeof createClient> | null = null;
+const getSupabase = () => (_supabase ??= createClient());
 
 interface ProjectActions {
   setStep: (step: EditorStep) => void;
@@ -125,7 +130,7 @@ export const useProjectStore = create<BoundStore>()(
           set({ savingStatus: 'saving' });
 
           try {
-            const { data, error } = await supabase
+            const { data, error } = await getSupabase()
               .from('projects')
               .insert({
                 user_id: userId,
@@ -152,7 +157,7 @@ export const useProjectStore = create<BoundStore>()(
 
           set({ savingStatus: 'saving' });
           try {
-            const { error } = await supabase
+            const { error } = await getSupabase()
               .from('projects')
               .update({
                 content: { pages, uploadedImages },
