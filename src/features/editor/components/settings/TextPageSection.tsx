@@ -25,6 +25,7 @@ export default function TextPageSection() {
   const store = useProjectStore()
   const currentPage = store.pages[store.currentPageIdx]
   const [showPhotoPickerModal, setShowPhotoPickerModal] = useState(false)
+  const [replacingPhotoIdx, setReplacingPhotoIdx] = useState<number | null>(null)
   const [mounted, setMounted] = useState(false)
   const firstFieldRef = useRef<HTMLTextAreaElement | null>(null)
 
@@ -93,7 +94,27 @@ export default function TextPageSection() {
     store.setSelectedOverlayIdx(nextIdx)
   }
 
-  const addPhotoBlock = (img: any) => {
+  const closePhotoPicker = () => {
+    setShowPhotoPickerModal(false)
+    setReplacingPhotoIdx(null)
+  }
+
+  const choosePhoto = (img: any) => {
+    const nextPhoto = {
+      src: img.src,
+      name: img.name || 'Photo',
+      originalSrc: img.originalSrc || img.src,
+      fit: img.fit || 'cover',
+      crop: img.crop,
+    }
+
+    if (replacingPhotoIdx !== null && overlays[replacingPhotoIdx]?.type === 'photo') {
+      updateOverlay(replacingPhotoIdx, nextPhoto)
+      store.setSelectedOverlayIdx(replacingPhotoIdx)
+      closePhotoPicker()
+      return
+    }
+
     const nextIdx = overlays.length
     store.updateCurrentPageSettings({
       overlays: [
@@ -101,8 +122,7 @@ export default function TextPageSection() {
         {
           id: `photo-${Date.now()}`,
           type: 'photo',
-          src: img.src,
-          name: img.name || 'Photo',
+          ...nextPhoto,
           x: 24,
           y: 24,
           width: 42,
@@ -112,7 +132,7 @@ export default function TextPageSection() {
       ],
     })
     store.setSelectedOverlayIdx(nextIdx)
-    setShowPhotoPickerModal(false)
+    closePhotoPicker()
   }
 
   const removeOverlay = (idx: number) => {
@@ -178,7 +198,16 @@ export default function TextPageSection() {
           <label className="caption-label">Elements</label>
           <div className="tp-add-btns">
             <button className="tp-add-btn" type="button" onClick={addTextBox}>+ Text</button>
-            <button className="tp-add-btn" type="button" onClick={() => setShowPhotoPickerModal(true)}>+ Photo</button>
+            <button
+              className="tp-add-btn"
+              type="button"
+              onClick={() => {
+                setReplacingPhotoIdx(null)
+                setShowPhotoPickerModal(true)
+              }}
+            >
+              + Photo
+            </button>
           </div>
         </div>
 
@@ -334,9 +363,32 @@ export default function TextPageSection() {
           <div className="tp-edit-title">Photo Block <span className="tp-edit-badge">drag on page</span></div>
           <div className="overlay-photo-info">
             <div className="overlay-photo-preview">
-              <img src={selectedOverlay.src} alt={selectedOverlay.name || 'Selected photo'} />
+              <img
+                src={selectedOverlay.src}
+                alt={selectedOverlay.name || 'Selected photo'}
+                style={{ borderRadius: selectedOverlay.style?.borderRadius || 0 }}
+              />
             </div>
             <p className="overlay-photo-name">{selectedOverlay.name || 'Selected photo'}</p>
+          </div>
+          <div className="photo-edit-actions">
+            <button
+              type="button"
+              className="photo-edit-action primary"
+              onClick={() => store.setEditingSlotIdx(-(selectedOverlayIdx + 1))}
+            >
+              Crop & fit
+            </button>
+            <button
+              type="button"
+              className="photo-edit-action"
+              onClick={() => {
+                setReplacingPhotoIdx(selectedOverlayIdx)
+                setShowPhotoPickerModal(true)
+              }}
+            >
+              Replace
+            </button>
           </div>
           <div className="photo-edit-control">
             <div className="photo-edit-control-header">
@@ -361,17 +413,17 @@ export default function TextPageSection() {
       </button>
 
       {mounted && showPhotoPickerModal && createPortal(
-        <div className="photo-picker-modal-overlay" onClick={() => setShowPhotoPickerModal(false)}>
+        <div className="photo-picker-modal-overlay" onClick={closePhotoPicker}>
           <div className="photo-picker-modal" onClick={(e) => e.stopPropagation()}>
             <div className="photo-picker-header">
-              <h4>Choose a photo</h4>
-              <button className="photo-picker-close" type="button" onClick={() => setShowPhotoPickerModal(false)}>x</button>
+              <h4>{replacingPhotoIdx !== null ? 'Replace photo' : 'Choose a photo'}</h4>
+              <button className="photo-picker-close" type="button" onClick={closePhotoPicker}>x</button>
             </div>
 
             {store.uploadedImages.length ? (
               <div className="photo-picker-grid">
                 {store.uploadedImages.map((img) => (
-                  <button key={img.id} type="button" className="photo-picker-thumb" onClick={() => addPhotoBlock(img)}>
+                  <button key={img.id} type="button" className="photo-picker-thumb" onClick={() => choosePhoto(img)}>
                     <img src={img.thumbSrc || img.src} alt={img.name || 'Photo'} />
                   </button>
                 ))}

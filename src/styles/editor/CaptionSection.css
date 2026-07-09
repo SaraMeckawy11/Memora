@@ -701,6 +701,43 @@
   margin: 0 0 0.25rem 0;
 }
 
+.photo-edit-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0.65rem 0;
+}
+
+.photo-edit-action {
+  height: 34px;
+  border: 1px solid rgba(31,168,154,0.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.88);
+  color: #2c2926;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+
+.photo-edit-action:hover {
+  background: var(--accent-soft);
+  border-color: rgba(31,168,154,0.38);
+  color: var(--accent-solid);
+}
+
+.photo-edit-action.primary {
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+  border-color: rgba(31,168,154,0.28);
+  color: #fff;
+  box-shadow: 0 10px 22px -18px rgba(14,94,87,0.5);
+}
+
+.photo-edit-action.primary:hover {
+  color: #fff;
+  box-shadow: 0 14px 28px -18px rgba(14,94,87,0.58);
+}
+
 .overlay-photo-hint {
   font-size: 0.72rem;
   color: #9ca3af;

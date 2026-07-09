@@ -7,6 +7,16 @@ export interface ProjectImage {
   src: string;
   name?: string;
   thumbSrc?: string;
+  originalSrc?: string;
+  fit?: 'cover' | 'contain';
+  crop?: ImageCrop;
+}
+
+export interface ImageCrop {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 }
 
 export interface TextStyle {
@@ -25,6 +35,9 @@ export interface PageOverlay {
   content?: string;
   src?: string;
   name?: string;
+  originalSrc?: string;
+  fit?: 'cover' | 'contain';
+  crop?: ImageCrop;
   x: number;
   y: number;
   width: number;

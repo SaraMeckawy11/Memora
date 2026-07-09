@@ -133,6 +133,21 @@ export default function StepEditor() {
   }, [currentLayoutObj, selectedSizeObj, effectivePageMargin, effectivePageGutter, layoutSplitX, layoutSplitY])
 
   const getImageObjectForSlot = (slotIdx: number) => {
+    if (slotIdx < 0) {
+      const overlayIdx = Math.abs(slotIdx) - 1
+      const overlay = currentPage?.overlays?.[overlayIdx]
+      if (overlay?.type !== 'photo' || !overlay.src) return null
+
+      return {
+        id: overlay.id,
+        src: overlay.src,
+        name: overlay.name,
+        originalSrc: overlay.originalSrc,
+        fit: overlay.fit || 'cover',
+        crop: overlay.crop,
+      }
+    }
+
     const imageId = currentPage?.images?.[slotIdx]
     if (!imageId) return null
     return store.uploadedImages.find(img => String(img.id) === String(imageId)) || null
@@ -141,13 +156,24 @@ export default function StepEditor() {
   const editorSlot = useMemo(() => {
     if (editingSlotRect?.width && editingSlotRect?.height) return editingSlotRect
     const editingIdx = store.editingSlotIdx;
-    if (editingIdx === null || !slotRects || !slotRects[editingIdx]) return null
-    
-    const rawSlot = slotRects[editingIdx]
+    if (editingIdx === null) return null
+
+    const overlayIdx = editingIdx < 0 ? Math.abs(editingIdx) - 1 : null
+    const overlay = overlayIdx !== null ? currentPage?.overlays?.[overlayIdx] : null
+    const rawSlot = editingIdx >= 0 ? slotRects?.[editingIdx] : (
+      overlay?.type === 'photo'
+        ? {
+            width: Math.max(80, ((selectedSizeObj?.width || 8) * 96 - effectivePageMargin * 2) * (overlay.width / 100)),
+            height: Math.max(80, ((selectedSizeObj?.height || 10) * 96 - effectivePageMargin * 2) * (overlay.height / 100)),
+          }
+        : null
+    )
+    if (!rawSlot) return null
+
     const SLOT_MAX = 420
     const ratio = rawSlot.width / rawSlot.height
     return ratio >= 1 ? { width: SLOT_MAX, height: SLOT_MAX / ratio } : { height: SLOT_MAX, width: SLOT_MAX * ratio }
-  }, [store.editingSlotIdx, slotRects, editingSlotRect])
+  }, [store.editingSlotIdx, slotRects, editingSlotRect, currentPage, selectedSizeObj, effectivePageMargin])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
@@ -235,7 +261,7 @@ export default function StepEditor() {
               onRemoveOverlay={(idx) => store.removeOverlay(idx)}
               selectedOverlayIdx={store.selectedOverlayIdx}
               onSelectOverlay={(idx) => store.setSelectedOverlayIdx(idx)}
-              onEditOverlayPhoto={(idx) => store.setEditingSlotIdx(idx + currentLayoutObj.slots)}
+              onEditOverlayPhoto={(idx) => store.setEditingSlotIdx(-(idx + 1))}
               onRemoveText={() => store.updateCurrentPageSettings({ textContent: '' })}
               onUpdateOverlayContent={(idx, content) => store.updateOverlay(idx, { content })}
               onUpdateTextContent={(content) => store.updateCurrentPageSettings({ textContent: content })}

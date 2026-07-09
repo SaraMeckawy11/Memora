@@ -6,6 +6,17 @@ import ImageGrid from './ImageGrid'
 import { PhotoBookPage } from '@/types/project'
 import { LayoutConfig } from '@/types/layout'
 
+const normalizeCrop = (item) => {
+  const c = item?.crop
+  if (!c) return null
+  const values = [c.x, c.y, c.w, c.h]
+  if (!values.every(Number.isFinite)) return null
+  const looksNormalized = c.w <= 1.5 && c.h <= 1.5 && c.x <= 1.5 && c.y <= 1.5
+  return looksNormalized
+    ? { x: c.x * 100, y: c.y * 100, w: c.w * 100, h: c.h * 100 }
+    : c
+}
+
 /* ---- Reusable draggable + resizable overlay element ---- */
 function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSelected, onSelect, onEditPhoto, onDragMove, onDragEnd, onUpdateContent }) {
   const elRef = useRef(null)
@@ -154,6 +165,7 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
   }
 
   const showControls = isSelected || dragging || resizing
+  const crop = normalizeCrop(overlay)
 
   return (
     <div
@@ -239,6 +251,34 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
             {overlay.content || <span style={{ fontSize: '0.65em', fontStyle: 'italic' }}>{overlay.placeholder || 'Type here…'}</span>}
           </div>
         )
+      ) : crop ? (
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden',
+            borderRadius: overlay.style?.borderRadius ?? 0,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          <img
+            src={overlay.src}
+            alt={overlay.name || 'photo'}
+            draggable={false}
+            style={{
+              position: 'absolute',
+              width: `${100 / (crop.w / 100)}%`,
+              height: `${100 / (crop.h / 100)}%`,
+              left: `${-(crop.x / 100) * (100 / (crop.w / 100))}%`,
+              top: `${-(crop.y / 100) * (100 / (crop.h / 100))}%`,
+              objectFit: 'cover',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          />
+        </div>
       ) : (
         <img
           src={overlay.src}
@@ -247,7 +287,7 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
           style={{
             width: '100%',
             height: '100%',
-            objectFit: 'cover',
+            objectFit: overlay.fit || 'cover',
             borderRadius: overlay.style?.borderRadius ?? 0,
             pointerEvents: 'none',
             userSelect: 'none',
@@ -281,8 +321,11 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
               className="overlay-edit-btn"
               onMouseDown={(e) => e.stopPropagation()}
               onTouchStart={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               onClick={(e) => { e.stopPropagation(); onEditPhoto && onEditPhoto() }}
               title="Edit photo"
+              aria-label="Edit photo"
+              type="button"
             >
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
             </button>

@@ -121,6 +121,22 @@ export const useProjectStore = create<BoundStore>()(
         updateImageInSlot: (slotIdx, updatedImage) => set((state) => {
           const page = state.pages[state.currentPageIdx];
           if (page) {
+            if (slotIdx < 0) {
+              const overlayIdx = Math.abs(slotIdx) - 1;
+              const overlay = page.overlays?.[overlayIdx];
+              if (overlay?.type === 'photo') {
+                page.overlays![overlayIdx] = {
+                  ...overlay,
+                  src: updatedImage.src,
+                  name: updatedImage.name,
+                  originalSrc: updatedImage.originalSrc,
+                  fit: updatedImage.fit,
+                  crop: updatedImage.crop,
+                };
+              }
+              return;
+            }
+
             if (slotIdx < page.images.length) {
               state.uploadedImages = state.uploadedImages.map((img) =>
                 String(img.id) === String(updatedImage.id) ? { ...img, ...updatedImage } : img
