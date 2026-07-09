@@ -219,7 +219,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         const dx = event.clientX - start.x
         const dy = event.clientY - start.y
         setCoverOffset({
-          x: start.offsetX + dx,
+          x: start.offsetX - dx,
           y: start.offsetY + dy,
         })
       }
