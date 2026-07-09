@@ -161,11 +161,15 @@ export default function CaptionSection() {
       </div>
 
       <div className="add-text-page-wrapper">
+        <div className="add-text-page-copy">
+          <strong>Need a story page?</strong>
+          <span>Insert a dedicated text page after this page.</span>
+        </div>
         <button
           onClick={() => store.addPage(store.currentPageIdx + 1, 'text')}
           className="add-text-page-btn"
         >
-          Add Text Page
+          + Text Page
         </button>
       </div>
     </div>

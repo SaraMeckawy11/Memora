@@ -188,22 +188,26 @@ export const useProjectStore = create<BoundStore>()(
         setCurrentPageIdx: (idx) => set({ currentPageIdx: idx }),
 
         addPage: (atIdx, type = 'photo') => set((state) => {
+          const isTextPage = type === 'text';
           const newPage: PhotoBookPage = {
             id: `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
             type,
             images: [],
             textContent: '',
             textStyle: {
-              fontSize: state.selectedFontSize,
+              fontSize: isTextPage ? 18 : state.selectedFontSize,
               color: state.selectedFontColor,
               fontFamily: state.selectedFontFamily,
               position: state.captionPosition,
               alignment: state.captionAlignment,
+              textAlign: 'center',
             },
-            layout: state.selectedLayout,
+            layout: isTextPage ? 'text' : state.selectedLayout,
             overlays: [],
             textBoxHidden: false,
             pageBgColor: state.pageBgColor,
+            textPosition: isTextPage ? { x: 50, y: 50 } : undefined,
+            textRect: isTextPage ? { width: 62, height: 18 } : undefined,
           };
           const insertIdx = atIdx !== undefined ? atIdx : state.pages.length;
           state.pages.splice(insertIdx, 0, newPage);

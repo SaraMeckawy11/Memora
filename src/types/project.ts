@@ -29,7 +29,9 @@ export interface PageOverlay {
   y: number;
   width: number;
   height: number;
-  style?: Partial<TextStyle>;
+  style?: Partial<TextStyle> & {
+    borderRadius?: number;
+  };
 }
 
 export interface PhotoBookPage {

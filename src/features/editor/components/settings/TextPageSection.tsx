@@ -1,176 +1,387 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useProjectStore } from '@/store/useProjectStore'
 import '@/styles/editor/CaptionSection.css'
 
 const FONT_FAMILIES = [
   { name: 'Inter', label: 'Inter' },
-  { name: 'Arial', label: 'Arial' },
-  { name: 'Helvetica', label: 'Helvetica' },
   { name: 'Georgia', label: 'Georgia' },
   { name: 'Times New Roman', label: 'Times New Roman' },
   { name: 'Playfair Display', label: 'Playfair Display' },
   { name: 'Prata', label: 'Prata' },
-  { name: 'Abril Fatface', label: 'Abril Fatface' },
   { name: 'Montserrat', label: 'Montserrat' },
-  { name: 'Montserrat Light', label: 'Montserrat Light' },
   { name: 'Bebas Neue', label: 'Bebas Neue' },
-  { name: 'Gistesy', label: 'Gistesy' },
-  { name: 'Signature', label: 'Signature' },
-  { name: 'Signature Font', label: 'Signature Font' },
-  { name: 'California Signature', label: 'California Signature' },
-  { name: 'Rogue', label: 'Rogue' },
-  { name: 'Rogue Hero', label: 'Rogue Hero' },
   { name: 'Dancing Script', label: 'Dancing Script' },
   { name: 'Pacifico', label: 'Pacifico' },
   { name: 'Caveat', label: 'Caveat' },
-  { name: 'Satisfy', label: 'Satisfy' },
   { name: 'Great Vibes', label: 'Great Vibes' },
-  { name: 'Shadows Into Light', label: 'Shadows Into Light' },
-  { name: 'Lobster', label: 'Lobster' },
-  { name: 'Permanent Marker', label: 'Permanent Marker' },
 ]
+
+const FONT_SIZES = [10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 56]
+const ALIGNMENTS = ['left', 'center', 'right'] as const
 
 export default function TextPageSection() {
   const store = useProjectStore()
   const currentPage = store.pages[store.currentPageIdx]
-  
-  const [fontSelectOpen, setFontSelectOpen] = useState(false)
-  const [overlayFontSelectOpen, setOverlayFontSelectOpen] = useState(false)
   const [showPhotoPickerModal, setShowPhotoPickerModal] = useState(false)
-  const [expandedSection, setExpandedSection] = useState('main')
-  
-  const fontSelectRef = useRef(null)
-  const overlayFontSelectRef = useRef(null)
-  const photoFileInputRef = useRef(null)
+  const [mounted, setMounted] = useState(false)
+  const firstFieldRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const selectedOverlayIdx = store.selectedOverlayIdx
+  const selectedOverlay = selectedOverlayIdx !== null ? currentPage?.overlays?.[selectedOverlayIdx] : null
+  const canEditMain = !selectedOverlay && !currentPage?.textBoxHidden
+
+  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (fontSelectRef.current && !fontSelectRef.current.contains(event.target)) setFontSelectOpen(false)
-      if (overlayFontSelectRef.current && !overlayFontSelectRef.current.contains(event.target)) setOverlayFontSelectOpen(false)
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    if (firstFieldRef.current) firstFieldRef.current.focus()
+  }, [selectedOverlayIdx, currentPage?.id])
 
   if (!currentPage || currentPage.type !== 'text') return null
 
-  const selectedOverlayIdx = store.selectedOverlayIdx
-  const selectedOverlay = selectedOverlayIdx !== null ? currentPage.overlays?.[selectedOverlayIdx] : null
-  const showMainEdit = !selectedOverlay && expandedSection === 'main' && !currentPage.textBoxHidden
+  const overlays = currentPage.overlays || []
 
-  /* ------------------------------
-     Store Actions Wrap
-  ------------------------------ */
-  const addOverlay = (overlay) => {
-    store.updateCurrentPageSettings({ overlays: [...(currentPage.overlays || []), overlay] })
+  const updateMainStyle = (key: string, value: any) => {
+    store.updateCurrentPageSettings({
+      textStyle: {
+        ...currentPage.textStyle,
+        [key]: value,
+      },
+    })
   }
 
-  const removeOverlay = (idx) => {
-    store.updateCurrentPageSettings({ overlays: (currentPage.overlays || []).filter((_, i) => i !== idx) })
+  const updateOverlay = (idx: number, next: any) => {
+    const nextOverlays = [...overlays]
+    nextOverlays[idx] = { ...nextOverlays[idx], ...next }
+    store.updateCurrentPageSettings({ overlays: nextOverlays })
   }
 
-  const updateMainStyle = (key, value) => {
-    store.updateCurrentPageSettings({ textStyle: { ...currentPage.textStyle, [key]: value } })
+  const updateOverlayStyle = (idx: number, key: string, value: any) => {
+    const overlay = overlays[idx]
+    if (!overlay) return
+    updateOverlay(idx, {
+      style: {
+        ...overlay.style,
+        [key]: value,
+      },
+    })
   }
 
-  const updateOverlayStyle = (idx, key, value) => {
-    const overlays = [...(currentPage.overlays || [])]
-    overlays[idx] = { ...overlays[idx], style: { ...overlays[idx].style, [key]: value } }
-    store.updateCurrentPageSettings({ overlays })
+  const addTextBox = () => {
+    const nextIdx = overlays.length
+    store.updateCurrentPageSettings({
+      overlays: [
+        ...overlays,
+        {
+          id: `text-${Date.now()}`,
+          type: 'text',
+          content: 'New text',
+          x: 24,
+          y: 24,
+          width: 52,
+          height: 14,
+          style: {
+            fontSize: 18,
+            fontFamily: currentPage.textStyle?.fontFamily || store.selectedFontFamily || 'Inter',
+            color: currentPage.textStyle?.color || '#000000',
+            textAlign: 'center',
+          },
+        },
+      ],
+    })
+    store.setSelectedOverlayIdx(nextIdx)
   }
 
-  const updateOverlayContent = (idx, content) => {
-    const overlays = [...(currentPage.overlays || [])]
-    overlays[idx] = { ...overlays[idx], content }
-    store.updateCurrentPageSettings({ overlays })
+  const addPhotoBlock = (img: any) => {
+    const nextIdx = overlays.length
+    store.updateCurrentPageSettings({
+      overlays: [
+        ...overlays,
+        {
+          id: `photo-${Date.now()}`,
+          type: 'photo',
+          src: img.src,
+          name: img.name || 'Photo',
+          x: 24,
+          y: 24,
+          width: 42,
+          height: 32,
+          style: { borderRadius: 0 },
+        },
+      ],
+    })
+    store.setSelectedOverlayIdx(nextIdx)
+    setShowPhotoPickerModal(false)
   }
+
+  const removeOverlay = (idx: number) => {
+    const nextOverlays = overlays.filter((_, i) => i !== idx)
+    store.updateCurrentPageSettings({ overlays: nextOverlays })
+    store.setSelectedOverlayIdx(null)
+  }
+
+  const renderFontSelect = (value: string, onChange: (value: string) => void) => (
+    <select value={value} onChange={(e) => onChange(e.target.value)} className="caption-select">
+      {FONT_FAMILIES.map((font) => (
+        <option key={font.name} value={font.name}>
+          {font.label}
+        </option>
+      ))}
+    </select>
+  )
+
+  const renderSizeSelect = (value: number, onChange: (value: number) => void) => (
+    <select value={value} onChange={(e) => onChange(+e.target.value)} className="caption-select">
+      {FONT_SIZES.map((size) => (
+        <option key={size} value={size}>
+          {size}px
+        </option>
+      ))}
+    </select>
+  )
+
+  const renderAlignment = (value: string, onChange: (value: string) => void) => (
+    <div className="tp-align-group" role="group" aria-label="Text alignment">
+      {ALIGNMENTS.map((align) => (
+        <button
+          key={align}
+          type="button"
+          className={`tp-align-btn ${value === align ? 'active' : ''}`}
+          onClick={() => onChange(align)}
+        >
+          {align[0].toUpperCase()}
+        </button>
+      ))}
+    </div>
+  )
 
   return (
     <div className="editor-card text-page-card">
-      <div className="tp-section">
-        <div className="tp-row-inline">
-          <label className="caption-label">Page Background</label>
-          <input
-            type="color"
-            value={currentPage.pageBgColor || '#ffffff'}
-            onChange={e => store.updateCurrentPageSettings({ pageBgColor: e.target.value })}
-            className="caption-color tp-color-sm"
-          />
+      <div className="tp-card-head">
+        <div>
+          <h4>Text Page</h4>
+          <p>Pick an element, then edit its words and style.</p>
         </div>
+        <input
+          type="color"
+          value={currentPage.pageBgColor || '#ffffff'}
+          onChange={(e) => store.updateCurrentPageSettings({ pageBgColor: e.target.value })}
+          className="caption-color tp-color-sm"
+          title="Page background"
+          aria-label="Page background"
+        />
       </div>
 
-      <div className="tp-divider" />
-
-      <div className="tp-section">
+      <div className="tp-section tp-element-section">
         <div className="tp-section-header">
-          <label className="caption-label">Page Elements</label>
+          <label className="caption-label">Elements</label>
           <div className="tp-add-btns">
-            <button className="tp-add-btn" onClick={() => addOverlay({ id: Date.now(), type: 'text', content: '', x: 30, y: 30, width: 40, height: 10, style: { fontSize: 16, fontFamily: 'Inter', color: '#000000' } })}>
-              <span>+ Text</span>
-            </button>
-            <button className="tp-add-btn" onClick={() => setShowPhotoPickerModal(true)}>
-              <span>+ Photo</span>
-            </button>
+            <button className="tp-add-btn" type="button" onClick={addTextBox}>+ Text</button>
+            <button className="tp-add-btn" type="button" onClick={() => setShowPhotoPickerModal(true)}>+ Photo</button>
           </div>
         </div>
 
         {!currentPage.textBoxHidden ? (
-          <div className={`tp-element-item${showMainEdit ? ' active' : ''}`} onClick={() => { store.setSelectedOverlayIdx(null); setExpandedSection('main'); }}>
-            <span className="tp-element-label">Main Text</span>
-            <button className="tp-element-delete" onClick={(e) => { e.stopPropagation(); store.updateCurrentPageSettings({ textBoxHidden: true }); }}>×</button>
+          <div
+            role="button"
+            tabIndex={0}
+            className={`tp-element-item ${canEditMain ? 'active' : ''}`}
+            onClick={() => store.setSelectedOverlayIdx(null)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') store.setSelectedOverlayIdx(null)
+            }}
+          >
+            <span className="tp-element-icon">T</span>
+            <span className="tp-element-label">Main page text</span>
+            <button
+              type="button"
+              className="tp-element-delete"
+              onClick={(e) => {
+                e.stopPropagation()
+                store.updateCurrentPageSettings({ textBoxHidden: true })
+              }}
+            >
+              x
+            </button>
           </div>
         ) : (
-          <button className="tp-restore-btn" onClick={() => store.updateCurrentPageSettings({ textBoxHidden: false })}>Restore main text</button>
+          <button
+            type="button"
+            className="tp-restore-btn"
+            onClick={() => {
+              store.updateCurrentPageSettings({ textBoxHidden: false })
+              store.setSelectedOverlayIdx(null)
+            }}
+          >
+            Restore main text
+          </button>
         )}
 
-        {currentPage.overlays?.map((overlay, idx) => (
-          <div key={overlay.id} className={`tp-element-item${selectedOverlayIdx === idx ? ' active' : ''}`} onClick={() => { setExpandedSection(null); store.setSelectedOverlayIdx(idx); }}>
-            <span className="tp-element-label">{overlay.type === 'text' ? `Text Box #${idx+1}` : (overlay.name || 'Photo')}</span>
-            <button className="tp-element-delete" onClick={(e) => { e.stopPropagation(); removeOverlay(idx); }}>×</button>
+        {overlays.map((overlay, idx) => (
+          <div
+            key={overlay.id}
+            role="button"
+            tabIndex={0}
+            className={`tp-element-item ${selectedOverlayIdx === idx ? 'active' : ''}`}
+            onClick={() => store.setSelectedOverlayIdx(idx)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') store.setSelectedOverlayIdx(idx)
+            }}
+          >
+            <span className="tp-element-icon">{overlay.type === 'text' ? 'T' : 'P'}</span>
+            <span className="tp-element-label">
+              {overlay.type === 'text' ? (overlay.content || `Text box ${idx + 1}`) : (overlay.name || `Photo ${idx + 1}`)}
+            </span>
+            <button
+              type="button"
+              className="tp-element-delete"
+              onClick={(e) => {
+                e.stopPropagation()
+                removeOverlay(idx)
+              }}
+            >
+              x
+            </button>
           </div>
         ))}
       </div>
 
-      {showMainEdit && (
+      <div className="tp-divider" />
+
+      {canEditMain && (
         <div className="tp-section tp-edit-section">
-          <textarea value={currentPage.textContent || ''} onChange={e => store.updateCurrentPageSettings({ textContent: e.target.value })} className="caption-textarea" />
+          <div className="tp-edit-title">Main Text <span className="tp-edit-badge">default</span></div>
+          <textarea
+            ref={firstFieldRef}
+            value={currentPage.textContent || ''}
+            onChange={(e) => store.updateCurrentPageSettings({ textContent: e.target.value })}
+            className="caption-textarea tp-textarea"
+            placeholder="Write the story for this page..."
+          />
+
           <div className="tp-controls-grid">
-             {/* Font, Size, Color controls using store mapping... */}
-             {/* Simplified for brevity while ensuring functional parity */}
-             <select value={currentPage.textStyle?.fontSize || 12} onChange={e => updateMainStyle('fontSize', +e.target.value)} className="caption-select">
-                {[10, 12, 14, 16, 20, 24, 32, 48].map(s => <option key={s} value={s}>{s}px</option>)}
-             </select>
+            <div>
+              <label className="caption-label">Font</label>
+              {renderFontSelect(currentPage.textStyle?.fontFamily || 'Inter', (value) => updateMainStyle('fontFamily', value))}
+            </div>
+            <div>
+              <label className="caption-label">Size</label>
+              {renderSizeSelect(currentPage.textStyle?.fontSize || 18, (value) => updateMainStyle('fontSize', value))}
+            </div>
+          </div>
+
+          <div className="tp-style-row">
+            <div className="tp-style-item">
+              <label className="caption-label">Color</label>
+              <input
+                type="color"
+                value={currentPage.textStyle?.color || '#000000'}
+                onChange={(e) => updateMainStyle('color', e.target.value)}
+                className="tp-color-input"
+              />
+            </div>
+            <div className="tp-style-item tp-style-grow">
+              <label className="caption-label">Alignment</label>
+              {renderAlignment(currentPage.textStyle?.textAlign || 'center', (value) => updateMainStyle('textAlign', value))}
+            </div>
           </div>
         </div>
       )}
 
-      {selectedOverlay?.type === 'text' && (
+      {selectedOverlay?.type === 'text' && selectedOverlayIdx !== null && (
         <div className="tp-section tp-edit-section">
-          <textarea value={selectedOverlay.content || ''} onChange={e => updateOverlayContent(selectedOverlayIdx, e.target.value)} className="caption-textarea" />
-          <select value={selectedOverlay.style?.fontSize || 16} onChange={e => updateOverlayStyle(selectedOverlayIdx, 'fontSize', +e.target.value)} className="caption-select">
-            {[10, 12, 14, 16, 20, 24, 32, 48].map(s => <option key={s} value={s}>{s}px</option>)}
-          </select>
+          <div className="tp-edit-title">Text Box <span className="tp-edit-badge">movable</span></div>
+          <textarea
+            ref={firstFieldRef}
+            value={selectedOverlay.content || ''}
+            onChange={(e) => updateOverlay(selectedOverlayIdx, { content: e.target.value })}
+            className="caption-textarea tp-textarea"
+            placeholder="Type text..."
+          />
+
+          <div className="tp-controls-grid">
+            <div>
+              <label className="caption-label">Font</label>
+              {renderFontSelect(selectedOverlay.style?.fontFamily || 'Inter', (value) => updateOverlayStyle(selectedOverlayIdx, 'fontFamily', value))}
+            </div>
+            <div>
+              <label className="caption-label">Size</label>
+              {renderSizeSelect(selectedOverlay.style?.fontSize || 18, (value) => updateOverlayStyle(selectedOverlayIdx, 'fontSize', value))}
+            </div>
+          </div>
+
+          <div className="tp-style-row">
+            <div className="tp-style-item">
+              <label className="caption-label">Color</label>
+              <input
+                type="color"
+                value={selectedOverlay.style?.color || '#000000'}
+                onChange={(e) => updateOverlayStyle(selectedOverlayIdx, 'color', e.target.value)}
+                className="tp-color-input"
+              />
+            </div>
+            <div className="tp-style-item tp-style-grow">
+              <label className="caption-label">Alignment</label>
+              {renderAlignment(selectedOverlay.style?.textAlign || 'center', (value) => updateOverlayStyle(selectedOverlayIdx, 'textAlign', value))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedOverlay?.type === 'photo' && selectedOverlayIdx !== null && (
+        <div className="tp-section tp-edit-section">
+          <div className="tp-edit-title">Photo Block <span className="tp-edit-badge">drag on page</span></div>
+          <div className="overlay-photo-info">
+            <div className="overlay-photo-preview">
+              <img src={selectedOverlay.src} alt={selectedOverlay.name || 'Selected photo'} />
+            </div>
+            <p className="overlay-photo-name">{selectedOverlay.name || 'Selected photo'}</p>
+          </div>
+          <div className="photo-edit-control">
+            <div className="photo-edit-control-header">
+              <label className="caption-label">Corner Radius</label>
+              <span className="photo-edit-value">{selectedOverlay.style?.borderRadius || 0}px</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="32"
+              value={selectedOverlay.style?.borderRadius || 0}
+              onChange={(e) => updateOverlayStyle(selectedOverlayIdx, 'borderRadius', +e.target.value)}
+              className="photo-edit-slider"
+            />
+          </div>
         </div>
       )}
 
       <div className="tp-divider" />
-      <button className="tp-delete-page-btn" onClick={() => store.removePage(store.currentPageIdx)}>Delete Page</button>
+      <button className="tp-delete-page-btn" type="button" onClick={() => store.removePage(store.currentPageIdx)}>
+        Delete text page
+      </button>
 
-      {showPhotoPickerModal && createPortal(
-         <div className="photo-picker-modal-overlay" onClick={() => setShowPhotoPickerModal(false)}>
-            <div className="photo-picker-modal" onClick={e => e.stopPropagation()}>
-               <div className="photo-picker-grid">
-                  {store.uploadedImages.map(img => (
-                     <div key={img.id} className="photo-picker-thumb" onClick={() => { addOverlay({ id: Date.now(), type: 'photo', src: img.src, x: 20, y: 20, width: 30, height: 30 }); setShowPhotoPickerModal(false); }}>
-                        <img src={img.thumbSrc || img.src} alt="pick" />
-                     </div>
-                  ))}
-               </div>
+      {mounted && showPhotoPickerModal && createPortal(
+        <div className="photo-picker-modal-overlay" onClick={() => setShowPhotoPickerModal(false)}>
+          <div className="photo-picker-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="photo-picker-header">
+              <h4>Choose a photo</h4>
+              <button className="photo-picker-close" type="button" onClick={() => setShowPhotoPickerModal(false)}>x</button>
             </div>
-         </div>,
-         document.body
+
+            {store.uploadedImages.length ? (
+              <div className="photo-picker-grid">
+                {store.uploadedImages.map((img) => (
+                  <button key={img.id} type="button" className="photo-picker-thumb" onClick={() => addPhotoBlock(img)}>
+                    <img src={img.thumbSrc || img.src} alt={img.name || 'Photo'} />
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="photo-picker-empty">Upload photos from the editor toolbar first.</p>
+            )}
+          </div>
+        </div>,
+        document.body,
       )}
     </div>
   )

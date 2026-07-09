@@ -345,18 +345,42 @@
 /* ---- Corner resize handles ---- */
 .overlay-resize-handle {
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   background: #fff;
   border: 2px solid var(--accent-solid);
   border-radius: 2px;
   z-index: 30;
 }
 
-.overlay-resize-nw { top: -5px; left: -5px; cursor: nw-resize; }
-.overlay-resize-ne { top: -5px; right: -5px; cursor: ne-resize; }
-.overlay-resize-sw { bottom: -5px; left: -5px; cursor: sw-resize; }
-.overlay-resize-se { bottom: -5px; right: -5px; cursor: se-resize; }
+.overlay-resize-nw { top: -6px; left: -6px; cursor: nw-resize; }
+.overlay-resize-ne { top: -6px; right: -6px; cursor: ne-resize; }
+.overlay-resize-sw { bottom: -6px; left: -6px; cursor: sw-resize; }
+.overlay-resize-se { bottom: -6px; right: -6px; cursor: se-resize; }
+
+.overlay-move-handle {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-solid);
+  background: #fff;
+  color: var(--accent-solid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  z-index: 35;
+  box-shadow: 0 8px 18px -12px rgba(14,94,87,0.5);
+  touch-action: none;
+}
+
+.overlay-move-handle:active {
+  cursor: grabbing;
+}
 
 /* ---- Delete button on overlay ---- */
 .overlay-delete-btn {
@@ -406,6 +430,30 @@
 .overlay-edit-btn:hover {
   background: var(--accent-solid-hover);
   transform: scale(1.15);
+}
+
+@media (max-width: 768px) {
+  .overlay-resize-handle {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+  }
+
+  .overlay-resize-nw { top: -9px; left: -9px; }
+  .overlay-resize-ne { top: -9px; right: -9px; }
+  .overlay-resize-sw { bottom: -9px; left: -9px; }
+  .overlay-resize-se { bottom: -9px; right: -9px; }
+
+  .overlay-move-handle,
+  .overlay-delete-btn,
+  .overlay-edit-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .overlay-move-handle {
+    top: -14px;
+  }
 }
 
 /* ---- Inline textarea for overlay text editing ---- */
