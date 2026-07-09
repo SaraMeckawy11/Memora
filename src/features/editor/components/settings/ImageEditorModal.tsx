@@ -11,7 +11,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- CONSTANTS ---------- */
   const MAX_PREVIEW_SIZE = 360
   const MIN_CROP_SIZE = 10 // Minimum crop size in pixels
-  const COVER_PAN_SCALE = 1.45
+  const COVER_PAN_SCALE = 1.25
 
   /* ---------- STATE ---------- */
   const [fit, setFit] = useState(image.fit || 'cover')
@@ -20,7 +20,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     width: slot.width,
     height: slot.height,
   })
-  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [coverCrop, setCoverCropState] = useState({ x: 0, y: 0 })
   // Use slot size for initial rendered/cropRect, will be updated after image load
   const [rendered, setRendered] = useState({
     width: slot.width,
@@ -39,11 +39,11 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   const coverDragRef = useRef({
     x: 0,
     y: 0,
-    offsetX: 0,
-    offsetY: 0,
+    cropX: 0,
+    cropY: 0,
   })
   const coverDraggingRef = useRef(false)
-  const offsetRef = useRef(offset)
+  const coverCropRef = useRef(coverCrop)
 
   // Track original src so we can revert after a destructive crop (dataURL)
   const originalSrcRef = useRef(image.originalSrc || image.src)
@@ -52,8 +52,8 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     // If a new image is opened, reset original reference
     originalSrcRef.current = image.originalSrc || image.src
     setFit(image.fit || 'cover')
-    offsetRef.current = { x: 0, y: 0 }
-    setOffset({ x: 0, y: 0 })
+    coverCropRef.current = { x: 0, y: 0 }
+    setCoverCropState({ x: 0, y: 0 })
     setIsCropping(false)
   }, [image.id, image.src, image.originalSrc, image.fit])
 
@@ -61,8 +61,8 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     Boolean(image.originalSrc) || (Boolean(originalSrcRef.current) && originalSrcRef.current !== image.src)
 
   useEffect(() => {
-    offsetRef.current = offset
-  }, [offset])
+    coverCropRef.current = coverCrop
+  }, [coverCrop])
 
   /* ---------- PREVIEW SCALE ---------- */
   // When cropping, scale image to fit MAX_PREVIEW_SIZE (not slot)
@@ -86,20 +86,36 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   )
 
   /* ---------- REFS ---------- */
-  const bounds = useRef({ x: 0, y: 0 })
   const containerRef = useRef(null)
 
   /* ---------- HELPERS ---------- */
-  const clamp = (value, axis) =>
-    Math.max(-bounds.current[axis], Math.min(bounds.current[axis], value))
+  const getCenteredCoverCrop = (
+    frame = rendered,
+    viewport = previewSlot
+  ) => ({
+    x: Math.max(0, (frame.width - viewport.width) / 2),
+    y: Math.max(0, (frame.height - viewport.height) / 2),
+  })
 
-  const setCoverOffset = (next) => {
-    const clamped = {
-      x: clamp(next.x, 'x'),
-      y: clamp(next.y, 'y'),
+  const clampCoverCrop = (
+    next,
+    frame = rendered,
+    viewport = previewSlot
+  ) => {
+    const maxX = Math.max(0, frame.width - viewport.width)
+    const maxY = Math.max(0, frame.height - viewport.height)
+    return {
+      x: Math.max(0, Math.min(maxX, next.x)),
+      y: Math.max(0, Math.min(maxY, next.y)),
     }
-    offsetRef.current = clamped
-    setOffset(clamped)
+  }
+
+  const setCoverCrop = (next, frame = rendered, viewport = previewSlot) => {
+    const clamped = {
+      ...clampCoverCrop(next, frame, viewport),
+    }
+    coverCropRef.current = clamped
+    setCoverCropState(clamped)
   }
 
   // New helper: Clamp crop rect to image bounds
@@ -152,16 +168,12 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
           }
         }
         setRendered({ width, height })
-        const nextBounds =
-          fit === 'cover'
-            ? {
-                x: Math.max(0, (width - previewSlot.width) / 2),
-                y: Math.max(0, (height - previewSlot.height) / 2),
-              }
-            : { x: 0, y: 0 }
-        bounds.current = nextBounds
-
-        setCoverOffset({ x: 0, y: 0 })
+        if (fit === 'cover') {
+          const frame = { width, height }
+          setCoverCrop(getCenteredCoverCrop(frame, previewSlot), frame, previewSlot)
+        } else {
+          setCoverCrop({ x: 0, y: 0 }, { width, height }, previewSlot)
+        }
       }
     }
     img.src = image.src
@@ -209,8 +221,8 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       const start = {
         x: e.clientX,
         y: e.clientY,
-        offsetX: offsetRef.current.x,
-        offsetY: offsetRef.current.y,
+        cropX: coverCropRef.current.x,
+        cropY: coverCropRef.current.y,
       }
       coverDragRef.current = start
 
@@ -218,9 +230,9 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         event.preventDefault()
         const dx = event.clientX - start.x
         const dy = event.clientY - start.y
-        setCoverOffset({
-          x: start.offsetX - dx,
-          y: start.offsetY + dy,
+        setCoverCrop({
+          x: start.cropX - dx,
+          y: start.cropY - dy,
         })
       }
 
@@ -349,14 +361,14 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       crop: undefined,
     })
     setIsCropping(false)
-    setCoverOffset({ x: 0, y: 0 })
+    setCoverCrop(getCenteredCoverCrop())
   }
 
   /* ---------- APPLY ---------- */
   const applyChanges = () => {
     if (fit === 'cover') {
-      const cropX = (bounds.current.x - offsetRef.current.x) / rendered.width
-      const cropY = (bounds.current.y - offsetRef.current.y) / rendered.height
+      const cropX = coverCropRef.current.x / rendered.width
+      const cropY = coverCropRef.current.y / rendered.height
       const cropW = previewSlot.width / rendered.width
       const cropH = previewSlot.height / rendered.height
       onSave({
@@ -455,11 +467,10 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
                 draggable={false}
                 className={`crop-viewport-img ${fit}`}
                 style={{
-                  left: `calc(50% - ${rendered.width / 2}px)`,
-                  top: `calc(50% - ${rendered.height / 2}px)`,
+                  left: fit === 'cover' ? -coverCrop.x : `calc(50% - ${rendered.width / 2}px)`,
+                  top: fit === 'cover' ? -coverCrop.y : `calc(50% - ${rendered.height / 2}px)`,
                   width: rendered.width,
                   height: rendered.height,
-                  transform: `translate(${offset.x}px, ${offset.y}px)`,
                 }}
               />
             </div>
