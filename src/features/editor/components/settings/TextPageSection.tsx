@@ -31,6 +31,12 @@ export default function TextPageSection() {
 
   const selectedOverlayIdx = store.selectedOverlayIdx
   const selectedOverlay = selectedOverlayIdx !== null ? currentPage?.overlays?.[selectedOverlayIdx] : null
+  const selectedOverlayImage = selectedOverlay?.type === 'photo' && selectedOverlay.imageId !== undefined
+    ? store.uploadedImages.find((img) => String(img.id) === String(selectedOverlay.imageId))
+    : null
+  const selectedOverlaySrc = selectedOverlay?.type === 'photo'
+    ? selectedOverlay.src || selectedOverlayImage?.src
+    : undefined
   const canEditMain = !selectedOverlay && !currentPage?.textBoxHidden
 
   useEffect(() => setMounted(true), [])
@@ -101,6 +107,7 @@ export default function TextPageSection() {
 
   const choosePhoto = (img: any) => {
     const nextPhoto = {
+      imageId: img.id,
       src: img.src,
       name: img.name || 'Photo',
       originalSrc: img.originalSrc || img.src,
@@ -364,7 +371,7 @@ export default function TextPageSection() {
           <div className="overlay-photo-info">
             <div className="overlay-photo-preview">
               <img
-                src={selectedOverlay.src}
+                src={selectedOverlaySrc}
                 alt={selectedOverlay.name || 'Selected photo'}
                 style={{ borderRadius: selectedOverlay.style?.borderRadius || 0 }}
               />
@@ -375,7 +382,7 @@ export default function TextPageSection() {
             <button
               type="button"
               className="photo-edit-action primary"
-              onClick={() => store.setEditingSlotIdx(-(selectedOverlayIdx + 1))}
+              onClick={() => window.dispatchEvent(new CustomEvent('edit-overlay-photo', { detail: { idx: selectedOverlayIdx } }))}
             >
               Crop & fit
             </button>

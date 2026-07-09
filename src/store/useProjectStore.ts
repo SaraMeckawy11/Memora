@@ -90,6 +90,24 @@ const persistUploadedImages = (images: ProjectImage[]) => {
   });
 };
 
+const stripLargeImageField = (value?: string) => {
+  if (!value) return value;
+  return value.startsWith('data:') ? undefined : value;
+};
+
+const sanitizePagesForStorage = (pages: PhotoBookPage[] = []) =>
+  pages.map((page) => ({
+    ...page,
+    overlays: page.overlays?.map((overlay) => {
+      if (overlay.type !== 'photo') return overlay;
+      return {
+        ...overlay,
+        src: stripLargeImageField(overlay.src),
+        originalSrc: stripLargeImageField(overlay.originalSrc),
+      };
+    }),
+  }));
+
 export const useProjectStore = create<BoundStore>()(
   immer(
     persist(
@@ -121,26 +139,11 @@ export const useProjectStore = create<BoundStore>()(
         updateImageInSlot: (slotIdx, updatedImage) => set((state) => {
           const page = state.pages[state.currentPageIdx];
           if (page) {
-            if (slotIdx < 0) {
-              const overlayIdx = Math.abs(slotIdx) - 1;
-              const overlay = page.overlays?.[overlayIdx];
-              if (overlay?.type === 'photo') {
-                page.overlays![overlayIdx] = {
-                  ...overlay,
-                  src: updatedImage.src,
-                  name: updatedImage.name,
-                  originalSrc: updatedImage.originalSrc,
-                  fit: updatedImage.fit,
-                  crop: updatedImage.crop,
-                };
-              }
-              return;
-            }
-
             if (slotIdx < page.images.length) {
               state.uploadedImages = state.uploadedImages.map((img) =>
                 String(img.id) === String(updatedImage.id) ? { ...img, ...updatedImage } : img
               );
+              persistUploadedImages(state.uploadedImages);
             } else {
               const overlayIdx = slotIdx - page.images.length;
               if (page.overlays && page.overlays[overlayIdx]) {
@@ -384,7 +387,10 @@ export const useProjectStore = create<BoundStore>()(
         partialize: (state) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { isSidebarOpen, savingStatus, uploadedImages, ...persisted } = state;
-          return persisted as any;
+          return {
+            ...persisted,
+            pages: sanitizePagesForStorage(state.pages),
+          } as any;
         }
       }
     )

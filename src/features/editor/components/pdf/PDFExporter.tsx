@@ -152,10 +152,15 @@ export function usePDFExporter({
                 const oTextY = oy + oh / 2 - oTotalH / 2 + oLineH * 0.8
 
                 pdf.text(oLines, oTextX, oTextY, { align: oJAlign, maxWidth: oMaxW > 0 ? oMaxW : undefined })
-              } else if (overlay.type === 'photo' && overlay.src) {
+              } else if (overlay.type === 'photo') {
                 try {
+                  const libraryImage = overlay.imageId !== undefined
+                    ? uploadedImages.find(img => String(img.id) === String(overlay.imageId))
+                    : null
+                  const overlaySrc = overlay.src || libraryImage?.src
+                  if (!overlaySrc) continue
                   const oImg = new Image()
-                  oImg.src = overlay.src
+                  oImg.src = overlaySrc
                   await new Promise<void>(r => { oImg.onload = () => r(); oImg.onerror = () => r() })
                   if (oImg.naturalWidth > 0) {
                     const ox = (overlay.x / 100) * size.width

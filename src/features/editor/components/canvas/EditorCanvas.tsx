@@ -18,7 +18,7 @@ const normalizeCrop = (item) => {
 }
 
 /* ---- Reusable draggable + resizable overlay element ---- */
-function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSelected, onSelect, onEditPhoto, onDragMove, onDragEnd, onUpdateContent }) {
+function OverlayElement({ overlay, pageRef, pageMargin, uploadedImages = [], onUpdate, onRemove, isSelected, onSelect, onEditPhoto, onDragMove, onDragEnd, onUpdateContent }) {
   const elRef = useRef(null)
   const [dragging, setDragging] = useState(false)
   const [resizing, setResizing] = useState(false)
@@ -165,7 +165,14 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
   }
 
   const showControls = isSelected || dragging || resizing
-  const crop = normalizeCrop(overlay)
+  const libraryImage = overlay.imageId !== undefined
+    ? uploadedImages.find((img) => String(img.id) === String(overlay.imageId))
+    : null
+  const photoSrc = overlay.src || libraryImage?.src
+  const photoName = overlay.name || libraryImage?.name || 'photo'
+  const photoFit = overlay.fit || libraryImage?.fit || 'cover'
+  const photoCrop = overlay.crop || libraryImage?.crop
+  const crop = normalizeCrop({ crop: photoCrop })
 
   return (
     <div
@@ -264,8 +271,8 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
           }}
         >
           <img
-            src={overlay.src}
-            alt={overlay.name || 'photo'}
+            src={photoSrc}
+            alt={photoName}
             draggable={false}
             style={{
               position: 'absolute',
@@ -281,13 +288,13 @@ function OverlayElement({ overlay, pageRef, pageMargin, onUpdate, onRemove, isSe
         </div>
       ) : (
         <img
-          src={overlay.src}
-          alt={overlay.name || 'photo'}
+          src={photoSrc}
+          alt={photoName}
           draggable={false}
           style={{
             width: '100%',
             height: '100%',
-            objectFit: overlay.fit || 'cover',
+            objectFit: photoFit,
             borderRadius: overlay.style?.borderRadius ?? 0,
             pointerEvents: 'none',
             userSelect: 'none',
@@ -360,6 +367,7 @@ interface EditorCanvasProps {
   selectedFontFamily: string;
   showPageNumbers: boolean;
   currentPageIdx: number;
+  uploadedImages: any[];
   imageGridProps: any;
   onUpdateTextPosition: (rect: any) => void;
   onUpdateOverlay: (idx: number, updated: any) => void;
@@ -387,6 +395,7 @@ export default function EditorCanvas({
   selectedFontFamily,
   showPageNumbers,
   currentPageIdx,
+  uploadedImages,
   imageGridProps,
   onUpdateTextPosition,
   onUpdateOverlay,
@@ -814,6 +823,7 @@ export default function EditorCanvas({
                   overlay={overlay}
                   pageRef={pageElRef}
                   pageMargin={pageMargin}
+                  uploadedImages={uploadedImages}
                   isSelected={selectedOverlayIdx === idx}
                   onSelect={() => { setIsTextSelected(false); onSelectOverlay && onSelectOverlay(idx) }}
                   onUpdate={(updated) => onUpdateOverlay && onUpdateOverlay(idx, updated)}

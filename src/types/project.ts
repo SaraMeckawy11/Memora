@@ -32,6 +32,7 @@ export interface TextStyle {
 export interface PageOverlay {
   id: string | number;
   type: 'text' | 'photo';
+  imageId?: string | number;
   content?: string;
   src?: string;
   name?: string;
