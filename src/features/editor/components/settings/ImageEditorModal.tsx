@@ -41,6 +41,8 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     offsetX: 0,
     offsetY: 0,
   })
+  const coverDraggingRef = useRef(false)
+  const offsetRef = useRef(offset)
 
   // Track original src so we can revert after a destructive crop (dataURL)
   const originalSrcRef = useRef(image.originalSrc || image.src)
@@ -49,12 +51,17 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     // If a new image is opened, reset original reference
     originalSrcRef.current = image.originalSrc || image.src
     setFit(image.fit || 'cover')
+    offsetRef.current = { x: 0, y: 0 }
     setOffset({ x: 0, y: 0 })
     setIsCropping(false)
   }, [image.id, image.src, image.originalSrc, image.fit])
 
   const hasRevertableCrop =
     Boolean(image.originalSrc) || (Boolean(originalSrcRef.current) && originalSrcRef.current !== image.src)
+
+  useEffect(() => {
+    offsetRef.current = offset
+  }, [offset])
 
   /* ---------- PREVIEW SCALE ---------- */
   // When cropping, scale image to fit MAX_PREVIEW_SIZE (not slot)
@@ -84,6 +91,15 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- HELPERS ---------- */
   const clamp = (value, axis) =>
     Math.max(-bounds.current[axis], Math.min(bounds.current[axis], value))
+
+  const setCoverOffset = (next) => {
+    const clamped = {
+      x: clamp(next.x, 'x'),
+      y: clamp(next.y, 'y'),
+    }
+    offsetRef.current = clamped
+    setOffset(clamped)
+  }
 
   // New helper: Clamp crop rect to image bounds
   const clampCropRect = (rect) => ({
@@ -140,22 +156,11 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
             : { x: 0, y: 0 }
         bounds.current = nextBounds
 
-        if (fit === 'cover' && image.crop) {
-          const crop = image.crop
-          const normalized = crop.w <= 1.5 && crop.h <= 1.5 && crop.x <= 1.5 && crop.y <= 1.5
-            ? { x: crop.x * 100, y: crop.y * 100, w: crop.w * 100, h: crop.h * 100 }
-            : crop
-          setOffset({
-            x: nextBounds.x - (normalized.x / 100) * width,
-            y: nextBounds.y - (normalized.y / 100) * height,
-          })
-        } else {
-          setOffset({ x: 0, y: 0 })
-        }
+        setCoverOffset({ x: 0, y: 0 })
       }
     }
     img.src = image.src
-  }, [image.src, image.crop, fit, isCropping, previewSlot.width, previewSlot.height])
+  }, [image.src, fit, isCropping, previewSlot.width, previewSlot.height])
 
   /* ---------- POINTER HANDLERS ---------- */
   const onPointerDown = (e) => {
@@ -193,13 +198,15 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       }
       e.target.setPointerCapture?.(e.pointerId)
     } else if (fit === 'cover') {
+      e.preventDefault()
       setDragging(true)
+      coverDraggingRef.current = true
       setDragStart({ x: e.clientX, y: e.clientY })
       coverDragRef.current = {
         x: e.clientX,
         y: e.clientY,
-        offsetX: offset.x,
-        offsetY: offset.y,
+        offsetX: offsetRef.current.x,
+        offsetY: offsetRef.current.y,
       }
       e.currentTarget.setPointerCapture?.(e.pointerId)
     }
@@ -263,18 +270,26 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         })
         setDragStart({ x: e.clientX, y: e.clientY })
       }
-    } else if (fit === 'cover' && dragging) {
+    } else if (fit === 'cover' && coverDraggingRef.current) {
+      e.preventDefault()
       const dx = e.clientX - coverDragRef.current.x
       const dy = e.clientY - coverDragRef.current.y
-      setOffset({
-        x: clamp(coverDragRef.current.offsetX + dx, 'x'),
-        y: clamp(coverDragRef.current.offsetY + dy, 'y'),
+      setCoverOffset({
+        x: offsetRef.current.x + dx,
+        y: offsetRef.current.y + dy,
       })
+      coverDragRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        offsetX: offsetRef.current.x,
+        offsetY: offsetRef.current.y,
+      }
     }
   }
 
   const onPointerUp = (e) => {
     setDragging(false)
+    coverDraggingRef.current = false
     setResizing(false)
     setResizeHandle(null)
     e.currentTarget.releasePointerCapture?.(e.pointerId)
@@ -322,14 +337,14 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       crop: undefined,
     })
     setIsCropping(false)
-    setOffset({ x: 0, y: 0 })
+    setCoverOffset({ x: 0, y: 0 })
   }
 
   /* ---------- APPLY ---------- */
   const applyChanges = () => {
     if (fit === 'cover') {
-      const cropX = (bounds.current.x - offset.x) / rendered.width
-      const cropY = (bounds.current.y - offset.y) / rendered.height
+      const cropX = (bounds.current.x - offsetRef.current.x) / rendered.width
+      const cropY = (bounds.current.y - offsetRef.current.y) / rendered.height
       const cropW = previewSlot.width / rendered.width
       const cropH = previewSlot.height / rendered.height
       onSave({
