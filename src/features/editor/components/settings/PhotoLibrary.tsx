@@ -1,6 +1,5 @@
 'use client'
 import { useState, useEffect, useMemo } from 'react'
-import UploadArea from './UploadArea'
 import '@/styles/editor/PhotoLibrary.css'
 
 /* ======================================================
@@ -204,7 +203,6 @@ export default function PhotoLibrary({
           </span>
         </h4>
         <div className="photo-library-actions">
-          <UploadArea onUpload={onUpload} compact={true} label="Upload" />
           <button onClick={() => setShowModal(true)} className="photo-library-auto-btn">
             ✨ Auto
           </button>
