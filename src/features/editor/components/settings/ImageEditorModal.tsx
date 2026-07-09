@@ -11,6 +11,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- CONSTANTS ---------- */
   const MAX_PREVIEW_SIZE = 360
   const MIN_CROP_SIZE = 10 // Minimum crop size in pixels
+  const COVER_PAN_SCALE = 1.18
 
   /* ---------- STATE ---------- */
   const [fit, setFit] = useState(image.fit || 'cover')
@@ -130,13 +131,17 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         const imgRatio = img.naturalWidth / img.naturalHeight
         const slotRatio = previewSlot.width / previewSlot.height
         if (fit === 'cover') {
-          if (imgRatio > slotRatio) {
-            height = previewSlot.height
-            width = height * imgRatio
-          } else {
-            width = previewSlot.width
-            height = width / imgRatio
-          }
+          const coverScale = Math.max(
+            previewSlot.width / img.naturalWidth,
+            previewSlot.height / img.naturalHeight
+          )
+          const panScale = Math.max(
+            coverScale,
+            (previewSlot.width * COVER_PAN_SCALE) / img.naturalWidth,
+            (previewSlot.height * COVER_PAN_SCALE) / img.naturalHeight
+          )
+          width = img.naturalWidth * panScale
+          height = img.naturalHeight * panScale
         } else if (fit === 'contain') {
           if (imgRatio > slotRatio) {
             width = previewSlot.width
