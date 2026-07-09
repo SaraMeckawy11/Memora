@@ -125,18 +125,31 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
           }
         }
         setRendered({ width, height })
-        bounds.current =
+        const nextBounds =
           fit === 'cover'
             ? {
                 x: Math.max(0, (width - previewSlot.width) / 2),
                 y: Math.max(0, (height - previewSlot.height) / 2),
               }
             : { x: 0, y: 0 }
-        setOffset({ x: 0, y: 0 })
+        bounds.current = nextBounds
+
+        if (fit === 'cover' && image.crop) {
+          const crop = image.crop
+          const normalized = crop.w <= 1.5 && crop.h <= 1.5 && crop.x <= 1.5 && crop.y <= 1.5
+            ? { x: crop.x * 100, y: crop.y * 100, w: crop.w * 100, h: crop.h * 100 }
+            : crop
+          setOffset({
+            x: nextBounds.x - (normalized.x / 100) * width,
+            y: nextBounds.y - (normalized.y / 100) * height,
+          })
+        } else {
+          setOffset({ x: 0, y: 0 })
+        }
       }
     }
     img.src = image.src
-  }, [image.src, fit, isCropping, previewSlot.width, previewSlot.height])
+  }, [image.src, image.crop, fit, isCropping, previewSlot.width, previewSlot.height])
 
   /* ---------- POINTER HANDLERS ---------- */
   const onPointerDown = (e) => {
@@ -388,50 +401,30 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
               </div>
             </div>
           ) : (
-            <>
-              {/* DIMMED IMAGE */}
-              <div
-                aria-hidden
-                className="crop-dimmed-bg"
+            <div
+              className="crop-viewport"
+              style={{
+                width: previewSlot.width,
+                height: previewSlot.height,
+              }}
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              onPointerLeave={onPointerUp}
+            >
+              <img
+                src={image.src}
+                draggable={false}
+                className={`crop-viewport-img ${fit}`}
                 style={{
+                  left: `calc(50% - ${rendered.width / 2}px)`,
+                  top: `calc(50% - ${rendered.height / 2}px)`,
                   width: rendered.width,
                   height: rendered.height,
-                  transform: `translate(calc(-50% + ${offset.x}px), calc(-50% + ${offset.y}px))`,
+                  transform: `translate(${offset.x}px, ${offset.y}px)`,
                 }}
-              >
-                <img
-                  src={image.src}
-                  draggable={false}
-                  className="crop-dimmed-img"
-                />
-              </div>
-
-              {/* SLOT */}
-              <div
-                className="crop-viewport"
-                style={{
-                  width: previewSlot.width,
-                  height: previewSlot.height,
-                }}
-                onPointerDown={onPointerDown}
-                onPointerMove={onPointerMove}
-                onPointerUp={onPointerUp}
-                onPointerLeave={onPointerUp}
-              >
-                <img
-                  src={image.src}
-                  draggable={false}
-                  className={`crop-viewport-img ${fit}`}
-                  style={{
-                    left: `calc(50% - ${rendered.width / 2}px)`,
-                    top: `calc(50% - ${rendered.height / 2}px)`,
-                    width: rendered.width,
-                    height: rendered.height,
-                    transform: `translate(${offset.x}px, ${offset.y}px)`,
-                  }}
-                />
-              </div>
-            </>
+              />
+            </div>
           )}
         </div>
 
