@@ -92,6 +92,10 @@ export default function ImageSlot({
                   width: `${100 / (crop.w / 100)}%`,
                   height: `${100 / (crop.h / 100)}%`,
 
+                  /* override global img { max-width: 100% } reset */
+                  maxWidth: 'none',
+                  maxHeight: 'none',
+
                   /*  shift image so crop aligns */
                   left: `${-(crop.x / 100) * (100 / (crop.w / 100))}%`,
                   top: `${-(crop.y / 100) * (100 / (crop.h / 100))}%`,

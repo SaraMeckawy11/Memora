@@ -168,11 +168,11 @@ export default function StepEditor() {
     const overlay = overlayIdx !== null ? currentPage?.overlays?.[overlayIdx] : null
     const rawSlot = overlay?.type === 'photo'
       ? {
-          width: Math.max(80, ((selectedSizeObj?.width || 8) * 96 - effectivePageMargin * 2) * (overlay.width / 100)),
-          height: Math.max(80, ((selectedSizeObj?.height || 10) * 96 - effectivePageMargin * 2) * (overlay.height / 100)),
+          width: ((selectedSizeObj?.width || 8) * 96 - effectivePageMargin * 2) * (overlay.width / 100),
+          height: ((selectedSizeObj?.height || 10) * 96 - effectivePageMargin * 2) * (overlay.height / 100),
         }
       : slotRects?.[editingIdx]
-    if (!rawSlot) return null
+    if (!rawSlot?.width || !rawSlot?.height) return null
 
     const SLOT_MAX = 420
     const ratio = rawSlot.width / rawSlot.height

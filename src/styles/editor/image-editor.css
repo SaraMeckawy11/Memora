@@ -393,6 +393,10 @@
 /* --- Crop Viewport Image --- */
 .crop-viewport-img {
   position: absolute;
+  /* Override global img { max-width: 100% } reset — the pan frame is
+     intentionally larger than the viewport in cover mode */
+  max-width: none;
+  max-height: none;
   user-select: none;
   touch-action: none;
 }

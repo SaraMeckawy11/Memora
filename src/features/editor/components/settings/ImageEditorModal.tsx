@@ -11,7 +11,6 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- CONSTANTS ---------- */
   const MAX_PREVIEW_SIZE = 360
   const MIN_CROP_SIZE = 10 // Minimum crop size in pixels
-  const COVER_PAN_SCALE = 1.25
 
   /* ---------- STATE ---------- */
   const [fit, setFit] = useState(image.fit || 'cover')
@@ -118,6 +117,18 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     setCoverCropState(clamped)
   }
 
+  // Saved crop is percent (0-100) of the natural image; older states may be 0..1.
+  const normalizeSavedCrop = (c) => {
+    if (!c) return null
+    if (![c.x, c.y, c.w, c.h].every(Number.isFinite)) return null
+    const looksNormalized = c.w <= 1.5 && c.h <= 1.5 && c.x <= 1.5 && c.y <= 1.5
+    const crop = looksNormalized
+      ? { x: c.x * 100, y: c.y * 100, w: c.w * 100, h: c.h * 100 }
+      : { ...c }
+    if (crop.w <= 0 || crop.h <= 0) return null
+    return crop
+  }
+
   // New helper: Clamp crop rect to image bounds
   const clampCropRect = (rect) => ({
     x: Math.max(0, Math.min(rendered.width - rect.w, rect.x)),
@@ -146,18 +157,24 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       } else {
         const imgRatio = img.naturalWidth / img.naturalHeight
         const slotRatio = previewSlot.width / previewSlot.height
+        const savedCrop = fit === 'cover' ? normalizeSavedCrop(image.crop) : null
         if (fit === 'cover') {
+          // Exact object-fit: cover scale, so the preview matches the page render
           const coverScale = Math.max(
             previewSlot.width / img.naturalWidth,
             previewSlot.height / img.naturalHeight
           )
-          const panScale = Math.max(
-            coverScale,
-            (previewSlot.width * COVER_PAN_SCALE) / img.naturalWidth,
-            (previewSlot.height * COVER_PAN_SCALE) / img.naturalHeight
-          )
-          width = img.naturalWidth * panScale
-          height = img.naturalHeight * panScale
+          let scale = coverScale
+          if (savedCrop) {
+            // Reproduce the saved zoom: the crop region should fill the viewport
+            scale = Math.max(
+              coverScale,
+              previewSlot.width / (img.naturalWidth * (savedCrop.w / 100)),
+              previewSlot.height / (img.naturalHeight * (savedCrop.h / 100))
+            )
+          }
+          width = img.naturalWidth * scale
+          height = img.naturalHeight * scale
         } else if (fit === 'contain') {
           if (imgRatio > slotRatio) {
             width = previewSlot.width
@@ -170,14 +187,23 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         setRendered({ width, height })
         if (fit === 'cover') {
           const frame = { width, height }
-          setCoverCrop(getCenteredCoverCrop(frame, previewSlot), frame, previewSlot)
+          if (savedCrop) {
+            // Restore the saved pan position instead of recentering
+            setCoverCrop(
+              { x: (savedCrop.x / 100) * width, y: (savedCrop.y / 100) * height },
+              frame,
+              previewSlot
+            )
+          } else {
+            setCoverCrop(getCenteredCoverCrop(frame, previewSlot), frame, previewSlot)
+          }
         } else {
           setCoverCrop({ x: 0, y: 0 }, { width, height }, previewSlot)
         }
       }
     }
     img.src = image.src
-  }, [image.src, fit, isCropping, previewSlot.width, previewSlot.height])
+  }, [image.src, image.crop, fit, isCropping, previewSlot.width, previewSlot.height])
 
   /* ---------- POINTER HANDLERS ---------- */
   const onPointerDown = (e) => {

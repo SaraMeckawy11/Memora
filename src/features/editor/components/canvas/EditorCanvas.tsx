@@ -278,6 +278,10 @@ function OverlayElement({ overlay, pageRef, pageMargin, uploadedImages = [], onU
               position: 'absolute',
               width: `${100 / (crop.w / 100)}%`,
               height: `${100 / (crop.h / 100)}%`,
+              // Override global img { max-width: 100% } reset — the image is
+              // intentionally larger than the slot so the crop region fills it
+              maxWidth: 'none',
+              maxHeight: 'none',
               left: `${-(crop.x / 100) * (100 / (crop.w / 100))}%`,
               top: `${-(crop.y / 100) * (100 / (crop.h / 100))}%`,
               objectFit: 'cover',
