@@ -382,7 +382,7 @@ export default function TextPageSection() {
             <button
               type="button"
               className="photo-edit-action primary"
-              onClick={() => window.dispatchEvent(new CustomEvent('edit-overlay-photo', { detail: { idx: selectedOverlayIdx } }))}
+              onClick={() => store.setEditingSlotIdx(selectedOverlayIdx + 1)}
             >
               Crop & fit
             </button>

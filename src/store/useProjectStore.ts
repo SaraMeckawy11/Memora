@@ -95,15 +95,21 @@ const stripLargeImageField = (value?: string) => {
   return value.startsWith('data:') ? undefined : value;
 };
 
-const sanitizePagesForStorage = (pages: PhotoBookPage[] = []) =>
+const sanitizePagesForStorage = (pages: PhotoBookPage[] = [], uploadedImages: ProjectImage[] = []) =>
   pages.map((page) => ({
     ...page,
     overlays: page.overlays?.map((overlay) => {
       if (overlay.type !== 'photo') return overlay;
+      const matchedImage = overlay.imageId !== undefined
+        ? uploadedImages.find((img) => String(img.id) === String(overlay.imageId))
+        : uploadedImages.find((img) => img.src === overlay.src || img.src === overlay.originalSrc);
+      const nextImageId = overlay.imageId ?? matchedImage?.id;
+      const canResolveFromLibrary = nextImageId !== undefined;
       return {
         ...overlay,
-        src: stripLargeImageField(overlay.src),
-        originalSrc: stripLargeImageField(overlay.originalSrc),
+        imageId: nextImageId,
+        src: canResolveFromLibrary ? stripLargeImageField(overlay.src) : overlay.src,
+        originalSrc: canResolveFromLibrary ? stripLargeImageField(overlay.originalSrc) : overlay.originalSrc,
       };
     }),
   }));
@@ -389,7 +395,7 @@ export const useProjectStore = create<BoundStore>()(
           const { isSidebarOpen, savingStatus, uploadedImages, ...persisted } = state;
           return {
             ...persisted,
-            pages: sanitizePagesForStorage(state.pages),
+            pages: sanitizePagesForStorage(state.pages, state.uploadedImages),
           } as any;
         }
       }

@@ -20,7 +20,6 @@ export default function StepEditor() {
   const [selectedSlotIdx, setSelectedSlotIdx] = useState<number | null>(null)
   const [editingSlotRect, setEditingSlotRect] = useState<any>(null)
   const [selectedOverlayIdx, setSelectedOverlayIdx] = useState<number | null>(null)
-  const [editingOverlayIdx, setEditingOverlayIdx] = useState<number | null>(null)
 
   const currentPage = store.pages[store.currentPageIdx] || null
   const currentLayoutObj = LAYOUTS.find(l => l.id === (currentPage?.layout || 'single')) || LAYOUTS[0]
@@ -110,19 +109,12 @@ export default function StepEditor() {
       store.setIsSidebarOpen(true)
     }
 
-    const handleEditOverlayPhoto = (e: any) => {
-      const idx = e.detail?.idx
-      if (Number.isInteger(idx)) setEditingOverlayIdx(idx)
-    }
-
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('auto-generate-pages', handleAutoGenerate)
-    window.addEventListener('edit-overlay-photo', handleEditOverlayPhoto)
     
     return () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('auto-generate-pages', handleAutoGenerate)
-      window.removeEventListener('edit-overlay-photo', handleEditOverlayPhoto)
     }
   }, [store])
 
@@ -141,59 +133,51 @@ export default function StepEditor() {
   }, [currentLayoutObj, selectedSizeObj, effectivePageMargin, effectivePageGutter, layoutSplitX, layoutSplitY])
 
   const getImageObjectForSlot = (slotIdx: number) => {
+    if (slotIdx >= currentLayoutObj.slots) {
+      const overlayIdx = slotIdx - currentLayoutObj.slots
+      const overlay = currentPage?.overlays?.[overlayIdx]
+      if (overlay?.type !== 'photo') return null
+
+      const libraryImage = overlay.imageId !== undefined
+        ? store.uploadedImages.find(img => String(img.id) === String(overlay.imageId))
+        : store.uploadedImages.find(img => img.src === overlay.src || img.src === overlay.originalSrc)
+      const src = overlay.src || libraryImage?.src
+      if (!src) return null
+
+      return {
+        id: overlay.imageId ?? libraryImage?.id ?? overlay.id,
+        src,
+        name: overlay.name || libraryImage?.name,
+        originalSrc: overlay.originalSrc || libraryImage?.originalSrc || libraryImage?.src || src,
+        fit: overlay.fit || libraryImage?.fit || 'cover',
+        crop: overlay.crop || libraryImage?.crop,
+      }
+    }
+
     const imageId = currentPage?.images?.[slotIdx]
     if (!imageId) return null
     return store.uploadedImages.find(img => String(img.id) === String(imageId)) || null
   }
 
-  const getImageObjectForOverlay = (overlayIdx: number | null) => {
-    if (overlayIdx === null) return null
-    const overlay = currentPage?.overlays?.[overlayIdx]
-    if (overlay?.type !== 'photo') return null
-    const libraryImage = overlay.imageId !== undefined
-      ? store.uploadedImages.find(img => String(img.id) === String(overlay.imageId))
-      : null
-    const src = overlay.src || libraryImage?.src
-    if (!src) return null
-
-    return {
-      id: overlay.imageId ?? overlay.id,
-      src,
-      name: overlay.name || libraryImage?.name,
-      originalSrc: overlay.originalSrc || libraryImage?.originalSrc || libraryImage?.src || src,
-      fit: overlay.fit || libraryImage?.fit || 'cover',
-      crop: overlay.crop || libraryImage?.crop,
-    }
-  }
-
   const editorSlot = useMemo(() => {
     if (editingSlotRect?.width && editingSlotRect?.height) return editingSlotRect
     const editingIdx = store.editingSlotIdx;
-    if (editingIdx === null || !slotRects || !slotRects[editingIdx]) return null
+    if (editingIdx === null) return null
 
-    const rawSlot = slotRects[editingIdx]
+    const overlayIdx = editingIdx >= currentLayoutObj.slots ? editingIdx - currentLayoutObj.slots : null
+    const overlay = overlayIdx !== null ? currentPage?.overlays?.[overlayIdx] : null
+    const rawSlot = overlay?.type === 'photo'
+      ? {
+          width: Math.max(80, ((selectedSizeObj?.width || 8) * 96 - effectivePageMargin * 2) * (overlay.width / 100)),
+          height: Math.max(80, ((selectedSizeObj?.height || 10) * 96 - effectivePageMargin * 2) * (overlay.height / 100)),
+        }
+      : slotRects?.[editingIdx]
     if (!rawSlot) return null
 
     const SLOT_MAX = 420
     const ratio = rawSlot.width / rawSlot.height
     return ratio >= 1 ? { width: SLOT_MAX, height: SLOT_MAX / ratio } : { height: SLOT_MAX, width: SLOT_MAX * ratio }
-  }, [store.editingSlotIdx, slotRects, editingSlotRect])
-
-  const overlayEditorSlot = useMemo(() => {
-    if (editingOverlayIdx === null) return null
-    const overlay = currentPage?.overlays?.[editingOverlayIdx]
-    if (overlay?.type !== 'photo') return null
-
-    const pageWidth = (selectedSizeObj?.width || 8) * 96 - effectivePageMargin * 2
-    const pageHeight = (selectedSizeObj?.height || 10) * 96 - effectivePageMargin * 2
-    const rawSlot = {
-      width: Math.max(80, pageWidth * (overlay.width / 100)),
-      height: Math.max(80, pageHeight * (overlay.height / 100)),
-    }
-    const SLOT_MAX = 420
-    const ratio = rawSlot.width / rawSlot.height
-    return ratio >= 1 ? { width: SLOT_MAX, height: SLOT_MAX / ratio } : { height: SLOT_MAX, width: SLOT_MAX * ratio }
-  }, [editingOverlayIdx, currentPage, selectedSizeObj, effectivePageMargin])
+  }, [store.editingSlotIdx, slotRects, editingSlotRect, currentLayoutObj.slots, currentPage, selectedSizeObj, effectivePageMargin])
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
@@ -282,7 +266,7 @@ export default function StepEditor() {
               onRemoveOverlay={(idx) => store.removeOverlay(idx)}
               selectedOverlayIdx={store.selectedOverlayIdx}
               onSelectOverlay={(idx) => store.setSelectedOverlayIdx(idx)}
-              onEditOverlayPhoto={(idx) => setEditingOverlayIdx(idx)}
+              onEditOverlayPhoto={(idx) => store.setEditingSlotIdx(idx + currentLayoutObj.slots)}
               onRemoveText={() => store.updateCurrentPageSettings({ textContent: '' })}
               onUpdateOverlayContent={(idx, content) => store.updateOverlay(idx, { content })}
               onUpdateTextContent={(content) => store.updateCurrentPageSettings({ textContent: content })}
@@ -323,31 +307,24 @@ export default function StepEditor() {
           onClose={() => store.setEditingSlotIdx(null)}
           onSave={(updated) => {
             if (store.editingSlotIdx !== null) {
-              store.updateImageInSlot(store.editingSlotIdx, updated)
+              if (store.editingSlotIdx >= currentLayoutObj.slots) {
+                const overlayIdx = store.editingSlotIdx - currentLayoutObj.slots
+                const overlay = currentPage?.overlays?.[overlayIdx]
+                if (overlay?.type === 'photo') {
+                  store.updateOverlay(overlayIdx, {
+                    imageId: overlay.imageId ?? updated.id,
+                    src: updated.src,
+                    name: updated.name,
+                    originalSrc: updated.originalSrc,
+                    fit: updated.fit,
+                    crop: updated.crop,
+                  })
+                }
+              } else {
+                store.updateImageInSlot(store.editingSlotIdx, updated)
+              }
             }
             store.setEditingSlotIdx(null)
-          }}
-        />
-      )}
-
-      {editingOverlayIdx !== null && (
-        <ImageEditorModal
-          image={getImageObjectForOverlay(editingOverlayIdx)}
-          slot={overlayEditorSlot}
-          onClose={() => setEditingOverlayIdx(null)}
-          onSave={(updated) => {
-            const overlay = currentPage?.overlays?.[editingOverlayIdx]
-            if (overlay?.type === 'photo') {
-              store.updateOverlay(editingOverlayIdx, {
-                imageId: overlay.imageId ?? updated.id,
-                src: updated.src,
-                name: updated.name,
-                originalSrc: updated.originalSrc,
-                fit: updated.fit,
-                crop: updated.crop,
-              })
-            }
-            setEditingOverlayIdx(null)
           }}
         />
       )}
