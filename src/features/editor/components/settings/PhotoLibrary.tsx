@@ -203,19 +203,13 @@ export default function PhotoLibrary({
             Used {usedCount}/{images.length}
           </span>
         </h4>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div className="photo-library-actions">
           <UploadArea onUpload={onUpload} compact={true} label="Upload" />
           <button onClick={() => setShowModal(true)} className="photo-library-auto-btn">
             ✨ Auto
           </button>
         </div>
       </div>
-
-      {images.length === 0 && (
-        <div className="photo-library-empty-state">
-           <UploadArea onUpload={onUpload} label="Upload Photos" />
-        </div>
-      )}
 
       {infoMessage && <div className="photo-library-info">{infoMessage}</div>}
 

@@ -156,6 +156,12 @@
   color: var(--text-muted);
 }
 
+.photo-library-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .photo-library-auto-btn {
   background: transparent;
   border: none;
