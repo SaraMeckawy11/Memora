@@ -35,6 +35,12 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   const [resizing, setResizing] = useState(false)
   const [resizeHandle, setResizeHandle] = useState(null)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const coverDragRef = useRef({
+    x: 0,
+    y: 0,
+    offsetX: 0,
+    offsetY: 0,
+  })
 
   // Track original src so we can revert after a destructive crop (dataURL)
   const originalSrcRef = useRef(image.originalSrc || image.src)
@@ -189,7 +195,13 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     } else if (fit === 'cover') {
       setDragging(true)
       setDragStart({ x: e.clientX, y: e.clientY })
-      e.target.setPointerCapture?.(e.pointerId)
+      coverDragRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        offsetX: offset.x,
+        offsetY: offset.y,
+      }
+      e.currentTarget.setPointerCapture?.(e.pointerId)
     }
   }
 
@@ -252,13 +264,12 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
         setDragStart({ x: e.clientX, y: e.clientY })
       }
     } else if (fit === 'cover' && dragging) {
-      const dx = e.clientX - dragStart.x
-      const dy = e.clientY - dragStart.y
-      setOffset((prev) => ({
-        x: clamp(prev.x + dx, 'x'),
-        y: clamp(prev.y + dy, 'y'),
-      }))
-      setDragStart({ x: e.clientX, y: e.clientY })
+      const dx = e.clientX - coverDragRef.current.x
+      const dy = e.clientY - coverDragRef.current.y
+      setOffset({
+        x: clamp(coverDragRef.current.offsetX + dx, 'x'),
+        y: clamp(coverDragRef.current.offsetY + dy, 'y'),
+      })
     }
   }
 
@@ -266,7 +277,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
     setDragging(false)
     setResizing(false)
     setResizeHandle(null)
-    e.target.releasePointerCapture?.(e.pointerId)
+    e.currentTarget.releasePointerCapture?.(e.pointerId)
   }
 
   /* ---------- CROP APPLY ---------- */
