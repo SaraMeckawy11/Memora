@@ -11,7 +11,7 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
   /* ---------- CONSTANTS ---------- */
   const MAX_PREVIEW_SIZE = 360
   const MIN_CROP_SIZE = 10 // Minimum crop size in pixels
-  const COVER_PAN_SCALE = 1.18
+  const COVER_PAN_SCALE = 1.45
 
   /* ---------- STATE ---------- */
   const [fit, setFit] = useState(image.fit || 'cover')
