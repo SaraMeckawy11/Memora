@@ -1,22 +1,22 @@
 /* ================= Layout ================= */
 .editor-card {
-  --layout-accent: #111827;
-  --layout-accent-soft: #f3f4f6;
-  --layout-border: #d8dce3;
-  --layout-text: #1f2937;
+  --layout-accent: var(--accent-solid, #0e5e57);
+  --layout-accent-soft: var(--accent-soft, #edf9f7);
+  --layout-border: rgba(31,168,154,0.24);
+  --layout-text: #141414;
 }
 
 .layout-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 0.6rem;
 }
 
 
 .layout-btn {
-  padding: 0.5rem;
-  min-height: 60px;
-  border-radius: 7px;
+  padding: 0.6rem 0.5rem;
+  min-height: 68px;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.7rem;
   font-weight: 500;
@@ -25,30 +25,36 @@
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
-  transition: all 0.15s ease;
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
   text-align: center;
 }
 
 .layout-btn.active {
-  background: linear-gradient(135deg, #ffffff 0%, #eef7ff 48%, #f3fbfa 100%);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.96) 0%, rgba(237,249,247,0.95) 52%, rgba(255,255,255,0.9) 100%);
   color: var(--layout-text);
-  border: 1px solid var(--layout-accent);
-  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+  border: 1px solid rgba(31,168,154,0.62);
+  box-shadow:
+    0 14px 28px -22px rgba(14,94,87,0.5),
+    0 0 0 3px rgba(168,232,224,0.2);
 }
 
 .layout-btn.inactive {
-  background-color: var(--layout-accent-soft);
+  background: rgba(20,20,20,0.035);
   color: var(--layout-text);
-  border: 1px solid transparent;
+  border: 1px solid rgba(20,20,20,0.04);
 }
 
 .layout-btn.inactive:hover {
   border-color: var(--layout-border);
-  background-color: #fff;
+  background: #fff;
   transform: translateY(-1px);
 }
 
 .layout-name {
+  font-family: "DM Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -114,17 +120,17 @@
 .layout-icon-box {
   width: 100%;
   height: 100%;
-  border-radius: 1px;
+  border-radius: 2px;
 }
 
 .layout-icon-box.active {
-  background-color: var(--layout-accent);
+  background: linear-gradient(135deg, var(--accent-start, #0e5e57), var(--accent-end, #3fbfb2));
 }
 
 .layout-icon-box.inactive {
-  background-color: #666;
+  background-color: rgba(20,20,20,0.58);
 }
 
 .layout-btn.inactive:hover .layout-icon-box.inactive {
-  background-color: #4b5563;
+  background-color: var(--layout-accent);
 }

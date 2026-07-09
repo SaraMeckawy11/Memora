@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(31,168,154,0.12);
 }
 
 .action-row:first-child {
@@ -43,15 +43,15 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 10px;
-  background: #f3f4f6;
-  color: #4b5563;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-solid);
   transition: all 0.2s ease;
 }
 
 .action-row:hover .action-icon {
-  background: #e5e7eb;
-  color: #111;
+  background: rgba(168,232,224,0.38);
+  color: #0e5e57;
 }
 
 .icon-danger {
@@ -73,7 +73,7 @@
 .action-title {
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text);
+  color: var(--text-default);
   line-height: 1.2;
 }
 
@@ -83,7 +83,7 @@
 
 .action-subtitle {
   font-size: 0.7rem;
-  color: #9ca3af; /* lighter gray */
+  color: #8a8680; /* lighter gray */
   line-height: 1.25;
 }
 
@@ -92,7 +92,7 @@
   font-size: 0.78rem; /* slightly larger to match standard */
   font-weight: 600;
   padding: 0.55rem 0.75rem; /* match other buttons */
-  border-radius: 10px; /* match other buttons */
+  border-radius: 999px; /* match other buttons */
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -101,13 +101,14 @@
 }
 
 .btn-action-primary {
-  background: #111; /* Consistent black */
+  background: #141414; /* Consistent black */
   color: #fff;
-  border: 1px solid #111;
+  border: 1px solid #141414;
 }
 
 .btn-action-primary:hover {
-  background: #000;
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+  border-color: transparent;
   transform: translateY(-1px);
 }
 
@@ -140,7 +141,7 @@
   position: absolute;
   cursor: pointer;
   top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #e5e7eb;
+  background-color: rgba(20,20,20,0.12);
   transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 99px; /* Pill shape */
   border: 1px solid rgba(0,0,0,0.05); /* Subtle border definition */
@@ -160,8 +161,8 @@
 }
 
 .switch-modern.checked .switch-slider {
-  background-color: #111; /* Match primary buttons */
-  border-color: #111;
+  background: linear-gradient(135deg, var(--accent-start), var(--accent-end)); /* Match primary buttons */
+  border-color: transparent;
 }
 
 .switch-modern.checked .switch-slider:before {
