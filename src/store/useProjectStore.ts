@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { createClient } from '@/utils/supabase/client';
+import { clearProject, loadProject, saveProject } from '@/app/utils/storage';
 import { ProjectState, PhotoBookPage, ProjectImage, EditorStep } from '@/types/project';
 
 // Lazily create the Supabase client on first use. Creating it at module
@@ -81,6 +82,13 @@ const initialState: ProjectState = {
 
 let historyStack: string[] = [];
 let historyIndex: number = -1;
+
+const persistUploadedImages = (images: ProjectImage[]) => {
+  if (typeof window === 'undefined') return;
+  saveProject({ uploadedImages: images }).catch((err) => {
+    console.error('Failed to save uploaded images locally:', err);
+  });
+};
 
 export const useProjectStore = create<BoundStore>()(
   immer(
@@ -230,7 +238,10 @@ export const useProjectStore = create<BoundStore>()(
           get().pushToHistory();
         }),
 
-        setUploadedImages: (images) => set({ uploadedImages: images }),
+        setUploadedImages: (images) => {
+          set({ uploadedImages: images });
+          persistUploadedImages(images);
+        },
 
         addImageToPage: (imageId, slotIdx) => set((state) => {
           const page = state.pages[state.currentPageIdx];
@@ -306,7 +317,14 @@ export const useProjectStore = create<BoundStore>()(
           if (get().autoSave) get().saveToSupabase();
         },
 
-        resetProject: () => set(initialState),
+        resetProject: () => {
+          set(initialState);
+          if (typeof window !== 'undefined') {
+            clearProject().catch((err) => {
+              console.error('Failed to clear local uploaded images:', err);
+            });
+          }
+        },
 
         setSelectedSlotIdx: (idx) => set({ selectedSlotIdx: idx }),
         setEditingSlotIdx: (idx) => set({ editingSlotIdx: idx }),
@@ -315,9 +333,37 @@ export const useProjectStore = create<BoundStore>()(
       {
         name: 'memora-project-storage',
         storage: createJSONStorage(() => localStorage),
+        onRehydrateStorage: () => (state) => {
+          if (typeof window === 'undefined') return;
+          loadProject()
+            .then((draft) => {
+              if (draft?.uploadedImages?.length) {
+                state?.setUploadedImages(draft.uploadedImages);
+              }
+            })
+            .catch((err) => {
+              console.error('Failed to load local uploaded images:', err);
+            });
+        },
+        merge: (persistedState, currentState) => {
+          const {
+            uploadedImages,
+            isSidebarOpen,
+            savingStatus,
+            ...persisted
+          } = (persistedState || {}) as Partial<ProjectState>;
+
+          return {
+            ...currentState,
+            ...persisted,
+            uploadedImages: currentState.uploadedImages,
+            isSidebarOpen: currentState.isSidebarOpen,
+            savingStatus: currentState.savingStatus,
+          };
+        },
         partialize: (state) => {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { isSidebarOpen, savingStatus, ...persisted } = state;
+          const { isSidebarOpen, savingStatus, uploadedImages, ...persisted } = state;
           return persisted as any;
         }
       }
