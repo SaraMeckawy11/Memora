@@ -201,14 +201,35 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
       e.preventDefault()
       setDragging(true)
       coverDraggingRef.current = true
-      setDragStart({ x: e.clientX, y: e.clientY })
-      coverDragRef.current = {
+      const start = {
         x: e.clientX,
         y: e.clientY,
         offsetX: offsetRef.current.x,
         offsetY: offsetRef.current.y,
       }
-      e.currentTarget.setPointerCapture?.(e.pointerId)
+      coverDragRef.current = start
+
+      const onCoverPointerMove = (event) => {
+        event.preventDefault()
+        const dx = event.clientX - start.x
+        const dy = event.clientY - start.y
+        setCoverOffset({
+          x: start.offsetX + dx,
+          y: start.offsetY + dy,
+        })
+      }
+
+      const onCoverPointerUp = () => {
+        setDragging(false)
+        coverDraggingRef.current = false
+        window.removeEventListener('pointermove', onCoverPointerMove)
+        window.removeEventListener('pointerup', onCoverPointerUp)
+        window.removeEventListener('pointercancel', onCoverPointerUp)
+      }
+
+      window.addEventListener('pointermove', onCoverPointerMove, { passive: false })
+      window.addEventListener('pointerup', onCoverPointerUp)
+      window.addEventListener('pointercancel', onCoverPointerUp)
     }
   }
 
@@ -269,20 +290,6 @@ export default function ImageEditorModal({ image, slot, onClose, onSave }) {
           return clampCropRect(newRect)
         })
         setDragStart({ x: e.clientX, y: e.clientY })
-      }
-    } else if (fit === 'cover' && coverDraggingRef.current) {
-      e.preventDefault()
-      const dx = e.clientX - coverDragRef.current.x
-      const dy = e.clientY - coverDragRef.current.y
-      setCoverOffset({
-        x: offsetRef.current.x + dx,
-        y: offsetRef.current.y + dy,
-      })
-      coverDragRef.current = {
-        x: e.clientX,
-        y: e.clientY,
-        offsetX: offsetRef.current.x,
-        offsetY: offsetRef.current.y,
       }
     }
   }
