@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import React, { useRef, useState, useEffect } from 'react'
 
 export default function PresetPreview({ preset, width, height }: { preset: any; width?: number; height?: number }) {
@@ -36,7 +36,9 @@ export default function PresetPreview({ preset, width, height }: { preset: any; 
         transform: 'translateZ(0)'
       }}
     >
-      {elements.map((el) => {
+      {elements.map((el, elIdx) => {
+        // Some preset data ships duplicate element ids -- key by id + index
+        const elKey = `${el.id}-${elIdx}`
         const style = {
           position: 'absolute',
           left: el.x * scale,
@@ -54,7 +56,7 @@ export default function PresetPreview({ preset, width, height }: { preset: any; 
 
         if (el.type === 'text') {
           return (
-            <div key={el.id} style={{
+            <div key={elKey} style={{
               ...style,
               color: el.color || '#000',
               fontSize: (el.fontSize || 16) * scale,
@@ -73,7 +75,7 @@ export default function PresetPreview({ preset, width, height }: { preset: any; 
 
         if (el.type === 'image') {
           return (
-            <div key={el.id} style={style}>
+            <div key={elKey} style={style}>
               <img 
                 src={el.src} 
                 alt="" 
@@ -100,14 +102,14 @@ export default function PresetPreview({ preset, width, height }: { preset: any; 
           if (el.shapeType === 'circle') (shapeStyle as any).borderRadius = '50%'
           if (el.shapeType === 'triangle') (shapeStyle as any).clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)'
           
-          return <div key={el.id} style={shapeStyle as React.CSSProperties} />
+          return <div key={elKey} style={shapeStyle as React.CSSProperties} />
         }
 
         if (el.type === 'drawing') {
           const viewBoxW = el.originalWidth || el.width
           const viewBoxH = el.originalHeight || el.height
           return (
-            <div key={el.id} style={style}>
+            <div key={elKey} style={style}>
               <svg width="100%" height="100%" viewBox={`0 0 ${viewBoxW} ${viewBoxH}`} style={{ overflow: 'visible' }}>
                 <path
                   d={el.path}

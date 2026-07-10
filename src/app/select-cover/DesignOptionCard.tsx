@@ -8,7 +8,7 @@ export default function DesignOptionCard() {
 
   return (
     <div className="design-option-wrapper">
-      <button className="btn-select" onClick={() => router.push('/cover')}>
+      <button className="btn-select" onClick={() => router.push('/cover?custom=1')}>
         Create Custom Cover
         <svg className="icon-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>

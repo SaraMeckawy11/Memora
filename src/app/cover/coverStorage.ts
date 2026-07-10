@@ -3,6 +3,8 @@
 // so the designed cover actually reaches the order.
 
 export const COVER_STORAGE_KEY = 'memoraCoverProject'
+// 'preset' (locked layout, text-only editing) or 'custom' (guided builder)
+export const COVER_MODE_KEY = 'memoraCoverMode'
 
 export interface SavedCoverDesign {
   front: { elements: any[]; backgroundColor: string }

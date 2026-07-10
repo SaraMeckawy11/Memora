@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { COVER_STORAGE_KEY } from '../coverStorage';
+import { COVER_STORAGE_KEY, COVER_MODE_KEY } from '../coverStorage';
 
-export function useProjectPersistence(currentState, canvasSettings, updateState, setCanvasSettings) {
+export function useProjectPersistence(currentState, canvasSettings, updateState, setCanvasSettings, mode = null) {
   const [lastSaved, setLastSaved] = useState(null);
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   // Default to FALSE to prevent overwriting saved data with initial defaults
@@ -22,13 +22,16 @@ export function useProjectPersistence(currentState, canvasSettings, updateState,
         updatedAt: new Date().toISOString()
       };
       localStorage.setItem(COVER_STORAGE_KEY, JSON.stringify(projectData));
+      // Record which editor mode produced this save (written ONLY here so a
+      // double-run of the page's init effect can't corrupt the load decision)
+      if (mode) localStorage.setItem(COVER_MODE_KEY, mode);
       setLastSaved(new Date());
       setIsAutoSaving(false);
     } catch (error) {
       console.error('Error auto-saving project:', error);
       setIsAutoSaving(false);
     }
-  }, []);
+  }, [mode]);
 
   // Auto-save effect
   useEffect(() => {
