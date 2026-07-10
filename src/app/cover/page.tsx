@@ -331,7 +331,7 @@ function CoverEditorContent() {
       ) : (
         <div className="simple-cover-body">
           <CoverCanvas
-            side={activeSide}
+            side={activeSide as 'front' | 'back'}
             elements={elements}
             backgroundColor={backgroundColor}
             canvasSettings={effectiveCanvasSettings}
@@ -352,7 +352,7 @@ function CoverEditorContent() {
             />
           ) : (
             <CustomCoverPanel
-              side={activeSide}
+              side={activeSide as 'front' | 'back'}
               elements={elements}
               selectedId={selectedElId}
               onSelect={setSelectedElId}

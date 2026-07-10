@@ -7,16 +7,32 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
-    // Basic validation
-    if (!body.customer || !body.deliveryAddress || !body.bookSize) {
+    const requiredCustomer = ['name', 'email', 'phone'];
+    const requiredAddress = ['street', 'city', 'governorate'];
+    const validProducts = ['Hardcover', 'Softcover'];
+    const product = body.product || body.coverConfig?.product || 'Softcover';
+    const pageCount = Array.isArray(body.pages) ? body.pages.length : Number(body.pageCount) || 0;
+
+    if (
+      !body.customer || !body.deliveryAddress || !body.bookSize ||
+      requiredCustomer.some(field => !String(body.customer[field] || '').trim()) ||
+      requiredAddress.some(field => !String(body.deliveryAddress[field] || '').trim())
+    ) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+    if (!/^\S+@\S+\.\S+$/.test(String(body.customer.email)) || !validProducts.includes(product)) {
+      return NextResponse.json({ error: 'Invalid order details' }, { status: 400 });
+    }
+    if (pageCount < 1 || pageCount > 300) {
+      return NextResponse.json({ error: 'Page count must be between 1 and 300' }, { status: 400 });
     }
 
     // Authoritative price — computed server-side, never taken from the client
     const pricing = computeOrderPricing({
-      productName: body.product || body.coverConfig?.product || 'Softcover',
-      pageCount: Array.isArray(body.pages) ? body.pages.length : Number(body.pageCount) || 0,
+      productName: product,
+      pageCount,
       quantity: Number(body.quantity) || 1,
+      sizeName: body.bookSize,
     });
 
     // Map nested structure to flat Prisma model
@@ -43,7 +59,12 @@ export async function POST(req) {
       templateId: body.templateId,
       photoUrls: JSON.stringify(body.photoUrls || []),
       // Quantity lives inside coverConfig (no dedicated column in the schema)
-      coverConfig: JSON.stringify({ ...(body.coverConfig || {}), quantity: pricing.quantity }),
+      coverConfig: JSON.stringify({
+        ...(body.coverConfig || {}),
+        quantity: pricing.quantity,
+        pageCount,
+        pages: Array.isArray(body.pages) ? body.pages : [],
+      }),
 
       status: 'pending',
 

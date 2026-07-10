@@ -106,6 +106,10 @@
 
 .order-input-wide { grid-column: 1 / -1; }
 
+.order-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.order-field > span { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .08em; color: var(--muted); }
+.order-field > small { color: #8c2f26; font-size: 11px; }
+
 .order-form-grid input {
   width: 100%;
   padding: 12px 14px;
@@ -117,6 +121,7 @@
   border-radius: 4px;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
+.order-form-grid input[aria-invalid='true'] { border-color: #b3483d; background: #fff8f6; }
 .order-form-grid input:focus {
   outline: none;
   border-color: var(--turq-400);
@@ -166,6 +171,16 @@
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+.order-secure-note { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.order-readiness { margin: 12px 0 0; padding: 10px 11px; border: 1px solid #efd4cf; border-radius: 6px; background: #fff8f6; color: #6f2822; font-size: 12px; line-height: 1.45; }
+
+@media (max-width: 560px) {
+  .order-root { padding: 18px 12px 48px; }
+  .order-header { margin-bottom: 20px; }
+  .order-header .m-pill { display: none; }
+  .order-card { padding: 18px; border-radius: 12px; }
 }
 
 .order-toast {

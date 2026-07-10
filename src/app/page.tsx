@@ -6,6 +6,7 @@ import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import heroImage from "@/assets/memora-hero.jpg";
+import { LANDING_STARTING_PRICE } from "@/lib/pricing";
 import "@/styles/memora.css";
 
 if (typeof window !== "undefined") {
@@ -466,15 +467,15 @@ const LandingPage = () => {
         </div>
         <div className="m-themes__grid">
           {[
-            { cls: "is-1", label: "Coastal", img: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=700&q=80&auto=format" },
-            { cls: "is-2", label: "Travel", img: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=700&q=80&auto=format" },
-            { cls: "is-3", label: "Adventure", img: "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?w=700&q=80&auto=format" },
+            { cls: "is-1", label: "Travel Adventures", img: "/backClouds.jpg", preset: "travel3" },
+            { cls: "is-2", label: "Our Wedding Day", img: "/backPinky.jpg", preset: "wedding" },
+            { cls: "is-3", label: "Baby Memories", img: "/backRoyalGreen.jpg", preset: "baby" },
           ].map((theme) => (
-            <article key={theme.label} className={`m-theme-card ${theme.cls}`}>
+            <Link href={`/cover?preset=${theme.preset}`} key={theme.label} className={`m-theme-card ${theme.cls}`}>
               <img src={theme.img} alt={`${theme.label} theme preview`} loading="lazy" />
-              <div className="m-theme-card__sticker">new</div>
+              <div className="m-theme-card__sticker">edit</div>
               <div className="m-theme-card__label">{theme.label}</div>
-            </article>
+            </Link>
           ))}
         </div>
       </section>
@@ -534,11 +535,11 @@ const LandingPage = () => {
           <div className="m-pricing__top">
             <div>
               <div className="m-pricing__plan">The Memora Book</div>
-              <div className="m-pricing__plan-sub">hardcover / 20 pages / lay-flat binding</div>
+              <div className="m-pricing__plan-sub">beautifully bound / made in Cairo / designed by you</div>
             </div>
             <div className="m-pricing__price">
               <span className="m-pricing__currency">EGP</span>
-              <span className="m-pricing__amount">299</span>
+              <span className="m-pricing__amount">{LANDING_STARTING_PRICE}</span>
               <span className="m-pricing__per">/ book</span>
             </div>
           </div>
@@ -564,9 +565,6 @@ const LandingPage = () => {
             Start your book
             <span className="m-btn-primary__arrow">→</span>
           </Link>
-          <div className="m-pricing__fine">
-            + EGP 15 / extra page / free shipping over EGP 800 / 30-day love guarantee
-          </div>
         </div>
       </section>
 

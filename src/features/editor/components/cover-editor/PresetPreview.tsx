@@ -1,6 +1,16 @@
 ﻿'use client'
 import React, { useRef, useState, useEffect } from 'react'
 
+const finiteNumber = (value: unknown, fallback = 0) => {
+  const number = Number(value)
+  return Number.isFinite(number) ? number : fallback
+}
+
+const normalizedOpacity = (value: unknown) => {
+  const opacity = finiteNumber(value, 100)
+  return opacity > 1 ? Math.min(100, Math.max(0, opacity)) / 100 : Math.min(1, Math.max(0, opacity))
+}
+
 export default function PresetPreview({ preset, width, height }: { preset: any; width?: number; height?: number }) {
   const containerRef = useRef(null)
   const [scale, setScale] = useState(0.1) // Lower default to prevent large flash before mount
@@ -10,7 +20,8 @@ export default function PresetPreview({ preset, width, height }: { preset: any; 
       if (containerRef.current) {
         const { width: currentWidth } = containerRef.current.getBoundingClientRect()
         const baseWidth = 893
-        setScale(currentWidth / baseWidth)
+        const nextScale = currentWidth / baseWidth
+        setScale(Number.isFinite(nextScale) && nextScale > 0 ? nextScale : 0.1)
       }
     }
 
@@ -39,15 +50,20 @@ export default function PresetPreview({ preset, width, height }: { preset: any; 
       {elements.map((el, elIdx) => {
         // Some preset data ships duplicate element ids -- key by id + index
         const elKey = `${el.id}-${elIdx}`
+        const elementWidth = Math.max(0, finiteNumber(el.width))
+        const fallbackHeight = el.type === 'text'
+          ? finiteNumber(el.fontSize, 16) * 1.5
+          : elementWidth
+        const elementHeight = Math.max(0, finiteNumber(el.height, fallbackHeight))
         const style = {
           position: 'absolute',
-          left: el.x * scale,
-          top: el.y * scale,
-          width: el.width * scale,
-          height: el.height * scale,
+          left: finiteNumber(el.x) * scale,
+          top: finiteNumber(el.y) * scale,
+          width: elementWidth * scale,
+          height: elementHeight * scale,
           transform: `rotate(${el.rotation || 0}deg) scaleX(${el.scaleX || 1}) scaleY(${el.scaleY || 1})`,
           zIndex: el.zIndex || 0,
-          opacity: (el.opacity !== undefined ? el.opacity : 100) / 100,
+          opacity: normalizedOpacity(el.opacity),
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

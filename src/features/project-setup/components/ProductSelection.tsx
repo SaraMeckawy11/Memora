@@ -1,11 +1,12 @@
 'use client'
 import { useEffect } from 'react'
 import { useProjectStore } from '@/store/useProjectStore'
+import { CHECKOUT_PRICING, formatPrice } from '@/lib/pricing'
 import '@/styles/setup/step-setup.css'
 
 const PRODUCTS = [
-  { id: 1, name: 'Hardcover', icon: '📕', description: 'Premium hardcover with dust jacket', price: 0 },
-  { id: 2, name: 'Softcover', icon: '📔', description: 'Flexible softcover binding', price: 0 },
+  { id: 1, name: 'Hardcover', icon: '📕', description: 'Premium rigid cover made for keepsakes', price: CHECKOUT_PRICING.covers.hardcover },
+  { id: 2, name: 'Softcover', icon: '📔', description: 'Lightweight, flexible everyday binding', price: CHECKOUT_PRICING.covers.softcover },
 ]
 
 export default function ProductSelection() {
@@ -43,7 +44,7 @@ export default function ProductSelection() {
             <h4 className="product-name">{product.name}</h4>
             <p className="product-desc">{product.description}</p>
             <p className="product-price">
-              {product.price === 0 ? 'Included' : `${product.price} EGP`}
+              {formatPrice(product.price)}
             </p>
           </div>
         ))}

@@ -48,6 +48,7 @@ export default function CoverCanvas({
 }: CoverCanvasProps) {
   const wrapRef = useRef<HTMLDivElement>(null)
   const [scale, setScale] = useState(0.2)
+  const [activeGuides, setActiveGuides] = useState<{ axis: 'x' | 'y'; position: number }[]>([])
   const scaleRef = useRef(scale)
   scaleRef.current = scale
   const dragRef = useRef<{ id: any; startX: number; startY: number; elX: number; elY: number } | null>(null)
@@ -90,10 +91,45 @@ export default function CoverCanvas({
       const maxX = W - (el.width || 0) * 0.2
       const minY = -(el.height || 0) * 0.8
       const maxY = H - (el.height || 0) * 0.2
-      onMoveElement?.(d.id, Math.max(minX, Math.min(maxX, nx)), Math.max(minY, Math.min(maxY, ny)))
+      const width = el.width || 0
+      const height = el.height || 0
+      const threshold = 7 / Math.max(s, 0.15)
+      const xTargets = [0, W / 2, W]
+      const yTargets = [0, H / 2, H]
+      elements.forEach(other => {
+        if (other.id === el.id) return
+        xTargets.push(other.x, other.x + (other.width || 0) / 2, other.x + (other.width || 0))
+        yTargets.push(other.y, other.y + (other.height || 0) / 2, other.y + (other.height || 0))
+      })
+
+      const snapAxis = (position: number, length: number, targets: number[]) => {
+        let best = { distance: Number.POSITIVE_INFINITY, position, guide: null as number | null }
+        for (const offset of [0, length / 2, length]) {
+          for (const target of targets) {
+            const distance = Math.abs(position + offset - target)
+            if (distance < best.distance && distance <= threshold) {
+              best = { distance, position: target - offset, guide: target }
+            }
+          }
+        }
+        return best
+      }
+
+      const snappedX = snapAxis(nx, width, xTargets)
+      const snappedY = snapAxis(ny, height, yTargets)
+      const guides: { axis: 'x' | 'y'; position: number }[] = []
+      if (snappedX.guide !== null) guides.push({ axis: 'x', position: snappedX.guide })
+      if (snappedY.guide !== null) guides.push({ axis: 'y', position: snappedY.guide })
+      setActiveGuides(guides)
+      onMoveElement?.(
+        d.id,
+        Math.max(minX, Math.min(maxX, snappedX.position)),
+        Math.max(minY, Math.min(maxY, snappedY.position)),
+      )
     }
     const up = () => {
       dragRef.current = null
+      setActiveGuides([])
       window.removeEventListener('pointermove', move)
       window.removeEventListener('pointerup', up)
       window.removeEventListener('pointercancel', up)
@@ -241,7 +277,26 @@ export default function CoverCanvas({
               : undefined
           }
         >
+          {interactive && <div className="cover-safe-area" aria-hidden="true" />}
           {elements.map(renderElement)}
+          {activeGuides.map(guide => (
+            <div
+              key={`${guide.axis}-${guide.position}`}
+              className={`cover-alignment-guide cover-alignment-guide--${guide.axis}`}
+              style={guide.axis === 'x' ? { left: guide.position } : { top: guide.position }}
+              aria-hidden="true"
+            />
+          ))}
+          {activeGuides.some(guide => guide.axis === 'x') && activeGuides.some(guide => guide.axis === 'y') && (
+            <div
+              className="cover-guide-intersection"
+              style={{
+                left: activeGuides.find(guide => guide.axis === 'x')?.position,
+                top: activeGuides.find(guide => guide.axis === 'y')?.position,
+              }}
+              aria-hidden="true"
+            />
+          )}
         </div>
       </div>
     </div>

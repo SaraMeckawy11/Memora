@@ -137,14 +137,16 @@ function CreatePageContent() {
             </>
           )}
 
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={step === 1 && (!state.selectedProduct || !state.selectedSize)}
-            className="bottom-nav-btn bottom-nav-btn--primary"
-          >
-            {step === 3 ? 'Checkout' : step === 2 ? 'Choose Cover' : 'Next'}
-          </button>
+          {step !== 3 && (
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={step === 1 && (!state.selectedProduct || !state.selectedSize)}
+              className="bottom-nav-btn bottom-nav-btn--primary"
+            >
+              {step === 2 ? 'Choose Cover' : 'Next'}
+            </button>
+          )}
         </div>
       </footer>
 

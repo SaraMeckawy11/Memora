@@ -25,6 +25,22 @@ export async function POST(req) {
        return NextResponse.json({ success: true, message: 'Order already paid', redirectProps: { success: true } });
     }
 
+    // Paymob cannot process a zero-value payment. While checkout pricing is
+    // configured as zero, complete the order locally and skip the gateway.
+    if (order.totalPrice <= 0) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          status: 'paid',
+          paymentMethod: 'complimentary',
+          amountCents: 0,
+          currency: 'EGP',
+          paidAt: new Date(),
+        },
+      });
+      return NextResponse.json({ success: true, freeOrder: true });
+    }
+
     // 1. Get Authentication Token
     const authToken = await getPaymobToken();
 

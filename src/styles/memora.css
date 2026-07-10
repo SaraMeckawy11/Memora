@@ -683,6 +683,7 @@ html, body { overflow-x: hidden; }
   box-shadow: 0 20px 40px -24px rgba(14,94,87,0.25);
   transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
 }
+.m-theme-card { display: block; text-decoration: none; color: inherit; }
 .m-theme-card img { width: 100%; height: 100%; object-fit: cover; }
 .m-theme-card::after {
   content: ""; position: absolute; inset: 0;
@@ -1097,5 +1098,12 @@ html, body { overflow-x: hidden; }
   .m-theme-card { height: 240px; }
   .m-editor__canvas, .m-pricing__card, .m-quote { padding: 20px; }
   .m-editor__photo { min-height: 120px; }
-  .m-footer__bar { align-items: flex-start; }
+  .m-footer { padding: 34px 18px 22px; text-align: center; }
+  .m-footer__inner { align-items: center; gap: 26px; }
+  .m-footer__brand { display: flex; flex-direction: column; align-items: center; }
+  .m-footer__tag { max-width: 320px; }
+  .m-footer__links { width: 100%; display: grid; grid-template-columns: 1fr 1fr; justify-content: stretch; gap: 10px; }
+  .m-footer__links a { padding: 10px 8px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.6); }
+  .m-footer__wordmark { font-size: clamp(62px, 24vw, 112px); line-height: .88; margin: 32px -10px 12px; }
+  .m-footer__bar { align-items: center; text-align: center; line-height: 1.6; letter-spacing: .14em; }
 }

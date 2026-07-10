@@ -10,6 +10,8 @@
   padding: 0 4px;
 }
 
+.review-kicker { margin-bottom: 8px; text-align: center; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: #13877c; }
+
 .review-title {
   text-align: center;
   margin: 0 0 8px;
@@ -74,6 +76,10 @@
   object-fit: cover;
 }
 
+.review-book-mock .cover-canvas-wrap,
+.review-book-mock .cover-canvas-outer { width: 100% !important; height: 100% !important; border: 0; border-radius: 0; box-shadow: none; }
+.review-edit-link { margin-top: 12px; color: #13877c; font-family: 'DM Mono', monospace; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
+
 .review-book-mock .placeholder {
   font-family: 'Clash Display', sans-serif;
   font-weight: 600;
@@ -124,6 +130,11 @@
   color: #13877c;
   text-decoration: underline;
 }
+
+.review-status { display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 999px; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; }
+.review-status--ready { color: #0e5e57; background: #e5f6f3; }
+.review-status--needed { color: #8c2f26; background: #f8e7e4; }
+.review-readiness { display: flex; flex-direction: column; gap: 3px; margin-top: 14px; padding: 11px 12px; border: 1px solid #efd4cf; border-radius: 6px; background: #fff8f6; color: #6f2822; font-size: 12px; line-height: 1.45; }
 
 .review-divider {
   border-bottom: 1.5px dashed #ede7dd;
@@ -197,6 +208,10 @@
 .review-pages-card {
   margin-bottom: 24px;
 }
+
+.review-pages-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.review-pages-head .review-summary-title { margin: 0; }
+.review-pages-head a { color: #13877c; font-family: 'DM Mono', monospace; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
 
 .review-pages-grid {
   display: grid;

@@ -121,7 +121,7 @@ export function CustomCoverPanel({
     <aside className="simple-panel">
       <h3 className="simple-panel-label">custom cover · {side}</h3>
       <p className="simple-panel-hint">
-        Add text and photos, then drag them on the cover to place them.
+        Add text and photos, then drag them into place. Turquoise guides mark aligned edges, centers, and intersections.
       </p>
 
       {/* Hidden file inputs */}
