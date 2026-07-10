@@ -8,6 +8,7 @@ import { SIZES } from '@/features/project-setup/components/SizeSelection'
 import { computeOrderPricing, formatPrice } from '@/lib/pricing'
 import { loadCoverDesign, SavedCoverDesign } from '@/app/cover/coverStorage'
 import CoverCanvas from '@/app/cover/components/CoverCanvas'
+import ReviewPagePreview from './ReviewPagePreview'
 import '@/styles/review/review.css'
 
 interface StepReviewProps {
@@ -18,7 +19,10 @@ interface StepReviewProps {
 
 export default function StepReview({ handleProceed, exportToPDF, isExporting }: StepReviewProps) {
   const store = useProjectStore()
-  const { pages, uploadedImages, selectedProduct, selectedSize, pageBgColor } = store
+  const {
+    pages, uploadedImages, selectedProduct, selectedSize, pageBgColor,
+    pageMargin, pageGutter, imageFitMode, imageBorderRadius,
+  } = store
   const selectedProductObj = PRODUCTS.find(product => product.id === selectedProduct)
   const selectedSizeObj = SIZES.find(size => size.id === selectedSize)
   const filledPages = pages.filter(page => page.images.some(Boolean)).length
@@ -37,6 +41,7 @@ export default function StepReview({ handleProceed, exportToPDF, isExporting }: 
     quantity: 1,
     sizeName: selectedSizeObj?.name,
   })
+  const pageAspect = selectedSizeObj ? selectedSizeObj.width / selectedSizeObj.height : 0.75
 
   const firstPhotoSrc = pages.reduce<string | null>((found, page) => {
     if (found) return found
@@ -119,16 +124,21 @@ export default function StepReview({ handleProceed, exportToPDF, isExporting }: 
           <Link href="/create?step=2">Edit pages</Link>
         </div>
         <div className="review-pages-grid">
-          {pages.map((page, index) => {
-            const imageId = page.images.find(Boolean)
-            const image = uploadedImages.find(item => String(item.id) === String(imageId))
-            return (
-              <div key={page.id} className="review-page-thumb" style={{ backgroundColor: page.pageBgColor || pageBgColor }}>
-                {image?.src ? <img src={image.src} alt={`Page ${index + 1}`} /> : <span>{page.type === 'text' ? 'Text page' : 'Empty'}</span>}
+          {pages.map((page, index) => (
+              <div key={page.id} className="review-page-thumb" style={{ aspectRatio: `${pageAspect}` }} aria-label={`Page ${index + 1} preview`}>
+                <ReviewPagePreview
+                  page={page}
+                  uploadedImages={uploadedImages}
+                  pageAspect={pageAspect}
+                  pageMargin={pageMargin}
+                  pageGutter={pageGutter}
+                  pageBgColor={pageBgColor}
+                  imageFitMode={imageFitMode}
+                  imageBorderRadius={imageBorderRadius}
+                />
                 <div className="review-page-num">{index + 1}</div>
               </div>
-            )
-          })}
+          ))}
         </div>
       </div>
     </div>
