@@ -212,7 +212,8 @@ export const useProjectStore = create<BoundStore>()(
 
         setCurrentPageIdx: (idx) => set({ currentPageIdx: idx }),
 
-        addPage: (atIdx, type = 'photo') => set((state) => {
+        addPage: (atIdx, type = 'photo') => {
+          set((state) => {
           const isTextPage = type === 'text';
           const newPage: PhotoBookPage = {
             id: `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
@@ -237,95 +238,123 @@ export const useProjectStore = create<BoundStore>()(
           const insertIdx = atIdx !== undefined ? atIdx : state.pages.length;
           state.pages.splice(insertIdx, 0, newPage);
           state.currentPageIdx = insertIdx;
+          });
           get().pushToHistory();
-        }),
+        },
 
-        removePage: (idx) => set((state) => {
-          state.pages.splice(idx, 1);
-          state.currentPageIdx = Math.max(0, Math.min(state.currentPageIdx, state.pages.length - 1));
+        removePage: (idx) => {
+          // Keep at least one page — removing the last one used to trigger the
+          // editor's auto-init effect, silently regenerating 10 blank pages
+          if (get().pages.length <= 1) return;
+          set((state) => {
+            state.pages.splice(idx, 1);
+            state.currentPageIdx = Math.max(0, Math.min(state.currentPageIdx, state.pages.length - 1));
+          });
           get().pushToHistory();
-        }),
+        },
 
-        duplicatePage: (idx) => set((state) => {
-          const pageToClone = state.pages[idx];
-          if (!pageToClone) return;
-          const newPage: PhotoBookPage = {
-            ...pageToClone,
-            id: `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-            textStyle: pageToClone.textStyle ? { ...pageToClone.textStyle } : undefined,
-            images: [...pageToClone.images]
-          };
-          state.pages.splice(idx + 1, 0, newPage);
-          state.currentPageIdx = idx + 1;
+        duplicatePage: (idx) => {
+          if (!get().pages[idx]) return;
+          set((state) => {
+            const pageToClone = state.pages[idx];
+            const newPage: PhotoBookPage = {
+              ...pageToClone,
+              id: `page-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+              textStyle: pageToClone.textStyle ? { ...pageToClone.textStyle } : undefined,
+              images: [...pageToClone.images]
+            };
+            state.pages.splice(idx + 1, 0, newPage);
+            state.currentPageIdx = idx + 1;
+          });
           get().pushToHistory();
-        }),
+        },
 
-        movePage: (from, to) => set((state) => {
-          const [moved] = state.pages.splice(from, 1);
-          state.pages.splice(to, 0, moved);
-          state.currentPageIdx = to;
+        // `to` is the absolute target index
+        movePage: (from, to) => {
+          const count = get().pages.length;
+          if (from === to || from < 0 || from >= count || to < 0 || to >= count) return;
+          set((state) => {
+            const [moved] = state.pages.splice(from, 1);
+            state.pages.splice(to, 0, moved);
+            state.currentPageIdx = to;
+          });
           get().pushToHistory();
-        }),
+        },
 
         setUploadedImages: (images) => {
           set({ uploadedImages: images });
           persistUploadedImages(images);
         },
 
-        addImageToPage: (imageId, slotIdx) => set((state) => {
-          const page = state.pages[state.currentPageIdx];
-          if (!page) return;
-          if (!page.images) page.images = [];
-          page.images[slotIdx] = imageId;
+        addImageToPage: (imageId, slotIdx) => {
+          if (!get().pages[get().currentPageIdx]) return;
+          set((state) => {
+            const page = state.pages[state.currentPageIdx];
+            if (!page.images) page.images = [];
+            page.images[slotIdx] = imageId;
+          });
           get().pushToHistory();
-        }),
+        },
 
-        removeImageFromPage: (slotIdx) => set((state) => {
-          const page = state.pages[state.currentPageIdx];
-          if (page?.images) {
-            page.images[slotIdx] = null;
-            get().pushToHistory();
-          }
-        }),
+        removeImageFromPage: (slotIdx) => {
+          if (!get().pages[get().currentPageIdx]?.images) return;
+          set((state) => {
+            state.pages[state.currentPageIdx].images[slotIdx] = null;
+          });
+          get().pushToHistory();
+        },
 
-        swapSlots: (idxA, idxB) => set((state) => {
-          const page = state.pages[state.currentPageIdx];
-          if (page?.images) {
+        swapSlots: (idxA, idxB) => {
+          if (!get().pages[get().currentPageIdx]?.images) return;
+          set((state) => {
+            const page = state.pages[state.currentPageIdx];
             const temp = page.images[idxA];
             page.images[idxA] = page.images[idxB];
             page.images[idxB] = temp;
-            get().pushToHistory();
-          }
-        }),
+          });
+          get().pushToHistory();
+        },
 
-        swapImages: (pIdxA, sIdxA, pIdxB, sIdxB) => set((state) => {
-          const pageA = state.pages[pIdxA];
-          const pageB = state.pages[pIdxB];
-          if (pageA?.images && pageB?.images) {
+        swapImages: (pIdxA, sIdxA, pIdxB, sIdxB) => {
+          if (!get().pages[pIdxA]?.images || !get().pages[pIdxB]?.images) return;
+          set((state) => {
+            const pageA = state.pages[pIdxA];
+            const pageB = state.pages[pIdxB];
             const temp = pageA.images[sIdxA];
             pageA.images[sIdxA] = pageB.images[sIdxB];
             pageB.images[sIdxB] = temp;
+          });
+          get().pushToHistory();
+        },
+
+        updateGlobalSettings: (settings) => {
+          set((state) => {
+            Object.assign(state, settings);
+          });
+          // Seed the undo baseline when the initial pages are created
+          if (settings.pages && historyStack.length === 0) {
             get().pushToHistory();
           }
-        }),
+        },
 
-        updateGlobalSettings: (settings) => set((state) => {
-          Object.assign(state, settings);
-        }),
+        updateCurrentPageSettings: (settings) => {
+          if (!get().pages[get().currentPageIdx]) return;
+          set((state) => {
+            Object.assign(state.pages[state.currentPageIdx], settings);
+          });
+          get().pushToHistory();
+        },
 
-        updateCurrentPageSettings: (settings) => set((state) => {
-          const page = state.pages[state.currentPageIdx];
-          if (page) {
-            Object.assign(page, settings);
-            get().pushToHistory();
-          }
-        }),
-
+        // NOTE: must be called AFTER a mutation commits (outside the immer
+        // recipe) — get() inside a recipe still returns the pre-commit state,
+        // which made every snapshot lag one edit behind.
         pushToHistory: () => {
           const { pages, autoSave, saveToSupabase } = get();
-          if (historyStack.length > 50) historyStack.shift();
+          // Drop any redo tail, then push the new snapshot
           historyStack = historyStack.slice(0, historyIndex + 1);
           historyStack.push(JSON.stringify(pages));
+          // Trim AFTER pushing so the index stays aligned with the stack
+          if (historyStack.length > 50) historyStack.shift();
           historyIndex = historyStack.length - 1;
           if (autoSave) saveToSupabase();
         },
@@ -348,6 +377,9 @@ export const useProjectStore = create<BoundStore>()(
 
         resetProject: () => {
           set(initialState);
+          // Undo history must not bleed into the next project
+          historyStack = [];
+          historyIndex = -1;
           if (typeof window !== 'undefined') {
             clearProject().catch((err) => {
               console.error('Failed to clear local uploaded images:', err);

@@ -11,6 +11,8 @@ import StepEditor from '@/features/editor/components/StepEditor'
 import StepReview from '@/features/review/components/StepReview'
 import { PRODUCTS } from '@/features/project-setup/components/ProductSelection'
 import { SIZES } from '@/features/project-setup/components/SizeSelection'
+import { LAYOUTS } from '@/features/editor/components/settings/LayoutSection'
+import { usePDFExporter } from '@/features/editor/components/pdf/PDFExporter'
 
 import '@/styles/CreatePage.css'
 import '@/styles/Loading.css'
@@ -25,12 +27,26 @@ function CreatePageContent() {
   const step = state.step as EditorStep
   const setStep = state.setStep
 
+  const { exportToPDF, isExporting } = usePDFExporter({
+    pages: state.pages,
+    uploadedImages: state.uploadedImages,
+    selectedSize: state.selectedSize,
+    sizes: SIZES,
+    layouts: LAYOUTS,
+    pageMargin: state.pageMargin,
+    pageGutter: state.pageGutter,
+    pageBgColor: state.pageBgColor,
+    imageFitMode: state.imageFitMode,
+  })
+
   // Sync step with URL
   useEffect(() => {
     const s = searchParams.get('step')
     if (s) {
       const parsed = parseInt(s)
-      if (parsed !== step) {
+      // Ignore invalid values (e.g. old links with ?step=editor) — an
+      // out-of-range step would render a blank page
+      if ([1, 2, 3].includes(parsed) && parsed !== step) {
         setStep(parsed as EditorStep)
       }
     }
@@ -144,8 +160,8 @@ function CreatePageContent() {
         {step === 3 && (
           <StepReview
             handleProceed={handleNext}
-            exportToPDF={() => alert('PDF Export Coming Soon!')}
-            isExporting={false}
+            exportToPDF={() => exportToPDF('print')}
+            isExporting={isExporting}
           />
         )}
       </div>

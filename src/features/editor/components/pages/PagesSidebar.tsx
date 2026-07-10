@@ -12,7 +12,7 @@ interface PagesSidebarProps {
   addPage: (atIdx?: number) => void;
   removePage: (idx: number) => void;
   duplicatePage: (idx: number) => void;
-  movePage: (from: number, offset: number) => void;
+  movePage: (from: number, to: number) => void;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   undo: () => void;
@@ -98,8 +98,8 @@ export default function PagesSidebar({
     e.preventDefault()
     if (draggedIndex === null) return
     if (draggedIndex !== targetIdx) {
-      // Swap immediately
-      movePage(draggedIndex, targetIdx - draggedIndex)
+      // movePage takes the absolute target index
+      movePage(draggedIndex, targetIdx)
       setDraggedIndex(targetIdx)
     }
   }
@@ -196,7 +196,7 @@ export default function PagesSidebar({
     if (card) {
       const targetIdx = parseInt(card.dataset.index || '0')
       if (!isNaN(targetIdx) && targetIdx !== draggedIndex) {
-        movePage(draggedIndex, targetIdx - draggedIndex)
+        movePage(draggedIndex, targetIdx)
         setDraggedIndex(targetIdx)
         // Vibrate on swap
         if (navigator.vibrate) navigator.vibrate(20)
@@ -239,16 +239,9 @@ export default function PagesSidebar({
   }
 
   const getSlotCount = (layoutId) => {
-    switch (layoutId) {
-      case 'single': return 1
-      case '2-horizontal': return 2
-      case '2-vertical': return 2
-      case '1-top-2-bottom': return 3
-      case '2-top-1-bottom': return 3
-      case '4-grid': return 4
-      case '6-grid': return 6
-      default: return 1
-    }
+    // Derive from the layout registry so new layouts can't fall out of sync
+    const layout = LAYOUTS.find(l => l.id === layoutId)
+    return layout?.slots ?? 1
   }
 
   const renderCardContent = (page, idx) => {
@@ -269,7 +262,7 @@ export default function PagesSidebar({
                 const target = e.target as HTMLInputElement;
                 const val = parseInt(target.value)
                 if (!isNaN(val) && val >= 1 && val <= pages.length && val !== idx + 1) {
-                  movePage(idx, (val - 1) - idx)
+                  movePage(idx, val - 1)
                   target.blur()
                 } else {
                   target.value = String(idx + 1)
@@ -280,7 +273,7 @@ export default function PagesSidebar({
               const target = e.target as HTMLInputElement;
               const val = parseInt(target.value)
               if (!isNaN(val) && val >= 1 && val <= pages.length && val !== idx + 1) {
-                movePage(idx, (val - 1) - idx)
+                movePage(idx, val - 1)
               } else {
                 target.value = String(idx + 1)
               }
@@ -487,7 +480,7 @@ export default function PagesSidebar({
                       className="preview-btn primary" 
                       onClick={handleExecuteSwap}
                       disabled={swapSelection.length !== 2}
-                      style={{ background: swapSelection.length === 2 ? '#2196F3' : '#ccc', borderColor: 'transparent' }}
+                      style={{ background: swapSelection.length === 2 ? '#141414' : '#ccc', borderColor: 'transparent' }}
                     >
                       Swap Images
                     </button>

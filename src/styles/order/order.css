@@ -1,0 +1,242 @@
+/* =========================================================
+   MEMORA — checkout / order pages
+   Inherits tokens from .memora-root (memora.css).
+   ========================================================= */
+
+.order-root {
+  min-height: 100vh;
+  background: var(--grad-soft);
+  padding: 32px clamp(16px, 4vw, 48px) 80px;
+}
+
+.order-header {
+  max-width: 1080px;
+  margin: 0 auto 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.order-title {
+  font-size: clamp(28px, 4vw, 44px);
+  margin: 0;
+}
+
+.order-main {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  grid-template-areas:
+    'summary totals'
+    'form totals';
+  gap: 20px;
+  align-items: start;
+}
+
+.order-summary { grid-area: summary; }
+.order-form { grid-area: form; }
+.order-totals { grid-area: totals; position: sticky; top: 24px; }
+
+@media (max-width: 860px) {
+  .order-main {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'summary' 'form' 'totals';
+  }
+  .order-totals { position: static; }
+}
+
+.order-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 24px;
+}
+
+.order-card-label {
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.2em;
+  margin: 0 0 16px;
+  text-transform: lowercase;
+}
+
+.order-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1.5px dashed var(--sand);
+  font-size: 16px;
+}
+.order-summary-row:last-child { border-bottom: none; }
+
+.order-qty {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--ink);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.order-qty button {
+  width: 34px;
+  height: 34px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 17px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.order-qty button:hover { background: var(--turq-50); }
+.order-qty span { min-width: 28px; text-align: center; font-size: 13px; }
+
+.order-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+@media (max-width: 560px) {
+  .order-form-grid { grid-template-columns: 1fr; }
+}
+
+.order-input-wide { grid-column: 1 / -1; }
+
+.order-form-grid input {
+  width: 100%;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--off-white);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.order-form-grid input:focus {
+  outline: none;
+  border-color: var(--turq-400);
+  background: var(--white);
+}
+.order-form-grid input::placeholder { color: var(--muted); }
+
+.order-form-hint {
+  margin: 14px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.order-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 15px;
+  border-bottom: 1.5px dashed var(--sand);
+}
+.order-total-row:last-of-type { border-bottom: none; }
+
+.order-total-final {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ink);
+  border-bottom: none;
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.order-pay-btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 18px;
+}
+.order-pay-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.order-toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1200;
+  background: var(--ink);
+  color: var(--white);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  padding: 12px 22px;
+  border-radius: 100px;
+}
+.order-toast--error { background: #8C2F26; }
+
+/* ---------- Result pages (success / failed) ---------- */
+
+.order-result-root {
+  min-height: 100vh;
+  background: var(--grad-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+}
+
+.order-result-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: clamp(32px, 6vw, 56px);
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+}
+
+.order-result-mark {
+  font-size: 28px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-bottom: 20px;
+  background: var(--turq-100);
+  color: var(--turq-ink);
+}
+.order-result-mark--error {
+  background: #F8E7E4;
+  color: #8C2F26;
+}
+
+.order-result-title {
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0 0 10px;
+}
+
+.order-result-text {
+  font-size: 17px;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+
+.order-result-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 12px 0 0;
+}
+
+.order-result-actions {
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}

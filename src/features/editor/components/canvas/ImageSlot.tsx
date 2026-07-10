@@ -125,7 +125,8 @@ export default function ImageSlot({
             className="editor-slot-remove"
             onClick={(e) => {
               e.stopPropagation()
-              onRemove(img.id)
+              // removeImageFromPage expects the slot index, not the image id
+              onRemove(idx)
             }}
           >
             ×

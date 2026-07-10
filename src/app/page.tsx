@@ -246,7 +246,7 @@ const LandingPage = () => {
           <div className="m-nav__actions">
             <Link href="/create" className="m-nav__cta">
               <span>Get started</span>
-              <span className="m-nav__cta-arrow">-&gt;</span>
+              <span className="m-nav__cta-arrow">→</span>
             </Link>
             <button
               type="button"
@@ -300,7 +300,7 @@ const LandingPage = () => {
               >
                 <span className="m-drawer__idx">0{index + 1}</span>
                 {link.label}
-                <span className="m-drawer__arrow" aria-hidden="true">-&gt;</span>
+                <span className="m-drawer__arrow" aria-hidden="true">→</span>
               </Link>
             ))}
           </nav>
@@ -308,7 +308,7 @@ const LandingPage = () => {
           <div className="m-drawer__foot">
             <Link href="/create" className="m-btn-primary m-drawer__cta" onClick={() => setMenuOpen(false)}>
               Create your book
-              <span className="m-btn-primary__arrow">-&gt;</span>
+              <span className="m-btn-primary__arrow">→</span>
             </Link>
             <div className="m-drawer__meta">
               <a href="mailto:hello@memora.app">hello@memora.app</a>
@@ -343,7 +343,7 @@ const LandingPage = () => {
             <div className="m-hero__ctas">
               <Link href="/create" className="m-btn-primary hero-cta">
                 Create your book
-                <span className="m-btn-primary__arrow">-&gt;</span>
+                <span className="m-btn-primary__arrow">→</span>
               </Link>
               <Link href="#themes" className="m-btn-secondary hero-cta" onClick={(e) => handleAnchor(e, "#themes")}>
                 See examples
@@ -357,7 +357,7 @@ const LandingPage = () => {
               </div>
               <div className="hero-stat__sep" aria-hidden="true" />
               <div className="hero-stat">
-                <div className="hero-stat__num">4.9<span>*</span></div>
+                <div className="hero-stat__num">4.9<span>✦</span></div>
                 <div className="hero-stat__label">avg. rating</div>
               </div>
               <div className="hero-stat__sep" aria-hidden="true" />
@@ -378,7 +378,7 @@ const LandingPage = () => {
                 priority
               />
               <div className="m-hero__badge">
-                <span className="m-hero__badge-k">*</span>
+                <span className="m-hero__badge-k">✦</span>
                 <span>premium paper / hand-stitched</span>
               </div>
             </div>
@@ -487,7 +487,7 @@ const LandingPage = () => {
         <div className="m-quotes__grid">
           {[
             {
-              q: "I cried opening it. My whole summer in Greece, sitting on my coffee table. Worth every pound.",
+              q: "I cried opening it. My whole summer in Greece, sitting on my coffee table. Worth every penny.",
               n: "Layla H.",
               l: "Cairo, EG",
             },
@@ -503,7 +503,7 @@ const LandingPage = () => {
             },
           ].map((quote) => (
             <article key={quote.n} className="m-quote">
-              <span className="m-quote__rating">*****</span>
+              <span className="m-quote__rating">✦✦✦✦✦</span>
               <p className="m-quote__text">"{quote.q}"</p>
               <div className="m-quote__author">
                 <span className="m-quote__avatar" aria-hidden="true">{quote.n.charAt(0)}</span>
@@ -562,7 +562,7 @@ const LandingPage = () => {
 
           <Link href="/create" className="m-pricing__btn">
             Start your book
-            <span className="m-btn-primary__arrow">-&gt;</span>
+            <span className="m-btn-primary__arrow">→</span>
           </Link>
           <div className="m-pricing__fine">
             + EGP 15 / extra page / free shipping over EGP 800 / 30-day love guarantee

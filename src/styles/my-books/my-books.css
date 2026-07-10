@@ -1,0 +1,223 @@
+/* =========================================================
+   MEMORA — My Books library page
+   Inherits tokens from .memora-root (memora.css).
+   ========================================================= */
+
+.mybooks-root {
+  min-height: 100vh;
+  background: var(--grad-soft);
+  display: flex;
+  flex-direction: column;
+}
+
+.mybooks-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px clamp(16px, 4vw, 32px);
+}
+
+.mybooks-logo {
+  font-family: 'Clash Display', 'Helvetica Neue', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.mybooks-container {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 16px clamp(16px, 4vw, 32px) 80px;
+}
+
+.mybooks-header {
+  margin-bottom: 32px;
+}
+
+.mybooks-title {
+  font-size: clamp(28px, 4vw, 44px);
+  margin: 0 0 6px;
+}
+
+.mybooks-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 16px;
+}
+
+.mybooks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.mybooks-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mybooks-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px -18px rgba(20, 20, 20, 0.35);
+}
+
+.mybooks-cover {
+  aspect-ratio: 4 / 3;
+  background: var(--turq-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+.mybooks-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mybooks-cover-placeholder {
+  text-align: center;
+  color: var(--muted);
+}
+.mybooks-cover-placeholder .mark {
+  font-size: 30px;
+  color: var(--turq-400);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.mybooks-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  border-radius: 100px;
+  border: 1px solid var(--ink);
+  background: var(--white);
+  color: var(--ink);
+}
+.mybooks-badge--ready {
+  background: var(--turq-100);
+  border-color: var(--turq-ink);
+  color: var(--turq-ink);
+}
+
+.mybooks-info {
+  padding: 18px;
+}
+
+.mybooks-name {
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  font-size: 17px;
+  margin: 0 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mybooks-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.mybooks-date {
+  margin: 0 0 16px;
+  font-size: 13px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.mybooks-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.mybooks-action {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: 100px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.mybooks-action--primary {
+  background: var(--ink);
+  color: var(--white);
+  border: 1px solid var(--ink);
+}
+.mybooks-action--primary:hover { background: var(--turq-600); border-color: var(--turq-600); }
+.mybooks-action--ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+.mybooks-action--ghost:hover { border-color: var(--ink); }
+.mybooks-action--danger {
+  flex: 0 0 auto;
+  background: transparent;
+  color: #8C2F26;
+  border: 1px solid rgba(140, 47, 38, 0.4);
+}
+.mybooks-action--danger:hover { border-color: #8C2F26; background: rgba(140, 47, 38, 0.05); }
+
+.mybooks-empty {
+  text-align: center;
+  padding: 80px 24px;
+  background: var(--white);
+  border: 1.5px dashed var(--sand);
+  border-radius: 6px;
+}
+.mybooks-empty .mark {
+  font-size: 34px;
+  color: var(--turq-400);
+  display: block;
+  margin-bottom: 16px;
+}
+.mybooks-empty h2 {
+  font-family: 'Clash Display', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+.mybooks-empty p {
+  margin: 0 auto 28px;
+  color: var(--muted);
+  font-style: italic;
+  max-width: 400px;
+}
+
+.mybooks-loading {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-style: italic;
+}

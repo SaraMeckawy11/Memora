@@ -7,6 +7,14 @@ import { ShapeElement } from './draggable-components/ShapeElement'
 import { DrawingElement } from './draggable-components/DrawingElement'
 import { ResizeHandleOverlay } from './draggable-components/ResizeHandleOverlay'
 
+// Opacity is stored as 0-100 by presets and 0-1 by some toolbar panels
+const normalizeOpacity = (value?: number) => {
+  if (value === undefined || value === null) return 1
+  const v = Number(value)
+  if (!Number.isFinite(v)) return 1
+  return v > 1 ? Math.min(100, v) / 100 : Math.max(0, v)
+}
+
 export default function DraggableElement({
   element,
   isSelected,
@@ -200,7 +208,11 @@ export default function DraggableElement({
     zIndex: element.zIndex || 1,
     transform: `rotate(${element.rotation || 0}deg)`,
     // backgroundColor handled in component for shapes
-    border: isSelected ? '1px dashed #3b82f6' : 'none',
+    border: isSelected ? '1px dashed #13877C' : 'none',
+    // Text opacity: shapes/images/drawings apply it inside their own renderers,
+    // but TextElement doesn't — without this, preset text opacity shows in the
+    // select-cover thumbnail yet renders fully opaque in the editor/export.
+    ...(effectiveElement.type === 'text' ? { opacity: normalizeOpacity(effectiveElement.opacity) } : {}),
     cursor: isDragging ? 'grabbing' : 'grab',
     position: 'absolute',
     display: 'flex',

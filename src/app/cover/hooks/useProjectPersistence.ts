@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { COVER_STORAGE_KEY } from '../coverStorage';
 
 export function useProjectPersistence(currentState, canvasSettings, updateState, setCanvasSettings) {
   const [lastSaved, setLastSaved] = useState(null);
@@ -20,7 +21,7 @@ export function useProjectPersistence(currentState, canvasSettings, updateState,
         version: '1.2',
         updatedAt: new Date().toISOString()
       };
-      localStorage.setItem('memoraCoverProject', JSON.stringify(projectData));
+      localStorage.setItem(COVER_STORAGE_KEY, JSON.stringify(projectData));
       setLastSaved(new Date());
       setIsAutoSaving(false);
     } catch (error) {
@@ -55,9 +56,16 @@ export function useProjectPersistence(currentState, canvasSettings, updateState,
     alert('Project saved successfully!');
   };
 
+  // Immediate save (no alert) — used before navigating away so a pending
+  // 2s-debounced autosave can't be lost
+  const flushSave = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    saveToStorage(currentState, canvasSettings);
+  }, [currentState, canvasSettings, saveToStorage]);
+
   const handleLoadProject = useCallback(() => {
     try {
-      const savedData = localStorage.getItem('memoraCoverProject');
+      const savedData = localStorage.getItem(COVER_STORAGE_KEY);
       if (savedData) {
         const projectData = JSON.parse(savedData);
         
@@ -102,7 +110,7 @@ export function useProjectPersistence(currentState, canvasSettings, updateState,
 
   const handleResetProject = () => {
     if (window.confirm('Are you sure you want to reset your project? This will clear all your work.')) {
-      localStorage.removeItem('memoraCoverProject');
+      localStorage.removeItem(COVER_STORAGE_KEY);
       
       const emptyState = {
         front: { elements: [], backgroundColor: '#ffffff' },
@@ -116,10 +124,11 @@ export function useProjectPersistence(currentState, canvasSettings, updateState,
     }
   };
 
-  return { 
-    handleSaveProject, 
-    handleLoadProject, 
+  return {
+    handleSaveProject,
+    handleLoadProject,
     handleResetProject,
+    flushSave,
     lastSaved,
     isAutoSaving,
     isAutoSaveEnabled,

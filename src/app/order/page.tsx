@@ -1,23 +1,36 @@
 'use client'
-import Link from 'next/link'
-import { useState, useCallback } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useProjectStore } from '@/store/useProjectStore'
+import { computeOrderPricing } from '@/lib/pricing'
+import { loadCoverDesign } from '@/app/cover/coverStorage'
 
 import { PRODUCTS } from '@/features/project-setup/components/ProductSelection'
 import { SIZES } from '@/features/project-setup/components/SizeSelection'
+import '@/styles/memora.css'
+import '@/styles/order/order.css'
+
+const REQUIRED_FIELDS = [
+  ['name', 'Full name'],
+  ['email', 'Email'],
+  ['phone', 'Phone'],
+  ['street', 'Street address'],
+  ['city', 'City'],
+  ['governorate', 'Governorate'],
+] as const
 
 export default function OrderPage() {
   const router = useRouter()
   const store = useProjectStore()
-  
+
   const selectedProductObj = PRODUCTS.find(p => p.id === store.selectedProduct)
   const selectedSizeObj = SIZES.find(s => s.id === store.selectedSize)
-  
+
   const [isProcessing, setIsProcessing] = useState(false)
-  const [notification, setNotification] = useState(null)
+  const processingRef = useRef(false)
+  const [notification, setNotification] = useState<{ message: string; type: string } | null>(null)
   const [quantity, setQuantity] = useState(1)
-  
+
   const [shippingInfo, setShippingInfo] = useState({
     name: '',
     email: '',
@@ -29,122 +42,170 @@ export default function OrderPage() {
     city: '',
     governorate: '',
     postalCode: '',
-    country: 'Egypt'
+    country: 'Egypt',
   })
 
-  // Calculate pricing
-  const basePrice = 499 
-  const productMultiplier = selectedProductObj?.name === 'Hardcover' ? 1.5 : 1
-  const pagePrice = store.pages.length * 10
-  const subtotal = (basePrice * productMultiplier + pagePrice) * quantity
-  const shipping = quantity * 50
-  const tax = (subtotal + shipping) * 0.14
-  const total = subtotal + shipping + tax
+  const productName = selectedProductObj?.name || 'Softcover'
+  const pricing = computeOrderPricing({
+    productName,
+    pageCount: store.pages.length,
+    quantity,
+  })
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setShippingInfo(prev => ({ ...prev, [name]: value }))
   }
 
-  const showNotification = useCallback((message, type = 'success') => {
+  const showNotification = useCallback((message: string, type = 'success') => {
     setNotification({ message, type })
-    setTimeout(() => setNotification(null), 3000)
+    setTimeout(() => setNotification(null), 3500)
   }, [])
 
   const handleCheckout = async () => {
-    const required = ['name', 'email', 'phone', 'street', 'city', 'governorate'];
-    for (const field of required) {
-        if (!shippingInfo[field]) {
-            showNotification(`Please fill in ${field}`, 'error');
-            return;
-        }
+    for (const [field, label] of REQUIRED_FIELDS) {
+      if (!shippingInfo[field].trim()) {
+        showNotification(`Please fill in ${label.toLowerCase()}`, 'error')
+        return
+      }
     }
-    
-    setIsProcessing(true);
+    if (!/^\S+@\S+\.\S+$/.test(shippingInfo.email)) {
+      showNotification('Please enter a valid email', 'error')
+      return
+    }
+
+    // Synchronous guard: state alone can't stop a double-click before re-render
+    if (processingRef.current) return
+    processingRef.current = true
+    setIsProcessing(true)
 
     try {
-        const orderPayload = {
-            sessionId: `session_${Date.now()}`,
-            customer: { ...shippingInfo },
-            bookSize: selectedSizeObj?.name,
-            photoUrls: store.uploadedImages.map(img => img.src), 
-            coverConfig: { product: selectedProductObj?.name },
-            totalPrice: total,
-            pages: store.pages
-        };
+      const orderPayload = {
+        sessionId: `session_${Date.now()}`,
+        customer: {
+          name: shippingInfo.name.trim(),
+          email: shippingInfo.email.trim(),
+          phone: shippingInfo.phone.trim(),
+        },
+        deliveryAddress: {
+          street: shippingInfo.street.trim(),
+          building: shippingInfo.building.trim(),
+          floor: shippingInfo.floor.trim(),
+          apartment: shippingInfo.apartment.trim(),
+          city: shippingInfo.city.trim(),
+          governorate: shippingInfo.governorate.trim(),
+          postalCode: shippingInfo.postalCode.trim(),
+          country: shippingInfo.country,
+        },
+        bookSize: selectedSizeObj?.name,
+        photoUrls: store.uploadedImages.map(img => img.src),
+        // Include the designed cover so fulfillment can reproduce it
+        coverConfig: { product: productName, quantity, coverDesign: loadCoverDesign() },
+        // The server recomputes the price from these — it never trusts a total
+        product: productName,
+        pageCount: store.pages.length,
+        quantity,
+        pages: store.pages,
+      }
 
-        const createRes = await fetch('/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderPayload),
-        });
+      const createRes = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      })
 
-        if (!createRes.ok) throw new Error('Failed to create order');
-        const { orderId } = await createRes.json();
+      if (!createRes.ok) throw new Error('Failed to create order')
+      const { orderId } = await createRes.json()
 
-        const payRes = await fetch('/api/paymob/initiate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ orderId }),
-        });
+      const payRes = await fetch('/api/paymob/initiate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId }),
+      })
 
-        if (!payRes.ok) throw new Error('Failed to initiate payment');
-        const { iframeUrl } = await payRes.json();
-        window.location.href = iframeUrl;
+      if (!payRes.ok) throw new Error('Failed to initiate payment')
+      const payData = await payRes.json()
 
+      if (payData.iframeUrl) {
+        window.location.href = payData.iframeUrl
+      } else if (payData.success) {
+        // Order was already paid — skip the gateway
+        router.push(`/order/success?merchant_order_id=${orderId}&success=true`)
+      } else {
+        throw new Error('Payment could not be started')
+      }
     } catch (error) {
-        console.error('Checkout error:', error);
-        showNotification('Something went wrong. Please try again.', 'error');
-        setIsProcessing(false);
+      console.error('Checkout error:', error)
+      showNotification('Something went wrong. Please try again.', 'error')
+      processingRef.current = false
+      setIsProcessing(false)
     }
   }
 
   return (
-    <div className="order-page-root">
-       {/* UI code simplified for brevity but matching original structure */}
-       <header className="checkout-header">
-           <button onClick={() => router.push('/create')}>← Back to Editor</button>
-           <h2>Review & Order</h2>
-       </header>
+    <div className="memora-root order-root">
+      {notification && (
+        <div className={`order-toast ${notification.type === 'error' ? 'order-toast--error' : ''}`} role="alert">
+          {notification.message}
+        </div>
+      )}
 
-       <main className="checkout-main">
-           <section className="summary">
-                <h3>Summary</h3>
-                <p>{selectedProductObj?.name} - {selectedSizeObj?.name}</p>
-                <p>{store.pages.length} Pages</p>
-                <div className="quantity">
-                    <button onClick={() => setQuantity(Math.max(1, quantity-1))}>-</button>
-                    <span>{quantity}</span>
-                    <button onClick={() => setQuantity(quantity+1)}>+</button>
-                </div>
-           </section>
+      <header className="order-header">
+        <button className="m-btn-secondary" onClick={() => router.push('/create')} type="button">
+          ← back to editor
+        </button>
+        <h1 className="m-display order-title">Review &amp; Order</h1>
+        <span className="m-pill">secure checkout</span>
+      </header>
 
-           <section className="shipping-form">
-               {/* Form inputs mapping to shippingInfo... */}
-               <input name="name" value={shippingInfo.name} onChange={handleInputChange} placeholder="Name" />
-               <input name="email" value={shippingInfo.email} onChange={handleInputChange} placeholder="Email" />
-               {/* ... other inputs ... */}
-           </section>
+      <main className="order-main">
+        <section className="order-card order-summary">
+          <h2 className="m-mono order-card-label">your book</h2>
+          <div className="order-summary-row">
+            <span>{productName} · {selectedSizeObj?.name || 'A4 Portrait'}</span>
+            <span className="m-mono">{store.pages.length} pages</span>
+          </div>
+          <div className="order-summary-row order-qty-row">
+            <span>Quantity</span>
+            <div className="order-qty" role="group" aria-label="Quantity">
+              <button type="button" onClick={() => setQuantity(q => Math.max(1, q - 1))} aria-label="Decrease quantity">−</button>
+              <span className="m-mono">{quantity}</span>
+              <button type="button" onClick={() => setQuantity(q => Math.min(50, q + 1))} aria-label="Increase quantity">+</button>
+            </div>
+          </div>
+        </section>
 
-           <aside className="totals">
-               <div className="total-row"><span>Total</span><span>{total.toFixed(2)} EGP</span></div>
-               <button onClick={handleCheckout} disabled={isProcessing}>
-                   {isProcessing ? 'Processing...' : 'Pay Now'}
-               </button>
-           </aside>
-       </main>
-       
-       <style jsx>{`
-           .order-page-root { font-family: Inter, sans-serif; max-width: 1200px; margin: 0 auto; padding: 2rem; }
-           .checkout-header { display: flex; align-items: center; gap: 1rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
-           .checkout-main { display: grid; grid-template-columns: 1fr 350px; gap: 2rem; margin-top: 2rem; }
-           .summary, .shipping-form { background: #fff; padding: 1.5rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-           .totals { background: #f8fafc; padding: 1.5rem; border-radius: 12px; height: fit-content; }
-           .total-row { display: flex; justify-content: space-between; font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
-           input { width: 100%; padding: 0.75rem; margin-bottom: 1rem; border: 1px solid #e2e8f0; border-radius: 8px; }
-           button { cursor: pointer; padding: 0.75rem 1.5rem; border-radius: 8px; transition: all 0.2s; }
-           .btn-primary { background: #0ea5a9; color: white; border: none; }
-       `}</style>
+        <section className="order-card order-form">
+          <h2 className="m-mono order-card-label">shipping details</h2>
+          <div className="order-form-grid">
+            <input name="name" value={shippingInfo.name} onChange={handleInputChange} placeholder="Full name *" autoComplete="name" />
+            <input name="email" type="email" value={shippingInfo.email} onChange={handleInputChange} placeholder="Email *" autoComplete="email" />
+            <input name="phone" type="tel" value={shippingInfo.phone} onChange={handleInputChange} placeholder="Phone *" autoComplete="tel" />
+            <input name="street" value={shippingInfo.street} onChange={handleInputChange} placeholder="Street address *" autoComplete="street-address" className="order-input-wide" />
+            <input name="building" value={shippingInfo.building} onChange={handleInputChange} placeholder="Building" />
+            <input name="floor" value={shippingInfo.floor} onChange={handleInputChange} placeholder="Floor" />
+            <input name="apartment" value={shippingInfo.apartment} onChange={handleInputChange} placeholder="Apartment" />
+            <input name="city" value={shippingInfo.city} onChange={handleInputChange} placeholder="City *" autoComplete="address-level2" />
+            <input name="governorate" value={shippingInfo.governorate} onChange={handleInputChange} placeholder="Governorate *" autoComplete="address-level1" />
+            <input name="postalCode" value={shippingInfo.postalCode} onChange={handleInputChange} placeholder="Postal code" autoComplete="postal-code" />
+          </div>
+          <p className="order-form-hint m-serif">* required — we deliver across Egypt.</p>
+        </section>
+
+        <aside className="order-card order-totals">
+          <h2 className="m-mono order-card-label">total</h2>
+          <div className="order-total-row"><span>Subtotal</span><span className="m-mono">{pricing.subtotal.toFixed(2)} EGP</span></div>
+          <div className="order-total-row"><span>Shipping</span><span className="m-mono">{pricing.shipping.toFixed(2)} EGP</span></div>
+          <div className="order-total-row"><span>Tax (14%)</span><span className="m-mono">{pricing.tax.toFixed(2)} EGP</span></div>
+          <div className="order-total-row order-total-final">
+            <span>Total</span><span className="m-mono">{pricing.total.toFixed(2)} EGP</span>
+          </div>
+          <button className="m-btn-primary order-pay-btn" onClick={handleCheckout} disabled={isProcessing} type="button">
+            {isProcessing ? 'Processing…' : 'Pay now'}
+            {!isProcessing && <span className="m-btn-primary__arrow">→</span>}
+          </button>
+        </aside>
+      </main>
     </div>
   )
 }

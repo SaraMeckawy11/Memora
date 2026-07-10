@@ -1,14 +1,23 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { computeOrderPricing } from '@/lib/pricing';
+import { requireAdmin } from '@/lib/adminAuth';
 
 export async function POST(req) {
   try {
     const body = await req.json();
 
     // Basic validation
-    if (!body.customer || !body.deliveryAddress || !body.bookSize || !body.totalPrice) {
+    if (!body.customer || !body.deliveryAddress || !body.bookSize) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
+
+    // Authoritative price — computed server-side, never taken from the client
+    const pricing = computeOrderPricing({
+      productName: body.product || body.coverConfig?.product || 'Softcover',
+      pageCount: Array.isArray(body.pages) ? body.pages.length : Number(body.pageCount) || 0,
+      quantity: Number(body.quantity) || 1,
+    });
 
     // Map nested structure to flat Prisma model
     const orderData = {
@@ -33,13 +42,14 @@ export async function POST(req) {
       bookSize: body.bookSize,
       templateId: body.templateId,
       photoUrls: JSON.stringify(body.photoUrls || []),
-      coverConfig: JSON.stringify(body.coverConfig || {}),
-      
-      status: body.status || 'pending',
-      
+      // Quantity lives inside coverConfig (no dedicated column in the schema)
+      coverConfig: JSON.stringify({ ...(body.coverConfig || {}), quantity: pricing.quantity }),
+
+      status: 'pending',
+
       // Payment (initial)
       paymentMethod: body.payment?.method || 'paymob',
-      totalPrice: body.totalPrice,
+      totalPrice: pricing.total,
       
       // Promo
       promoCode: body.promo?.code,
@@ -59,6 +69,12 @@ export async function POST(req) {
 
 export async function GET(req) {
   try {
+    // Order listings expose customer PII — admin only
+    const authError = await requireAdmin();
+    if (authError) {
+      return NextResponse.json({ error: authError.error }, { status: authError.status });
+    }
+
     const { searchParams } = new URL(req.url);
     const status = searchParams.get('status');
     

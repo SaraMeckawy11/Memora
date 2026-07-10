@@ -186,13 +186,16 @@ export function usePDFExporter({
           const gutterInInches = (effectiveGutter || 0) * pxToIn
 
           /* ---------- Caption metrics ---------- */
-          const cs = page.captionStyle || {}
+          // Captions live in textContent/textStyle (CaptionSection); caption/captionStyle
+          // are legacy fields kept as fallback for old saved projects
+          const captionText = page.textContent || page.caption
+          const cs = page.textStyle || page.captionStyle || {}
           const capFontSize = (cs.fontSize || 9) * pxToPt
           const capColor = cs.color || '#000000'
           const capFontFamily = cs.fontFamily || 'Inter'
           const capPosition = cs.position || 'bottom'   // 'top' | 'bottom'
           const capAlignment = cs.alignment || 'center'  // 'left' | 'center' | 'right'
-          const hasCaption = !!page.caption
+          const hasCaption = !!captionText
 
           // Map caption font to jsPDF built-in
           let capPdfFont = 'helvetica'
@@ -208,7 +211,7 @@ export function usePDFExporter({
             pdf.setFontSize(capFontSize)
             pdf.setFont(capPdfFont)
             const maxCapW = size.width - marginInInches * 2
-            captionLines = pdf.splitTextToSize(page.caption, maxCapW > 0 ? maxCapW : 1)
+            captionLines = pdf.splitTextToSize(captionText, maxCapW > 0 ? maxCapW : 1)
             captionTotalH = captionLines.length * capLineH
           }
 
@@ -287,7 +290,16 @@ export function usePDFExporter({
             const imgRatio = imgW / imgH
             const slotRatio = slotW / slotH
 
-            const crop = imgData.crop
+            // Normalize crop the same way the canvas does: older saved states
+            // may store 0..1 fractions instead of 0-100 percent
+            const crop = (() => {
+              const c = imgData.crop
+              if (!c || ![c.x, c.y, c.w, c.h].every(Number.isFinite)) return null
+              const looksNormalized = c.w <= 1.5 && c.h <= 1.5 && c.x <= 1.5 && c.y <= 1.5
+              return looksNormalized
+                ? { x: c.x * 100, y: c.y * 100, w: c.w * 100, h: c.h * 100 }
+                : c
+            })()
             const fitMode = imgData.fit || imageFitMode || 'cover'
             
             const canvas = document.createElement('canvas')

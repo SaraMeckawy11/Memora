@@ -535,7 +535,7 @@ export default function EditorCanvas({
                     top: guide.type === 'horizontal' ? guide.pos : 0,
                     width: guide.type === 'vertical' ? 1 : '100%',
                     height: guide.type === 'horizontal' ? 1 : '100%',
-                    backgroundColor: '#ec4899', // Pink guide line
+                    backgroundColor: '#1FA89A', // Brand turquoise guide line
                     zIndex: 9999,
                     pointerEvents: 'none',
                     boxShadow: '0 0 4px rgba(255, 255, 255, 0.5)'

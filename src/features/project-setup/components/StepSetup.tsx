@@ -15,7 +15,7 @@ export default function StepSetup() {
         </span>
         <h2 className="setup-title">Let's set up your book.</h2>
         <p className="setup-subtitle">
-          Pick a cover style and a size to start with — you can change
+          Pick a book type and a size to start with — you can change
           everything later in the editor.
         </p>
       </div>

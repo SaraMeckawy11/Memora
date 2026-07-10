@@ -69,16 +69,6 @@ export function useZoomPan(wrapperRef, canvasSettings, searchParams) {
 
   useEffect(() => {
     const handleResize = () => {
-      if(isAutoFitMode) {
-        handleZoomToFit(true);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isAutoFitMode, canvasSettings]);
-
-  useEffect(() => {
-    const handleResize = () => {
       if (isAutoFitMode) handleZoomToFit(true);
     };
     window.addEventListener('resize', handleResize);

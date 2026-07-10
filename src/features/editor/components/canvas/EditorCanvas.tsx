@@ -622,6 +622,13 @@ export default function EditorCanvas({
     setResizeHandle(null)
   }
 
+  // Photo-page captions are stored as textContent/textStyle (see CaptionSection);
+  // `caption` is a legacy field kept as a fallback for old saved projects
+  const pageCaption = currentPage?.type !== 'text'
+    ? (currentPage?.textContent || (currentPage as any)?.caption)
+    : null
+  const effectiveCaptionPosition = currentPage?.textStyle?.position || captionPosition
+
   return (
     <div
       ref={canvasRef}
@@ -678,18 +685,18 @@ export default function EditorCanvas({
             <div className="editor-page-grid"></div>
           </>
         )}
-        {currentPage?.caption && captionPosition === 'top' && (
+        {currentPage?.type !== 'text' && pageCaption && effectiveCaptionPosition === 'top' && (
           <p
             className="editor-caption"
             style={{
-              fontSize: selectedFontSize,
-              color: selectedFontColor,
-              fontFamily: selectedFontFamily,
-              textAlign: captionAlignment as any,
+              fontSize: currentPage?.textStyle?.fontSize || selectedFontSize,
+              color: currentPage?.textStyle?.color || selectedFontColor,
+              fontFamily: currentPage?.textStyle?.fontFamily || selectedFontFamily,
+              textAlign: (currentPage?.textStyle?.alignment || captionAlignment) as any,
               marginBottom: pageGutter,
             }}
           >
-            {currentPage.caption}
+            {pageCaption}
           </p>
         )}
 
@@ -850,18 +857,18 @@ export default function EditorCanvas({
           )}
         </div>
 
-        {currentPage?.caption && captionPosition === 'bottom' && (
+        {currentPage?.type !== 'text' && pageCaption && effectiveCaptionPosition === 'bottom' && (
           <p
             className="editor-caption"
             style={{
-              fontSize: selectedFontSize,
-              color: selectedFontColor,
-              fontFamily: selectedFontFamily,
-              textAlign: captionAlignment as any,
+              fontSize: currentPage?.textStyle?.fontSize || selectedFontSize,
+              color: currentPage?.textStyle?.color || selectedFontColor,
+              fontFamily: currentPage?.textStyle?.fontFamily || selectedFontFamily,
+              textAlign: (currentPage?.textStyle?.alignment || captionAlignment) as any,
               marginTop: pageGutter,
             }}
           >
-            {currentPage.caption}
+            {pageCaption}
           </p>
         )}
       </div>

@@ -1,8 +1,12 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useProjectStore } from '@/store/useProjectStore'
 import { PRODUCTS } from '@/features/project-setup/components/ProductSelection'
 import { SIZES } from '@/features/project-setup/components/SizeSelection'
+import { computeOrderPricing } from '@/lib/pricing'
+import { hasCoverDesign } from '@/app/cover/coverStorage'
 
 interface StepReviewProps {
   handleProceed: () => void;
@@ -21,6 +25,16 @@ export default function StepReview({
   const selectedProductObj = PRODUCTS.find(p => p.id === selectedProduct)
   const selectedSizeObj = SIZES.find(s => s.id === selectedSize)
   const filledPages = pages.filter(p => p.images.length > 0).length
+
+  // Cover design lives in localStorage — read after mount to avoid SSR mismatch
+  const [coverDesigned, setCoverDesigned] = useState(false)
+  useEffect(() => setCoverDesigned(hasCoverDesign()), [])
+
+  const pricing = computeOrderPricing({
+    productName: selectedProductObj?.name || 'Softcover',
+    pageCount: pages.length,
+    quantity: 1,
+  })
 
   return (
     <div style={{ animation: 'fadeIn 0.3s ease' }}>
@@ -79,16 +93,39 @@ export default function StepReview({
               <span style={{ color: '#666' }}>Size:</span>
               <span style={{ fontWeight: 600 }}>{selectedSizeObj?.name}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.95rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.95rem' }}>
               <span style={{ color: '#666' }}>Pages:</span>
               <span style={{ fontWeight: 600 }}>{pages.length}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.95rem' }}>
+              <span style={{ color: '#666' }}>Cover:</span>
+              {coverDesigned ? (
+                <span style={{ fontWeight: 600 }}>
+                  Designed ✓{' '}
+                  <Link href="/cover" style={{ fontWeight: 400, fontSize: '0.85rem', textDecoration: 'underline' }}>
+                    edit
+                  </Link>
+                </span>
+              ) : (
+                <Link href="/select-cover" style={{ fontWeight: 600, textDecoration: 'underline' }}>
+                  Design your cover →
+                </Link>
+              )}
             </div>
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 600 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.95rem', color: '#666' }}>
               <span>Subtotal:</span>
-              <span>${selectedProductObj?.price.toFixed(2)}</span>
+              <span>{pricing.subtotal.toFixed(2)} EGP</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.95rem', color: '#666' }}>
+              <span>Shipping + tax:</span>
+              <span>{(pricing.shipping + pricing.tax).toFixed(2)} EGP</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 600 }}>
+              <span>Total:</span>
+              <span>{pricing.total.toFixed(2)} EGP</span>
             </div>
           </div>
 

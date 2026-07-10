@@ -5,11 +5,16 @@ export async function POST(req) {
   try {
     const { password } = await req.json();
 
+    if (!process.env.ADMIN_PASSWORD || !process.env.JWT_SECRET) {
+      console.error('ADMIN_PASSWORD / JWT_SECRET not configured — admin login disabled');
+      return NextResponse.json({ error: 'Admin login is not configured' }, { status: 500 });
+    }
+
     if (password !== process.env.ADMIN_PASSWORD) {
       return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
     }
 
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret');
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const token = await new SignJWT({ role: 'admin' })
       .setProtectedHeader({ alg: 'HS256' })
       .setExpirationTime('24h')

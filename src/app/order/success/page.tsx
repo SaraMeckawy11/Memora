@@ -2,39 +2,54 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import '@/styles/memora.css'
+import '@/styles/order/order.css'
 
 function SuccessContent() {
   const searchParams = useSearchParams()
-  // Paymob redirects with query params
+  // Paymob redirects back with these query params
   const orderId = searchParams.get('merchant_order_id')
   const success = searchParams.get('success')
 
-  return (
-    <div className="bg-white min-h-screen flex flex-col items-center justify-center px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-      <div className="mx-auto max-w-max">
-        <main className="sm:flex">
-          <div className="sm:ml-6">
-            <div className="sm:border-l sm:border-gray-200 sm:pl-6">
-              <h1 className="text-4xl font-bold tracking-tight text-green-600 sm:text-5xl">Order Confirmed!</h1>
-              <p className="mt-1 text-base text-gray-500">Thank you for your purchase.</p>
-              {orderId && <p className="mt-2 text-sm text-gray-500">Order ID: {orderId}</p>}
-            </div>
-            <div className="mt-10 flex space-x-3 sm:border-l sm:border-transparent sm:pl-6">
-              <Link
-                href="/"
-                className="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Go back home
-              </Link>
-              <Link
-                href="/my-books"
-                className="inline-flex items-center rounded-md border border-transparent bg-indigo-100 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                View My Books
-              </Link>
-            </div>
+  // Paymob sends success=true/false as strings; only "false" means failure
+  const failed = success === 'false'
+
+  if (failed) {
+    return (
+      <div className="memora-root order-result-root">
+        <div className="order-result-card">
+          <div className="order-result-mark order-result-mark--error">✕</div>
+          <h1 className="m-display order-result-title">Payment didn&rsquo;t go through</h1>
+          <p className="m-serif order-result-text">
+            Your card wasn&rsquo;t charged. You can try again whenever you&rsquo;re ready.
+          </p>
+          {orderId && <p className="m-mono order-result-meta">order {orderId}</p>}
+          <div className="order-result-actions">
+            <Link href="/order" className="m-btn-primary">
+              Try again <span className="m-btn-primary__arrow">→</span>
+            </Link>
+            <Link href="/" className="m-btn-secondary">back home</Link>
           </div>
-        </main>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="memora-root order-result-root">
+      <div className="order-result-card">
+        <div className="order-result-mark">✦</div>
+        <h1 className="m-display order-result-title">Order confirmed</h1>
+        <p className="m-serif order-result-text">
+          Thank you — your book is on its way to the printer.
+        </p>
+        {orderId && <p className="m-mono order-result-meta">order {orderId}</p>}
+        <div className="order-result-actions">
+          <Link href="/my-books" className="m-btn-primary">
+            View my books <span className="m-btn-primary__arrow">→</span>
+          </Link>
+          <Link href="/" className="m-btn-secondary">back home</Link>
+        </div>
       </div>
     </div>
   )
@@ -42,7 +57,7 @@ function SuccessContent() {
 
 export default function OrderSuccess() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<div className="memora-root order-result-root">Loading…</div>}>
       <SuccessContent />
     </Suspense>
   )

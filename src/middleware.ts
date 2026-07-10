@@ -28,7 +28,9 @@ export async function middleware(request) {
     }
 
     try {
-      const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'secret');
+      // Fail closed: without a configured secret, no token can be trusted
+      if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not configured');
+      const secret = new TextEncoder().encode(process.env.JWT_SECRET);
       await jwtVerify(token, secret);
     } catch (err) {
       const url = request.nextUrl.clone();

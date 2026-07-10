@@ -16,7 +16,7 @@ export function useElementOperations(elements, setElements, setSelectedId) {
           rotation: 0,
           zIndex: prev.length + 1,
           color: '#000000', fontSize: 24, fontFamily: 'Arial', fontWeight: 'normal',
-          textAlign: 'center', lineHeight: 1.2, fill: '#3b82f6', stroke: '#000000', strokeWidth: 0,
+          textAlign: 'center', lineHeight: 1.2, fill: '#1FA89A', stroke: '#000000', strokeWidth: 0,
           brightness: 100, contrast: 100, saturate: 100, hueRotate: 0, blur: 0, opacity: 100, sepia: 0, grayscale: 0, vignette: 0
         };
 

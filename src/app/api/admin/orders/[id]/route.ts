@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { sendOrderShippedEmail } from '@/lib/email';
+import { requireAdmin } from '@/lib/adminAuth';
 
 export async function GET(req, { params }) {
   try {
+    const authError = await requireAdmin();
+    if (authError) {
+      return NextResponse.json({ error: authError.error }, { status: authError.status });
+    }
+
     const { id } = params;
-    
+
     const order = await prisma.order.findUnique({
         where: { id }
     });
@@ -70,6 +76,11 @@ export async function GET(req, { params }) {
 
 export async function PATCH(req, { params }) {
   try {
+    const authError = await requireAdmin();
+    if (authError) {
+      return NextResponse.json({ error: authError.error }, { status: authError.status });
+    }
+
     const { id } = params;
     const body = await req.json();
     const { status, trackingNumber } = body;

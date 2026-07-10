@@ -32,24 +32,18 @@ function CoverEditorContent() {
   const [isInteractingWithCanvas, setIsInteractingWithCanvas] = useState(false)
   const [canvasSettings, setCanvasSettings] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [showDebug, setShowDebug] = useState(true)
-
-  // Hide debug overlay after 3 seconds once loaded
-  useEffect(() => {
-    if (!loading) {
-      const timer = setTimeout(() => setShowDebug(false), 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [loading])
 
   // Load layout from create page selection
   useEffect(() => {
     const initLayout = async () => {
       try {
         setLoading(true);
-        // First try to load from local storage persistence
-        const hasSavedProject = handleLoadProject();
-        
+        // A freshly picked preset (?preset=...) must win over a previously
+        // saved cover — useCanvasState already loaded it from the URL, so
+        // only restore the saved project when no preset was requested.
+        const presetRequested = Boolean(searchParams.get('preset'));
+        const hasSavedProject = presetRequested ? false : handleLoadProject();
+
         if (hasSavedProject) {
            console.log('Cover Editor: Loaded project from local persistence');
            // handleLoadProject inside useProjectPersistence takes care of state update
@@ -96,12 +90,6 @@ function CoverEditorContent() {
     initLayout()
   }, [])
 
-  // -- DEBUG OVERLAY --
-  const debugInfo = canvasSettings ? 
-    `Size: ${canvasSettings.sizeName} (${canvasSettings.width}x${canvasSettings.height})` : 
-    'Loading Layout...';
-
-
   // -- CANVAS ENGINE HOOKS --
   // Use default or loaded settings. If loading, use default to init hooks but don't render content yet?
   // Actually hook initialization must be unconditional.
@@ -126,15 +114,19 @@ function CoverEditorContent() {
     addElement, updateElement, reorder
   } = useElementOperations(elements, setElements, setSelectedId);
 
-  const { 
-    handleSaveProject, handleLoadProject, handleResetProject,
-    lastSaved, isAutoSaving, setIsAutoSaveEnabled 
+  const {
+    handleSaveProject, handleLoadProject, handleResetProject, flushSave,
+    lastSaved, isAutoSaving, setIsAutoSaveEnabled
   } = useProjectPersistence(currentState, effectiveCanvasSettings, updateState, setCanvasSettings);
 
 
   // -- HANDLERS --
   const handleBack = () => router.back();
-  const handleDone = () => router.push('/create?step=3'); // Renamed to handleDone to act as "Next Step"
+  const handleDone = () => {
+    // Save immediately — the debounced autosave may still be pending
+    flushSave();
+    router.push('/create?step=3');
+  };
 
   const handleReorderElement = (direction) => {
     if (selectedId) reorder(selectedId, direction);
@@ -172,27 +164,6 @@ function CoverEditorContent() {
 
   return (
     <div className="cover-editor-root">
-      {/* 
-         DEBUG OVERLAY: Remove this after confirming layout is correct.
-      */}
-      <div style={{
-          position: 'fixed', 
-          top: 60, 
-          left: '50%', 
-          transform: 'translateX(-50%)', 
-          background: 'rgba(0,0,0,0.8)', 
-          color: 'white', 
-          padding: '4px 12px', 
-          borderRadius: 4, 
-          zIndex: 99999, 
-          fontSize: 12,
-          pointerEvents: 'none',
-          whiteSpace: 'nowrap',
-          opacity: showDebug ? 1 : 0,
-          transition: 'opacity 0.5s ease-out'
-      }}>
-        {debugInfo}
-      </div>
       <FontLoader />
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', flexDirection: 'column', gap: '1rem' }}>
@@ -374,17 +345,17 @@ function CoverEditorContent() {
       )}
       <style jsx>{`
         .dropdown-item {
-          text-align: left; 
-          padding: 8px 12px; 
-          background: none; 
-          border: none; 
-          cursor: pointer; 
-          borderRadius: 4px; 
-          font-size: 13px; 
-          color: #334155;
+          text-align: left;
+          padding: 8px 12px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          border-radius: 4px;
+          font-size: 13px;
+          color: #141414;
         }
         .dropdown-item:hover {
-          background: #f1f5f9;
+          background: #f0fbfa;
         }
       `}</style>
     </div>

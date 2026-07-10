@@ -90,7 +90,7 @@ export interface ProjectState {
   coverImage: ProjectImage | null;
   coverText: string;
   coverTheme: string;
-  
+
   // Global Settings
   pageMargin: number;
   pageGutter: number;
