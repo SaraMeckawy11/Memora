@@ -184,8 +184,9 @@ const LandingPage = () => {
       // transform back to CSS so the signature tilt + hover effects survive.
       const themeCards: Array<{ sel: string; rot: number; scale: number }> = [
         { sel: ".m-theme-card.is-1", rot: -2, scale: 1 },
-        { sel: ".m-theme-card.is-2", rot: 0, scale: 1.02 },
-        { sel: ".m-theme-card.is-3", rot: 2, scale: 1 },
+        { sel: ".m-theme-card.is-2", rot: 1.5, scale: 1 },
+        { sel: ".m-theme-card.is-3", rot: 1.5, scale: 1 },
+        { sel: ".m-theme-card.is-4", rot: -1.5, scale: 1 },
       ];
       themeCards.forEach(({ sel, rot, scale }, i) => {
         gsap.fromTo(
@@ -467,14 +468,18 @@ const LandingPage = () => {
         </div>
         <div className="m-themes__grid">
           {[
-            { cls: "is-1", label: "Travel Adventures", img: "/backClouds.jpg", preset: "travel3" },
-            { cls: "is-2", label: "Our Wedding Day", img: "/backPinky.jpg", preset: "wedding" },
-            { cls: "is-3", label: "Baby Memories", img: "/backRoyalGreen.jpg", preset: "baby" },
+            { cls: "is-1", label: "Travel", detail: "6 cover designs", img: "/theme-travel-collection.webp", category: "travel" },
+            { cls: "is-2", label: "Memories", detail: "5 cover designs", img: "/theme-memories-collection.webp", category: "memories" },
+            { cls: "is-3", label: "Wedding", detail: "4 cover designs", img: "/theme-wedding-collection.webp", category: "wedding" },
+            { cls: "is-4", label: "With Love", detail: "5 cover designs", img: "/theme-love-collection.webp", category: "with-love" },
           ].map((theme) => (
-            <Link href={`/cover?preset=${theme.preset}`} key={theme.label} className={`m-theme-card ${theme.cls}`}>
-              <img src={theme.img} alt={`${theme.label} theme preview`} loading="lazy" />
-              <div className="m-theme-card__sticker">edit</div>
-              <div className="m-theme-card__label">{theme.label}</div>
+            <Link href={`/select-cover#category-${theme.category}`} key={theme.label} className={`m-theme-card ${theme.cls}`}>
+              <img src={theme.img} alt={`${theme.label} photobook cover collection`} loading="lazy" />
+              <div className="m-theme-card__sticker">view all</div>
+              <div className="m-theme-card__label">
+                <span>{theme.label}</span>
+                <small>{theme.detail} &rarr;</small>
+              </div>
             </Link>
           ))}
         </div>

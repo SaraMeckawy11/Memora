@@ -1,6 +1,6 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import '@/styles/select-cover/SelectCover.css'
 import '@/styles/select-cover/CoverPresets.css'
 import { COVER_PRESETS } from '@/app/cover/presets'
@@ -12,6 +12,15 @@ import DesignOptionCard from './DesignOptionCard'
 export default function SelectCoverPage() {
   const router = useRouter()
   const [selectedPreset, setSelectedPreset] = useState(null)
+
+  useEffect(() => {
+    const categoryId = window.location.hash.slice(1)
+    if (!categoryId) return
+    const timer = window.setTimeout(() => {
+      document.getElementById(categoryId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 120)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   const handleSelectPreset = (presetId) => {
     setSelectedPreset(presetId)
@@ -60,7 +69,7 @@ export default function SelectCoverPage() {
           <h3 className="section-header">Cover Designs</h3>
           
           {[...new Set(PRESETS.map(p => p.category))].map(category => (
-            <div key={category} className="category-section">
+            <div key={category} id={`category-${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} className="category-section">
               <h4 className="category-title">{category}</h4>
               <div className="presets-grid">
                 {PRESETS.filter(p => p.category === category).map((preset) => (
