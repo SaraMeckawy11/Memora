@@ -21,8 +21,8 @@ export default function SelectCoverPage() {
 
   const handleNext = (e) => {
     if (e) e.preventDefault()
-    // Using replace to prevent history stack issues that can cause "toggling"
-    router.replace('/create?step=3')
+    // push (not replace) so the browser/phone back button returns here
+    router.push('/create?step=3')
   }
 
   const handleBack = () => {
@@ -37,11 +37,11 @@ export default function SelectCoverPage() {
           <button className="back-link" onClick={handleBack}>
             ← Back to Editor
           </button>
-          <button 
+          <button
             className="btn-next-step"
             onClick={handleNext}
           >
-            Review Order →
+            Continue to Review →
           </button>
         </div>
       </div>

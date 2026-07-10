@@ -137,6 +137,14 @@
   font-size: 15px;
   border-bottom: 1.5px dashed var(--sand);
 }
+
+/* Prices are amounts, not lowercase labels — undo .m-mono's lowercasing
+   so "EGP" doesn't render as "egp" */
+.order-total-row .m-mono,
+.order-summary-row .m-mono,
+.order-qty .m-mono {
+  text-transform: none;
+}
 .order-total-row:last-of-type { border-bottom: none; }
 
 .order-total-final {

@@ -151,10 +151,10 @@ export default function OrderPage() {
       )}
 
       <header className="order-header">
-        <button className="m-btn-secondary" onClick={() => router.push('/create')} type="button">
-          ← back to editor
+        <button className="m-btn-secondary" onClick={() => router.push('/create?step=3')} type="button">
+          ← back to review
         </button>
-        <h1 className="m-display order-title">Review &amp; Order</h1>
+        <h1 className="m-display order-title">Checkout</h1>
         <span className="m-pill">secure checkout</span>
       </header>
 

@@ -7,6 +7,7 @@ import { PRODUCTS } from '@/features/project-setup/components/ProductSelection'
 import { SIZES } from '@/features/project-setup/components/SizeSelection'
 import { computeOrderPricing } from '@/lib/pricing'
 import { hasCoverDesign } from '@/app/cover/coverStorage'
+import '@/styles/review/review.css'
 
 interface StepReviewProps {
   handleProceed: () => void;
@@ -24,7 +25,7 @@ export default function StepReview({
 
   const selectedProductObj = PRODUCTS.find(p => p.id === selectedProduct)
   const selectedSizeObj = SIZES.find(s => s.id === selectedSize)
-  const filledPages = pages.filter(p => p.images.length > 0).length
+  const filledPages = pages.filter(p => p.images.some(Boolean)).length
 
   // Cover design lives in localStorage — read after mount to avoid SSR mismatch
   const [coverDesigned, setCoverDesigned] = useState(false)
@@ -36,182 +37,124 @@ export default function StepReview({
     quantity: 1,
   })
 
+  const firstPhotoSrc = (() => {
+    for (const page of pages) {
+      const imageId = page.images.find(Boolean)
+      if (imageId === undefined) continue
+      const img = uploadedImages.find(i => String(i.id) === String(imageId))
+      if (img?.src) return img.src
+    }
+    return null
+  })()
+
   return (
-    <div style={{ animation: 'fadeIn 0.3s ease' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '1rem', fontSize: '2rem' }}>
-        Review Your Photo Book
-      </h2>
-      <p style={{ textAlign: 'center', color: '#666', marginBottom: '3rem' }}>
-        Everything looks perfect? Let's finalize your order!
+    <div className="review-root">
+      <h2 className="review-title">Review Your Photo Book</h2>
+      <p className="review-subtitle">
+        Everything looks perfect? Let&rsquo;s finalize your order!
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '3rem' }}>
-        <div style={{ 
-          backgroundColor: '#fff', 
-          borderRadius: '12px', 
-          padding: '2rem', 
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)', 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center' 
-        }}>
-          <div style={{ 
-            width: '200px', 
-            height: '260px', 
-            backgroundColor: pageBgColor, 
-            borderRadius: '8px', 
-            boxShadow: '0 8px 16px rgba(0, 0, 0, 0.15)', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            marginBottom: '1.5rem' 
-          }}>
-            <span style={{ fontWeight: 600, color: '#666' }}>Your Book</span>
+      <div className="review-grid">
+        <div className="review-card review-book-card">
+          <div className="review-book-mock" style={{ backgroundColor: pageBgColor }}>
+            {firstPhotoSrc ? (
+              <img src={firstPhotoSrc} alt="First page of your book" />
+            ) : (
+              <span className="placeholder">Your Book</span>
+            )}
           </div>
-          <p style={{ textAlign: 'center', color: '#666' }}>
+          <p className="review-book-meta">
             {filledPages} of {pages.length} pages filled
           </p>
-          <p style={{ textAlign: 'center', color: '#999', fontSize: '0.85rem' }}>
+          <p className="review-book-meta small">
             {uploadedImages.length} photos uploaded
           </p>
         </div>
 
-        <div style={{ 
-          backgroundColor: '#fff', 
-          borderRadius: '12px', 
-          padding: '2rem', 
-          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' 
-        }}>
-          <h3 style={{ marginTop: 0, marginBottom: '1.5rem' }}>Order Summary</h3>
+        <div className="review-card">
+          <h3 className="review-summary-title">order summary</h3>
 
-          <div style={{ marginBottom: '1.5rem', paddingBottom: '1.5rem', borderBottom: '1px solid #e0e0e0' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.95rem' }}>
-              <span style={{ color: '#666' }}>Book Type:</span>
-              <span style={{ fontWeight: 600 }}>{selectedProductObj?.name}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.95rem' }}>
-              <span style={{ color: '#666' }}>Size:</span>
-              <span style={{ fontWeight: 600 }}>{selectedSizeObj?.name}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', fontSize: '0.95rem' }}>
-              <span style={{ color: '#666' }}>Pages:</span>
-              <span style={{ fontWeight: 600 }}>{pages.length}</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.95rem' }}>
-              <span style={{ color: '#666' }}>Cover:</span>
+          <div className="review-row">
+            <span className="label">Book type</span>
+            <span className="value">{selectedProductObj?.name || '—'}</span>
+          </div>
+          <div className="review-row">
+            <span className="label">Size</span>
+            <span className="value">{selectedSizeObj?.name || '—'}</span>
+          </div>
+          <div className="review-row">
+            <span className="label">Pages</span>
+            <span className="value">{pages.length}</span>
+          </div>
+          <div className="review-row">
+            <span className="label">Cover</span>
+            <span className="value">
               {coverDesigned ? (
-                <span style={{ fontWeight: 600 }}>
-                  Designed ✓{' '}
-                  <Link href="/cover" style={{ fontWeight: 400, fontSize: '0.85rem', textDecoration: 'underline' }}>
-                    edit
-                  </Link>
-                </span>
+                <>Designed ✓ <Link href="/cover">edit</Link></>
               ) : (
-                <Link href="/select-cover" style={{ fontWeight: 600, textDecoration: 'underline' }}>
-                  Design your cover →
-                </Link>
+                <Link href="/select-cover">Design your cover →</Link>
               )}
-            </div>
+            </span>
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.95rem', color: '#666' }}>
-              <span>Subtotal:</span>
-              <span>{pricing.subtotal.toFixed(2)} EGP</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.95rem', color: '#666' }}>
-              <span>Shipping + tax:</span>
-              <span>{(pricing.shipping + pricing.tax).toFixed(2)} EGP</span>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.2rem', fontWeight: 600 }}>
-              <span>Total:</span>
-              <span>{pricing.total.toFixed(2)} EGP</span>
-            </div>
+          <div className="review-divider" />
+
+          <div className="review-row">
+            <span className="label">Subtotal</span>
+            <span className="value">{pricing.subtotal.toFixed(2)} EGP</span>
+          </div>
+          <div className="review-row">
+            <span className="label">Shipping + tax</span>
+            <span className="value">{(pricing.shipping + pricing.tax).toFixed(2)} EGP</span>
+          </div>
+          <div className="review-total-row">
+            <span>Total</span>
+            <span>{pricing.total.toFixed(2)} EGP</span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="review-actions">
             <button
-              onClick={exportToPDF}
-              disabled={isExporting}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#f5f5f5',
-                color: '#333',
-                border: '1px solid #ddd',
-                borderRadius: '8px',
-                cursor: isExporting ? 'wait' : 'pointer',
-                fontSize: '0.95rem',
-                fontWeight: 500,
-              }}
-            >
-              {isExporting ? '⏳ Exporting...' : '📄 Download PDF Preview'}
-            </button>
-            
-            <button
-              className="btn btn-primary"
+              className="review-btn review-btn--primary"
               onClick={handleProceed}
-              style={{ width: '100%' }}
+              type="button"
             >
               Proceed to Checkout →
+            </button>
+            <button
+              className="review-btn review-btn--ghost"
+              onClick={exportToPDF}
+              disabled={isExporting}
+              type="button"
+            >
+              {isExporting ? 'Exporting…' : 'Download PDF preview'}
             </button>
           </div>
         </div>
       </div>
 
-      <div style={{ 
-        backgroundColor: '#fff', 
-        borderRadius: '12px', 
-        padding: '1.5rem', 
-        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' 
-      }}>
-        <h4 style={{ margin: '0 0 1rem 0', fontSize: '1rem', fontWeight: 600 }}>
-          All Pages Preview
-        </h4>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', 
-          gap: '1rem' 
-        }}>
-          {pages.map((page, idx) => (
-            <div
-              key={page.id}
-              style={{
-                aspectRatio: '1',
-                backgroundColor: pageBgColor,
-                borderRadius: '6px',
-                border: '1px solid #e0e0e0',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.8rem',
-                color: '#666',
-                position: 'relative',
-                overflow: 'hidden',
-              }}
-            >
-              {page.images.length > 0 ? (
-                <img
-                  src={uploadedImages.find(i => i.id === page.images[0])?.src}
-                  alt={`Page ${idx + 1}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              ) : (
-                <span>Page {idx + 1}</span>
-              )}
-              <div style={{
-                position: 'absolute',
-                bottom: '4px',
-                right: '4px',
-                backgroundColor: 'rgba(0,0,0,0.6)',
-                color: '#fff',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontSize: '0.7rem',
-              }}>
-                {idx + 1}
+      <div className="review-card review-pages-card">
+        <h3 className="review-summary-title">all pages</h3>
+        <div className="review-pages-grid">
+          {pages.map((page, idx) => {
+            const imageId = page.images.find(Boolean)
+            const img = imageId !== undefined
+              ? uploadedImages.find(i => String(i.id) === String(imageId))
+              : null
+            return (
+              <div
+                key={page.id}
+                className="review-page-thumb"
+                style={{ backgroundColor: pageBgColor }}
+              >
+                {img?.src ? (
+                  <img src={img.src} alt={`Page ${idx + 1}`} />
+                ) : (
+                  <span>{page.type === 'text' ? 'Text' : `Page ${idx + 1}`}</span>
+                )}
+                <div className="review-page-num">{idx + 1}</div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </div>

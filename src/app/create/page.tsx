@@ -65,10 +65,11 @@ function CreatePageContent() {
       router.push('/create?step=2')
     }
     else if (step === 2) {
-      router.replace('/select-cover')
+      // push (not replace) so the browser/phone back button returns here
+      router.push('/select-cover')
     }
     else if (step === 3) {
-      router.replace('/order')
+      router.push('/order')
     }
   }
 
@@ -142,7 +143,7 @@ function CreatePageContent() {
             disabled={step === 1 && (!state.selectedProduct || !state.selectedSize)}
             className="bottom-nav-btn bottom-nav-btn--primary"
           >
-            {step === 3 ? 'Complete Order' : step === 2 ? 'Select Cover' : 'Next'}
+            {step === 3 ? 'Checkout' : step === 2 ? 'Choose Cover' : 'Next'}
           </button>
         </div>
       </footer>
